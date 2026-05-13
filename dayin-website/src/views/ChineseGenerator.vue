@@ -261,7 +261,7 @@ const downloadPDF = () => {
           </div>
 
           <div class="pinyin-paper-sheet">
-            <div v-for="row in 18" :key="row" class="practice-line pinyin-paper-line">
+            <div v-for="row in 19" :key="row" class="practice-line pinyin-paper-line">
             </div>
           </div>
         </div>
@@ -647,11 +647,11 @@ const downloadPDF = () => {
 }
 .pinyin-paper-sheet {
   display: grid;
-  gap: 3.5mm;
+  gap: 3mm;
   padding-top: 2mm;
 }
 .pinyin-paper-line {
-  height: 9mm;
+  height: 8.8mm;
 }
 .composition-paper .paper-info {
   margin-bottom: 14px;
@@ -720,6 +720,15 @@ const downloadPDF = () => {
 }
 .cornell-summary {
   height: 47mm;
+  padding-top: 4mm;
+  padding-bottom: 4mm;
+}
+.cornell-summary .cornell-label {
+  height: 6.5mm;
+  line-height: 6.5mm;
+}
+.cornell-summary .cornell-line {
+  height: 6.4mm;
 }
 
 @media print {

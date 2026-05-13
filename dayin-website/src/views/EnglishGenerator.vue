@@ -134,7 +134,7 @@ const downloadPDF = () => {
 }
 .english-sheet {
   display: grid;
-  gap: 3.5mm;
+  gap: 5.5mm;
   padding-top: 2mm;
 }
 .english-line {
@@ -142,19 +142,19 @@ const downloadPDF = () => {
   box-sizing: border-box;
   width: 180mm;
   height: 9mm;
-  border-top: 1px solid #333;
-  border-bottom: 1px solid #333;
 }
 .english-line::before {
   content: "";
   position: absolute;
   inset: 0;
   background-image:
-    repeating-linear-gradient(to right, #999 0 2px, transparent 2px 5px),
-    repeating-linear-gradient(to right, #999 0 2px, transparent 2px 5px);
-  background-position: 0 33.333%, 0 66.666%;
-  background-repeat: repeat-x, repeat-x;
-  background-size: 100% 1px, 100% 1px;
+    linear-gradient(#b8dcc4, #b8dcc4),
+    linear-gradient(#b8dcc4, #b8dcc4),
+    linear-gradient(#f0b3b3, #f0b3b3),
+    linear-gradient(#b8dcc4, #b8dcc4);
+  background-position: 0 0, 0 33.333%, 0 66.666%, 0 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 1px, 100% 1px, 100% 1px, 100% 1px;
   pointer-events: none;
 }
 
