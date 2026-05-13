@@ -486,14 +486,20 @@ const downloadPDF = () => {
 .pinyin-line::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image:
-    repeating-linear-gradient(to right, #aaa 0 2px, transparent 2px 5px),
-    repeating-linear-gradient(to right, #aaa 0 2px, transparent 2px 5px);
-  background-position: 0 33.333%, 0 66.666%;
-  background-repeat: repeat-x, repeat-x;
-  background-size: 100% 1px, 100% 1px;
-  opacity: 0.9;
+  left: 0;
+  top: 33.333%;
+  width: 100%;
+  border-top: 1px dashed #aaa;
+  pointer-events: none;
+}
+.pinyin-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 66.666%;
+  width: 100%;
+  border-top: 1px dashed #aaa;
+  pointer-events: none;
 }
 .pinyin-divider {
   position: absolute;
@@ -593,13 +599,19 @@ const downloadPDF = () => {
 .practice-line::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image:
-    repeating-linear-gradient(to right, #999 0 2px, transparent 2px 5px),
-    repeating-linear-gradient(to right, #999 0 2px, transparent 2px 5px);
-  background-position: 0 33.333%, 0 66.666%;
-  background-repeat: repeat-x, repeat-x;
-  background-size: 100% 1px, 100% 1px;
+  left: 0;
+  top: 33.333%;
+  width: 100%;
+  border-top: 1px dashed #999;
+  pointer-events: none;
+}
+.practice-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 66.666%;
+  width: 100%;
+  border-top: 1px dashed #999;
   pointer-events: none;
 }
 .four-line-band {
@@ -647,11 +659,11 @@ const downloadPDF = () => {
 }
 .pinyin-paper-sheet {
   display: grid;
-  gap: 3mm;
+  gap: 3.5mm;
   padding-top: 2mm;
 }
 .pinyin-paper-line {
-  height: 8.8mm;
+  height: 8.6mm;
 }
 .composition-paper .paper-info {
   margin-bottom: 14px;

@@ -4,6 +4,7 @@ import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
 import html2pdf from 'html2pdf.js';
 
 const paperTitle = '英语作业纸';
+const englishLineRows = Array.from({ length: 18 }, (_, index) => index + 1);
 
 const printPaper = () => {
   window.print();
@@ -68,7 +69,14 @@ const downloadPDF = () => {
           </div>
 
           <div class="english-sheet">
-            <div v-for="row in 18" :key="row" class="english-line"></div>
+            <div v-for="row in englishLineRows" :key="row" class="english-line">
+              <svg viewBox="0 0 180 9" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="0" y1="0.25" x2="180" y2="0.25" stroke="#b8dcc4" stroke-width="0.35" />
+                <line x1="0" y1="3" x2="180" y2="3" stroke="#b8dcc4" stroke-width="0.35" />
+                <line x1="0" y1="6" x2="180" y2="6" stroke="#f0b3b3" stroke-width="0.35" />
+                <line x1="0" y1="8.75" x2="180" y2="8.75" stroke="#b8dcc4" stroke-width="0.35" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -138,24 +146,26 @@ const downloadPDF = () => {
   padding-top: 2mm;
 }
 .english-line {
-  position: relative;
   box-sizing: border-box;
   width: 180mm;
   height: 9mm;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  forced-color-adjust: none;
 }
-.english-line::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(#b8dcc4, #b8dcc4),
-    linear-gradient(#b8dcc4, #b8dcc4),
-    linear-gradient(#f0b3b3, #f0b3b3),
-    linear-gradient(#b8dcc4, #b8dcc4);
-  background-position: 0 0, 0 33.333%, 0 66.666%, 0 100%;
-  background-repeat: no-repeat;
-  background-size: 100% 1px, 100% 1px, 100% 1px, 100% 1px;
-  pointer-events: none;
+.english-line svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  forced-color-adjust: none;
+}
+.english-line line {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  forced-color-adjust: none;
 }
 
 @media print {
@@ -181,6 +191,17 @@ const downloadPDF = () => {
     height: 297mm !important;
     padding: 15mm !important;
     margin: 0 auto;
+  }
+  .english-line {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    forced-color-adjust: none !important;
+  }
+  .english-line svg,
+  .english-line line {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    forced-color-adjust: none !important;
   }
 }
 </style>

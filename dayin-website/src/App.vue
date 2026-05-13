@@ -23,4 +23,16 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
+@media print {
+  html,
+  body,
+  #app {
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+}
 </style>

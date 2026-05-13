@@ -59,7 +59,7 @@ const selectedKeys = computed({
           </a-menu-item>
         </a-menu>
       </a-layout-sider>
-      <a-layout style="padding: 24px">
+      <a-layout class="main-layout" style="padding: 24px">
         <a-layout-content class="content">
           <router-view />
         </a-layout-content>
@@ -101,5 +101,29 @@ const selectedKeys = computed({
   background: transparent;
   min-height: 280px;
   height: 100%;
+}
+
+@media print {
+  .generator-layout {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: #fff !important;
+  }
+  .header,
+  .sider {
+    display: none !important;
+  }
+  .main-layout {
+    display: block !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+  .content {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: #fff !important;
+  }
 }
 </style>
