@@ -1,51 +1,63 @@
 import type { MathProblem, GeneratorConfig } from '../../types/math';
 
+const shuffle = <T>(items: T[]) => {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+};
+
 export const generateBreakTen = (config: GeneratorConfig): MathProblem[] => {
-  const problems: MathProblem[] = [];
-  let i = 0;
+  const candidates: Array<{ a: number; b: number }> = [];
   // Break-ten is usually for subtraction where 10 < a < 20, and a % 10 < b
   // e.g. 15 - 8
-  while (problems.length < config.count) {
-    const a = Math.floor(Math.random() * 9) + 11; // 11 to 19
-    const b = Math.floor(Math.random() * 8) + 2;  // 2 to 9
-    
-    // Condition for break-ten
-    if (a % 10 < b && a > b) {
-      problems.push({
-        id: `break-${Date.now()}-${i}`,
-        type: 'split-tree',
-        a,
-        b,
-        operator: '-',
-        answer: a - b,
-        expression: `${a} - ${b} = ${a - b}`,
-        splitNodes: {
-          main: a,
-          left: a % 10,
-          right: 10,
-          isLeftBreak: false
-        }
-      });
-      i++;
+  for (let a = 11; a <= 19; a++) {
+    for (let b = 2; b <= 9; b++) {
+      if (a % 10 < b && a > b) {
+        candidates.push({ a, b });
+      }
     }
   }
-  return problems;
+
+  return shuffle(candidates)
+    .slice(0, config.count)
+    .map(({ a, b }, index) => ({
+      id: `break-${Date.now()}-${index}`,
+      type: 'split-tree',
+      a,
+      b,
+      operator: '-',
+      answer: a - b,
+      expression: `${a} - ${b} = ${a - b}`,
+      splitNodes: {
+        main: a,
+        left: a % 10,
+        right: 10,
+        isLeftBreak: false
+      }
+    }));
 };
 
 export const generateMakeTen = (config: GeneratorConfig): MathProblem[] => {
-  const problems: MathProblem[] = [];
-  let i = 0;
+  const candidates: Array<{ a: number; b: number; left: number; right: number }> = [];
 
-  while (problems.length < config.count) {
-    const a = Math.floor(Math.random() * 4) + 6; // 6 to 9
-    const b = Math.floor(Math.random() * 4) + 6; // 6 to 9
-    const left = 10 - a;
-    const right = b - left;
+  for (let a = 6; a <= 9; a++) {
+    for (let b = 6; b <= 9; b++) {
+      const left = 10 - a;
+      const right = b - left;
 
-    if (right <= 0) continue;
+      if (right > 0) {
+        candidates.push({ a, b, left, right });
+      }
+    }
+  }
 
-    problems.push({
-      id: `make-ten-${Date.now()}-${i}`,
+  return shuffle(candidates)
+    .slice(0, config.count)
+    .map(({ a, b, left, right }, index) => ({
+      id: `make-ten-${Date.now()}-${index}`,
       type: 'make-ten',
       a,
       b,
@@ -58,9 +70,5 @@ export const generateMakeTen = (config: GeneratorConfig): MathProblem[] => {
         right,
         isLeftBreak: true
       }
-    });
-    i++;
-  }
-
-  return problems;
+    }));
 };

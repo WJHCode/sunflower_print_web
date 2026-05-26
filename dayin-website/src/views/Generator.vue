@@ -14,7 +14,7 @@ const formState = ref({
   type: 'addition', // addition, subtraction, break-ten, make-ten, mixed
   maxNumber: 20,
   columns: 3,
-  rows: 12,
+  rows: 16,
   showAnswer: false,
 });
 
@@ -60,6 +60,13 @@ const problemList = computed<MathProblem[]>(() => {
   }
   return [];
 });
+const generatedCount = computed(() => problemList.value.length);
+const countLabel = computed(() => {
+  if (generatedCount.value === problemCount.value) {
+    return `共 ${generatedCount.value} 题`;
+  }
+  return `最多可生成 ${generatedCount.value} 题（目标 ${problemCount.value} 题）`;
+});
 
 const printPaper = () => {
   window.print();
@@ -98,11 +105,11 @@ const downloadPDF = () => {
           <a-input-number v-model:value="formState.maxNumber" :min="10" :max="100" style="width: 100%" />
         </a-form-item>
         <a-form-item label="排版格式">
-          <a-tag v-if="isFixedLayout" color="blue">固定 3列 × 5行 (共15题)</a-tag>
+          <a-tag v-if="isFixedLayout" color="blue">固定 3列 × 5行 ({{ countLabel }})</a-tag>
           <div v-else class="layout-controls">
             <a-input-number v-model:value="formState.columns" :min="1" :max="5" addon-before="列" />
-            <a-input-number v-model:value="formState.rows" :min="1" :max="12" addon-before="行" />
-            <a-tag color="blue">共 {{ problemCount }} 题</a-tag>
+            <a-input-number v-model:value="formState.rows" :min="1" :max="16" addon-before="行" />
+            <a-tag color="blue">{{ countLabel }}</a-tag>
           </div>
         </a-form-item>
         <a-form-item label="显示答案">
@@ -214,7 +221,7 @@ const downloadPDF = () => {
   width: max-content;
 }
 .basic-content {
-  min-height: 214mm;
+  min-height: 238mm;
   grid-auto-rows: minmax(0, 1fr);
   align-items: center;
   row-gap: 0;
