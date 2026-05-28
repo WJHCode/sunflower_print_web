@@ -168,6 +168,70 @@ const downloadPDF = () => {
   forced-color-adjust: none;
 }
 
+@media (max-width: 768px) {
+  .english-container {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    min-width: 0;
+    overflow-y: auto;
+    padding-bottom: 12px;
+  }
+
+  .settings-panel {
+    width: 100%;
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
+  .settings-panel :deep(.ant-card-head) {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
+  .settings-panel :deep(.ant-card-body) {
+    padding: 16px;
+  }
+
+  .preview-panel {
+    flex: 0 0 auto;
+    min-width: 0;
+    min-height: 430px;
+    padding: 12px;
+    overflow: auto;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .paper-stack {
+    justify-items: center;
+  }
+
+  .paper-container {
+    flex: 0 0 auto;
+    zoom: 0.43;
+    border-radius: 6px;
+  }
+
+  .paper-info {
+    gap: 8px 16px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 430px) and (max-width: 768px) {
+  .paper-container {
+    zoom: 0.5;
+  }
+}
+
+@media (min-width: 560px) and (max-width: 768px) {
+  .paper-container {
+    zoom: 0.65;
+  }
+}
+
 @media print {
   @page {
     size: A4 portrait;
@@ -186,6 +250,7 @@ const downloadPDF = () => {
     display: block;
   }
   .paper-container {
+    zoom: 1 !important;
     box-shadow: none !important;
     width: 210mm !important;
     height: 297mm !important;

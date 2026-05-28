@@ -150,6 +150,94 @@ const selectedKeys = computed({
   height: 100%;
 }
 
+@media (max-width: 768px) {
+  .generator-layout {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .header {
+    height: auto;
+    min-height: 58px;
+    padding: 10px 14px;
+    line-height: 1.2;
+  }
+
+  .logo {
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .logo-mark {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+  }
+
+  .home-button {
+    height: 32px;
+    padding-inline: 11px;
+    font-size: 13px;
+  }
+
+  .generator-layout > :deep(.ant-layout) {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sider {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    padding: 8px 8px 6px;
+    box-shadow: 0 1px 0 rgba(58, 74, 62, 0.1);
+  }
+
+  .subject-menu {
+    display: flex;
+    height: auto !important;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .subject-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .subject-menu :deep(.ant-menu-item) {
+    flex: 0 0 auto;
+    height: 36px;
+    line-height: 36px;
+    margin: 0 4px;
+    padding-inline: 12px;
+  }
+
+  .subject-menu :deep(.ant-menu-title-content) {
+    margin-inline-start: 6px;
+  }
+
+  .main-layout {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    min-width: 0;
+    min-height: 0;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .content {
+    width: 100% !important;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
 @media print {
   .generator-layout {
     display: block !important;

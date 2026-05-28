@@ -18,10 +18,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 #app {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  html,
+  body,
+  #app {
+    min-width: 0;
+    overflow-x: hidden;
+  }
 }
 
 @media print {
