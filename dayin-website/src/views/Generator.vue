@@ -1,7 +1,20 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
-import { generateBasicAddition, generateBasicSubtraction, generateMixedArithmetic } from '../utils/generators/basicMath';
+import {
+  generateBasicAddition,
+  generateBasicSubtraction,
+  generateCurrencyUnitConversion,
+  generateLengthUnitConversion,
+  generateMixedArithmetic,
+  generateMoneyExchange,
+  generateTableDivision,
+  generateTableMultiplication,
+  generateTimeUnitConversion,
+  generateTripleAddition,
+  generateTripleSubtraction,
+  generateWeightUnitConversion
+} from '../utils/generators/basicMath';
 import { generateBreakTen, generateMakeTen } from '../utils/generators/splitMath';
 import BasicEquation from '../components/math/BasicEquation.vue';
 import MakeTenEquation from '../components/math/MakeTenEquation.vue';
@@ -11,7 +24,7 @@ import type { MathProblem } from '../types/math';
 import html2pdf from 'html2pdf.js';
 
 const formState = ref({
-  type: 'addition', // addition, subtraction, break-ten, make-ten, mixed
+  type: 'addition',
   maxNumber: 20,
   columns: 3,
   rows: 16,
@@ -24,21 +37,66 @@ const problemTypeLabels: Record<string, string> = {
   'break-ten': '破十法练习题',
   'make-ten': '凑十法练习题',
   mixed: '加减混合运算练习题',
+  'triple-addition': '三个数连续加法练习题',
+  'triple-subtraction': '三个数连续减法练习题',
+  'table-division': '表内除法练习题',
+  'table-multiplication': '表内乘法练习题',
+  'currency-unit': '元角分单位换算练习题',
+  'money-exchange': '纸币面值兑换练习题',
+  'weight-unit': '质量单位换算练习题',
+  'length-unit': '长度单位换算练习题',
+  'time-unit': '时间单位换算练习题',
 };
 
 const paperTitle = computed(() => problemTypeLabels[formState.value.type] ?? '口算练习题');
 
 const fixedLayoutTypes = new Set(['break-ten', 'make-ten']);
+const numberRangeTypes = new Set(['addition', 'subtraction', 'mixed', 'triple-addition', 'triple-subtraction']);
+const unitConversionTypes = new Set(['currency-unit', 'weight-unit', 'length-unit', 'time-unit']);
+const hiddenLayoutTypes = new Set(['money-exchange']);
+const singleColumnTypes = new Set(['money-exchange']);
 const isFixedLayout = computed(() => fixedLayoutTypes.has(formState.value.type));
-const columns = computed(() => isFixedLayout.value ? 3 : formState.value.columns);
-const rows = computed(() => isFixedLayout.value ? 5 : formState.value.rows);
+const showNumberRange = computed(() => numberRangeTypes.has(formState.value.type));
+const showLayoutSettings = computed(() => !hiddenLayoutTypes.has(formState.value.type));
+const columns = computed(() => {
+  if (singleColumnTypes.has(formState.value.type)) return 1;
+  return isFixedLayout.value ? 3 : formState.value.columns;
+});
+const rows = computed(() => {
+  if (singleColumnTypes.has(formState.value.type)) return 12;
+  return isFixedLayout.value ? 5 : formState.value.rows;
+});
+const numberRangeMin = computed(() => formState.value.type === 'triple-subtraction' ? 20 : 10);
+const numberRangeMax = computed(() => {
+  if (formState.value.type === 'triple-addition') return 100;
+  if (formState.value.type === 'triple-subtraction') return 999;
+  return 100;
+});
 const problemCount = computed(() => columns.value * rows.value);
 const contentClass = computed(() => ({
   'paper-content': true,
   'make-ten-content': formState.value.type === 'make-ten',
   'split-tree-content': formState.value.type === 'break-ten',
   'basic-content': !isFixedLayout.value,
+  'unit-conversion-content': unitConversionTypes.has(formState.value.type),
+  'money-exchange-content': formState.value.type === 'money-exchange',
 }));
+
+watch(
+  () => formState.value.type,
+  (type) => {
+    if (type === 'triple-addition' || type === 'triple-subtraction') {
+      formState.value.maxNumber = 50;
+      return;
+    }
+
+    if (formState.value.maxNumber < numberRangeMin.value) {
+      formState.value.maxNumber = numberRangeMin.value;
+    } else if (formState.value.maxNumber > numberRangeMax.value) {
+      formState.value.maxNumber = numberRangeMax.value;
+    }
+  }
+);
 
 // Generate problems using the new engines
 const problemList = computed<MathProblem[]>(() => {
@@ -57,6 +115,24 @@ const problemList = computed<MathProblem[]>(() => {
     return generateMakeTen(config);
   } else if (formState.value.type === 'mixed') {
     return generateMixedArithmetic(config);
+  } else if (formState.value.type === 'triple-addition') {
+    return generateTripleAddition(config);
+  } else if (formState.value.type === 'triple-subtraction') {
+    return generateTripleSubtraction(config);
+  } else if (formState.value.type === 'table-division') {
+    return generateTableDivision(config);
+  } else if (formState.value.type === 'table-multiplication') {
+    return generateTableMultiplication(config);
+  } else if (formState.value.type === 'currency-unit') {
+    return generateCurrencyUnitConversion(config);
+  } else if (formState.value.type === 'money-exchange') {
+    return generateMoneyExchange(config);
+  } else if (formState.value.type === 'weight-unit') {
+    return generateWeightUnitConversion(config);
+  } else if (formState.value.type === 'length-unit') {
+    return generateLengthUnitConversion(config);
+  } else if (formState.value.type === 'time-unit') {
+    return generateTimeUnitConversion(config);
   }
   return [];
 });
@@ -99,12 +175,26 @@ const downloadPDF = () => {
             <a-select-option value="break-ten">破十法练习 (减法)</a-select-option>
             <a-select-option value="make-ten">凑十法练习 (加法)</a-select-option>
             <a-select-option value="mixed">加减混合运算</a-select-option>
+            <a-select-option value="triple-addition">三个数连续加法</a-select-option>
+            <a-select-option value="triple-subtraction">三个数连续减法</a-select-option>
+            <a-select-option value="table-division">表内除法</a-select-option>
+            <a-select-option value="table-multiplication">表内乘法</a-select-option>
+            <a-select-option value="currency-unit">元角分单位换算</a-select-option>
+            <a-select-option value="money-exchange">纸币面值兑换</a-select-option>
+            <a-select-option value="weight-unit">质量单位换算</a-select-option>
+            <a-select-option value="length-unit">长度单位换算</a-select-option>
+            <a-select-option value="time-unit">时间单位换算</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="数字范围 (对基础加减法、混合运算有效)">
-          <a-input-number v-model:value="formState.maxNumber" :min="10" :max="100" style="width: 100%" />
+        <a-form-item v-if="showNumberRange" label="数字范围">
+          <a-input-number
+            v-model:value="formState.maxNumber"
+            :min="numberRangeMin"
+            :max="numberRangeMax"
+            style="width: 100%"
+          />
         </a-form-item>
-        <a-form-item label="排版格式">
+        <a-form-item v-if="showLayoutSettings" label="排版格式">
           <a-tag v-if="isFixedLayout" color="blue">固定 3列 × 5行 ({{ countLabel }})</a-tag>
           <div v-else class="layout-controls">
             <a-input-number v-model:value="formState.columns" :min="1" :max="5" addon-before="列" />
@@ -235,6 +325,12 @@ const downloadPDF = () => {
   grid-auto-rows: 1fr;
   align-items: center;
   row-gap: 0;
+}
+.money-exchange-content {
+  min-height: 202mm;
+  grid-auto-rows: minmax(0, 1fr);
+  align-items: center;
+  row-gap: 12px;
 }
 
 @media print {

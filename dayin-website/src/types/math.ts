@@ -7,6 +7,11 @@ export interface SplitNodes {
   isLeftBreak: boolean; // whether the left node is the '10' (break ten)
 }
 
+export interface ExchangePart {
+  count: number;
+  unit: string;
+}
+
 export interface MathProblem {
   id: string;
   type: MathProblemType;
@@ -17,6 +22,9 @@ export interface MathProblem {
   operator: string;
   operator2?: string;
   answer: number | string;
+  prompt?: string;
+  answerUnit?: string;
+  exchangeParts?: ExchangePart[];
   splitNodes?: SplitNodes;
 }
 
