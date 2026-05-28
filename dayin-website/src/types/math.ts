@@ -1,4 +1,4 @@
-export type MathProblemType = 'basic' | 'split-tree' | 'make-ten' | 'vertical' | 'conversion';
+export type MathProblemType = 'basic' | 'split-tree' | 'make-ten' | 'vertical' | 'conversion' | 'clock';
 
 export interface SplitNodes {
   main: number;
@@ -24,6 +24,8 @@ export interface MathProblem {
   answer: number | string;
   prompt?: string;
   answerUnit?: string;
+  hour?: number;
+  minute?: number;
   exchangeParts?: ExchangePart[];
   splitNodes?: SplitNodes;
 }

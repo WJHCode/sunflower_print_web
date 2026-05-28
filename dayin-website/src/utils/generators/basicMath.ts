@@ -375,3 +375,31 @@ export const generateTimeUnitConversion = (config: GeneratorConfig): MathProblem
       createPromptProblem('time-unit', index, prompt, answer, answerUnit)
     ));
 };
+
+export const generateClockReading = (config: GeneratorConfig): MathProblem[] => {
+  const candidates: Array<{ hour: number; minute: number }> = [];
+
+  for (let hour = 1; hour <= 12; hour++) {
+    for (let minute = 0; minute < 60; minute += 5) {
+      candidates.push({ hour, minute });
+    }
+  }
+
+  return shuffle(candidates)
+    .slice(0, config.count)
+    .map(({ hour, minute }, index) => {
+      const minuteText = String(minute).padStart(2, '0');
+
+      return {
+        id: `clock-reading-${Date.now()}-${index}`,
+        type: 'clock',
+        a: hour,
+        b: minute,
+        hour,
+        minute,
+        operator: ':',
+        answer: `${hour}:${minuteText}`,
+        expression: `${hour}:${minuteText}`
+      };
+    });
+};

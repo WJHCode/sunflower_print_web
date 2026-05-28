@@ -4,6 +4,7 @@ import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
 import {
   generateBasicAddition,
   generateBasicSubtraction,
+  generateClockReading,
   generateCurrencyUnitConversion,
   generateLengthUnitConversion,
   generateMixedArithmetic,
@@ -17,6 +18,7 @@ import {
 } from '../utils/generators/basicMath';
 import { generateBreakTen, generateMakeTen } from '../utils/generators/splitMath';
 import BasicEquation from '../components/math/BasicEquation.vue';
+import ClockEquation from '../components/math/ClockEquation.vue';
 import MakeTenEquation from '../components/math/MakeTenEquation.vue';
 import SplitTreeEquation from '../components/math/SplitTreeEquation.vue';
 import type { MathProblem } from '../types/math';
@@ -46,24 +48,30 @@ const problemTypeLabels: Record<string, string> = {
   'weight-unit': '质量单位换算练习题',
   'length-unit': '长度单位换算练习题',
   'time-unit': '时间单位换算练习题',
+  'clock-reading': '认识钟表练习题',
 };
 
 const paperTitle = computed(() => problemTypeLabels[formState.value.type] ?? '口算练习题');
 
 const fixedLayoutTypes = new Set(['break-ten', 'make-ten']);
+const clockColumns = 3;
+const clockRows = Math.floor((214 + 7) / (48 + 7));
 const numberRangeTypes = new Set(['addition', 'subtraction', 'mixed', 'triple-addition', 'triple-subtraction']);
 const unitConversionTypes = new Set(['currency-unit', 'weight-unit', 'length-unit', 'time-unit']);
 const hiddenLayoutTypes = new Set(['money-exchange']);
 const singleColumnTypes = new Set(['money-exchange']);
+const clockLayoutTypes = new Set(['clock-reading']);
 const isFixedLayout = computed(() => fixedLayoutTypes.has(formState.value.type));
 const showNumberRange = computed(() => numberRangeTypes.has(formState.value.type));
 const showLayoutSettings = computed(() => !hiddenLayoutTypes.has(formState.value.type));
 const columns = computed(() => {
   if (singleColumnTypes.has(formState.value.type)) return 1;
+  if (clockLayoutTypes.has(formState.value.type)) return clockColumns;
   return isFixedLayout.value ? 3 : formState.value.columns;
 });
 const rows = computed(() => {
   if (singleColumnTypes.has(formState.value.type)) return 12;
+  if (clockLayoutTypes.has(formState.value.type)) return clockRows;
   return isFixedLayout.value ? 5 : formState.value.rows;
 });
 const numberRangeMin = computed(() => formState.value.type === 'triple-subtraction' ? 20 : 10);
@@ -80,6 +88,7 @@ const contentClass = computed(() => ({
   'basic-content': !isFixedLayout.value,
   'unit-conversion-content': unitConversionTypes.has(formState.value.type),
   'money-exchange-content': formState.value.type === 'money-exchange',
+  'clock-content': formState.value.type === 'clock-reading',
 }));
 
 watch(
@@ -133,6 +142,8 @@ const problemList = computed<MathProblem[]>(() => {
     return generateLengthUnitConversion(config);
   } else if (formState.value.type === 'time-unit') {
     return generateTimeUnitConversion(config);
+  } else if (formState.value.type === 'clock-reading') {
+    return generateClockReading(config);
   }
   return [];
 });
@@ -184,6 +195,7 @@ const downloadPDF = () => {
             <a-select-option value="weight-unit">质量单位换算</a-select-option>
             <a-select-option value="length-unit">长度单位换算</a-select-option>
             <a-select-option value="time-unit">时间单位换算</a-select-option>
+            <a-select-option value="clock-reading">认识钟表</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item v-if="showNumberRange" label="数字范围">
@@ -196,6 +208,7 @@ const downloadPDF = () => {
         </a-form-item>
         <a-form-item v-if="showLayoutSettings" label="排版格式">
           <a-tag v-if="isFixedLayout" color="blue">固定 3列 × 5行 ({{ countLabel }})</a-tag>
+          <a-tag v-else-if="formState.type === 'clock-reading'" color="blue">A4 自适应 3列 × {{ rows }}行 ({{ countLabel }})</a-tag>
           <div v-else class="layout-controls">
             <a-input-number v-model:value="formState.columns" :min="1" :max="5" addon-before="列" />
             <a-input-number v-model:value="formState.rows" :min="1" :max="16" addon-before="行" />
@@ -244,6 +257,11 @@ const downloadPDF = () => {
             />
             <MakeTenEquation
               v-else-if="item.type === 'make-ten'"
+              :problem="item"
+              :showAnswer="formState.showAnswer"
+            />
+            <ClockEquation
+              v-else-if="item.type === 'clock'"
               :problem="item"
               :showAnswer="formState.showAnswer"
             />
@@ -332,6 +350,13 @@ const downloadPDF = () => {
   grid-auto-rows: minmax(0, 1fr);
   align-items: center;
   row-gap: 12px;
+}
+.clock-content {
+  min-height: 214mm;
+  grid-auto-rows: minmax(0, 48mm);
+  align-items: center;
+  row-gap: 7mm;
+  column-gap: 8mm;
 }
 
 @media print {
