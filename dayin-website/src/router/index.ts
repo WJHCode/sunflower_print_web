@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import HomeView from '@/views/Home.vue'
 import GeneratorLayout from '@/layouts/GeneratorLayout.vue'
 import GeneratorView from '@/views/Generator.vue'
 import ChineseGeneratorView from '@/views/ChineseGenerator.vue'
@@ -9,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
-    redirect: '/generator'
+    component: HomeView
   },
   {
     path: '/generator',

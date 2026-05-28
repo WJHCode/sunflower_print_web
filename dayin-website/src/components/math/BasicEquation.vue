@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import type { MathProblem } from '../../types/math';
 
-defineProps<{
+const props = defineProps<{
   problem: MathProblem;
   showAnswer: boolean;
 }>();
+
+const shouldLeftAlign = () => (
+  props.problem.prompt ||
+  props.problem.operator === '÷' ||
+  (props.problem.c !== undefined && props.problem.operator === props.problem.operator2)
+);
 </script>
 
 <template>
   <div
     class="problem-item basic-equation"
     :class="{
-      'prompt-item': problem.prompt || problem.operator === '÷',
+      'prompt-item': shouldLeftAlign(),
       'exchange-item': problem.exchangeParts
     }"
   >

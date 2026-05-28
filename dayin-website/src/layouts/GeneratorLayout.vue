@@ -5,7 +5,7 @@ import {
   FormatPainterOutlined, 
   CalculatorOutlined, 
   ReadOutlined,
-  PrinterOutlined 
+  HomeOutlined
 } from '@ant-design/icons-vue';
 
 const route = useRoute();
@@ -29,19 +29,22 @@ const selectedKeys = computed({
 <template>
   <a-layout class="generator-layout">
     <a-layout-header class="header">
-      <div class="logo">向日葵打印</div>
+      <button class="logo" type="button" @click="router.push('/')">
+        <span class="logo-mark">日</span>
+        <span>向日葵打印</span>
+      </button>
       <div class="actions">
-        <a-button type="primary" shape="round">
-          <template #icon><PrinterOutlined /></template>
-          升级VIP，无限制打印
+        <a-button class="home-button" shape="round" @click="router.push('/')">
+          <template #icon><HomeOutlined /></template>
+          返回首页
         </a-button>
-        <a-avatar style="background-color: #87d068" class="ml-4">User</a-avatar>
       </div>
     </a-layout-header>
     <a-layout>
-      <a-layout-sider width="200" style="background: #fff" class="sider">
+      <a-layout-sider width="212" class="sider">
         <a-menu
           v-model:selectedKeys="selectedKeys"
+          class="subject-menu"
           mode="inline"
           :style="{ height: '100%', borderRight: 0 }"
         >
@@ -59,7 +62,7 @@ const selectedKeys = computed({
           </a-menu-item>
         </a-menu>
       </a-layout-sider>
-      <a-layout class="main-layout" style="padding: 24px">
+      <a-layout class="main-layout">
         <a-layout-content class="content">
           <router-view />
         </a-layout-content>
@@ -71,31 +74,75 @@ const selectedKeys = computed({
 <style scoped>
 .generator-layout {
   height: 100vh;
+  background: #f7f5ef;
 }
 .header {
-  background: #fff;
+  background: #fffdf7;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  padding: 0 28px;
+  box-shadow: 0 1px 0 rgba(58, 74, 62, 0.1);
   z-index: 10;
 }
 .logo {
-  font-size: 20px;
-  font-weight: bold;
-  color: #1890ff;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #233126;
+  cursor: pointer;
+}
+.logo-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6c84c;
+  color: #2c3b2b;
+  box-shadow: 0 8px 18px rgba(140, 108, 31, 0.16);
 }
 .actions {
   display: flex;
   align-items: center;
 }
-.ml-4 {
-  margin-left: 16px;
+.home-button {
+  color: #2f7d46;
+  border-color: rgba(47, 125, 70, 0.32);
+  background: #f8fbf5;
 }
 .sider {
-  box-shadow: 2px 0 8px 0 rgba(29,35,41,.05);
+  background: #fffdf7 !important;
+  box-shadow: 1px 0 0 rgba(58, 74, 62, 0.1);
   z-index: 9;
+  padding-top: 18px;
+}
+.subject-menu {
+  background: transparent;
+}
+.subject-menu :deep(.ant-menu-item) {
+  width: auto;
+  margin: 6px 14px;
+  border-radius: 8px;
+  color: #4b5b4d;
+}
+.subject-menu :deep(.ant-menu-item-selected) {
+  background: #e8f3ea;
+  color: #2f7d46;
+  font-weight: 700;
+}
+.subject-menu :deep(.ant-menu-item-selected::after) {
+  display: none;
+}
+.main-layout {
+  padding: 24px;
+  background: #f7f5ef;
 }
 .content {
   background: transparent;

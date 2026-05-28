@@ -13,7 +13,7 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN';
 body {
   margin: 0;
   padding: 0;
-  background-color: #f0f2f5;
+  background-color: #f7f5ef;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

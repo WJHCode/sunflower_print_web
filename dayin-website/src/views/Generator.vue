@@ -264,12 +264,13 @@ const downloadPDF = () => {
   width: 320px;
   flex-shrink: 0;
   border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: 0 12px 30px rgba(60, 54, 38, 0.08);
   overflow-y: auto;
+  background: #fffdf7;
 }
 .preview-panel {
   flex-grow: 1;
-  background: #f0f2f5;
+  background: #eee8dc;
   border-radius: 8px;
   overflow-y: auto;
   display: flex;
@@ -282,7 +283,7 @@ const downloadPDF = () => {
   box-sizing: border-box; /* This ensures padding doesn't add to the total width/height */
   background: white;
   padding: 15mm;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 18px 44px rgba(60, 54, 38, 0.16);
   border-radius: 4px;
 }
 .paper-header h2 {
