@@ -512,7 +512,7 @@ const downloadPDF = () => {
   position: relative;
   z-index: 1;
   text-align: center;
-  font-family: "Kaiti", "STKaiti", serif;
+  font-family: "FandolPinyin", "Kaiti", "STKaiti", serif;
   font-size: 28px;
   line-height: 1;
   color: #333;
