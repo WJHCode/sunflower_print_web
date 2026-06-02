@@ -30,8 +30,8 @@ const categories = [
     tone: 'red'
   },
   {
-    title: '英语作业纸',
-    description: '四线三格与基础英文书写纸。',
+    title: '英语练习题',
+    description: '四线三格、月份单词和英文描红字帖。',
     path: '/generator/english',
     icon: EditOutlined,
     tone: 'blue'
