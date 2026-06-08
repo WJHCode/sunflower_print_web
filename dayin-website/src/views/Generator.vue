@@ -267,6 +267,7 @@ const downloadPDF = () => {
             />
           </template>
         </div>
+        <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
       </div>
     </div>
   </div>

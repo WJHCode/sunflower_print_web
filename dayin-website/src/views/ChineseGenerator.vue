@@ -193,6 +193,7 @@ const downloadPDF = () => {
               <span v-for="cell in 15" :key="cell" class="tianzi-cell"></span>
             </div>
           </div>
+          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
 
         <div v-else-if="isStrokeOrder" class="paper-container">
@@ -227,6 +228,7 @@ const downloadPDF = () => {
               </span>
             </div>
           </div>
+          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
 
         <div v-else-if="isFourLineSquare" class="paper-container">
@@ -248,6 +250,7 @@ const downloadPDF = () => {
               </div>
             </div>
           </div>
+          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
 
         <div v-else-if="isPinyinPaper" class="paper-container">
@@ -264,6 +267,7 @@ const downloadPDF = () => {
             <div v-for="row in 19" :key="row" class="practice-line pinyin-paper-line">
             </div>
           </div>
+          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
 
         <div v-else-if="isComposition" class="paper-container composition-paper">
@@ -280,6 +284,7 @@ const downloadPDF = () => {
           <div class="composition-grid">
             <span v-for="cell in 500" :key="cell" class="composition-cell"></span>
           </div>
+          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
 
         <div v-else-if="isCornellNote" class="paper-container cornell-paper">
@@ -308,6 +313,7 @@ const downloadPDF = () => {
               <span v-for="line in 5" :key="line" class="cornell-line"></span>
             </div>
           </div>
+          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
 
         <div v-for="(page, pageIndex) in pinyinPages" v-else :key="pageIndex" class="paper-container">
@@ -341,6 +347,7 @@ const downloadPDF = () => {
               </div>
             </div>
           </div>
+          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
       </div>
     </div>
