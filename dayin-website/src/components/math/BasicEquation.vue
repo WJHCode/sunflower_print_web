@@ -8,6 +8,9 @@ const props = defineProps<{
 
 const shouldLeftAlign = () => (
   props.problem.prompt ||
+  props.problem.operator === '+' ||
+  props.problem.operator === '-' ||
+  props.problem.operator === '×' ||
   props.problem.operator === '÷' ||
   (props.problem.c !== undefined && props.problem.operator === props.problem.operator2)
 );

@@ -231,17 +231,23 @@ export const generateCurrencyUnitConversion = (config: GeneratorConfig): MathPro
 };
 
 export const generateMoneyExchange = (config: GeneratorConfig): MathProblem[] => {
-  const denominations: Array<{ value: number; unit: string }> = [
-    { value: 5000, unit: '张50元' },
-    { value: 2000, unit: '张20元' },
-    { value: 1000, unit: '张10元' },
-    { value: 500, unit: '张5元' },
-    { value: 100, unit: '张1元' },
-    { value: 50, unit: '张5角' },
-    { value: 10, unit: '张1角' },
-    { value: 5, unit: '枚5分' },
-    { value: 1, unit: '枚1分' }
+  const mode = config.moneyExchangeUnitMode ?? 'yuan-jiao-fen';
+  const allDenominations: Array<{ value: number; unit: string; group: 'yuan' | 'jiao' | 'fen' }> = [
+    { value: 5000, unit: '张50元', group: 'yuan' },
+    { value: 2000, unit: '张20元', group: 'yuan' },
+    { value: 1000, unit: '张10元', group: 'yuan' },
+    { value: 500, unit: '张5元', group: 'yuan' },
+    { value: 100, unit: '张1元', group: 'yuan' },
+    { value: 50, unit: '张5角', group: 'jiao' },
+    { value: 10, unit: '张1角', group: 'jiao' },
+    { value: 5, unit: '枚5分', group: 'fen' },
+    { value: 1, unit: '枚1分', group: 'fen' }
   ];
+  const denominations = allDenominations.filter((item) => {
+    if (mode === 'yuan') return item.group === 'yuan';
+    if (mode === 'yuan-jiao') return item.group !== 'fen';
+    return true;
+  });
   const candidates: Array<{ prompt: string; parts: ExchangePart[] }> = [];
 
   const formatAmount = (totalFen: number) => {
@@ -264,8 +270,13 @@ export const generateMoneyExchange = (config: GeneratorConfig): MathProblem[] =>
   };
 
   for (let yuan = 1; yuan <= 100; yuan++) {
-    for (let jiao = 0; jiao <= 9; jiao++) {
-      for (let fen = 0; fen <= 9; fen++) {
+    const minJiao = mode === 'yuan' ? 0 : 1;
+    const maxJiao = mode === 'yuan' ? 0 : 9;
+    const minFen = mode === 'yuan-jiao-fen' ? 1 : 0;
+    const maxFen = mode === 'yuan-jiao-fen' ? 9 : 0;
+
+    for (let jiao = minJiao; jiao <= maxJiao; jiao++) {
+      for (let fen = minFen; fen <= maxFen; fen++) {
         const totalFen = yuan * 100 + jiao * 10 + fen;
         const parts = splitAmount(totalFen);
         if (parts.length < 2) continue;

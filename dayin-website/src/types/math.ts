@@ -33,4 +33,5 @@ export interface MathProblem {
 export interface GeneratorConfig {
   maxNumber: number;
   count: number;
+  moneyExchangeUnitMode?: 'yuan' | 'yuan-jiao' | 'yuan-jiao-fen';
 }

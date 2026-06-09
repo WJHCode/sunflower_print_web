@@ -32,6 +32,7 @@ const formState = ref({
   columns: 3,
   rows: 16,
   showAnswer: false,
+  moneyExchangeUnitMode: 'yuan-jiao-fen' as 'yuan' | 'yuan-jiao' | 'yuan-jiao-fen',
 });
 
 const problemTypeLabels: Record<string, string> = {
@@ -62,12 +63,27 @@ const unitConversionTypes = new Set(['currency-unit', 'weight-unit', 'length-uni
 const hiddenLayoutTypes = new Set(['money-exchange']);
 const singleColumnTypes = new Set(['money-exchange']);
 const clockLayoutTypes = new Set(['clock-reading']);
+const threeColumnArithmeticTypes = new Set([
+  'addition',
+  'subtraction',
+  'mixed',
+  'triple-addition',
+  'triple-subtraction',
+  'table-multiplication',
+  'table-division',
+  'currency-unit',
+  'weight-unit',
+  'length-unit',
+  'time-unit',
+]);
 const isFixedLayout = computed(() => fixedLayoutTypes.has(formState.value.type));
+const isThreeColumnArithmetic = computed(() => threeColumnArithmeticTypes.has(formState.value.type));
 const showNumberRange = computed(() => numberRangeTypes.has(formState.value.type));
 const showLayoutSettings = computed(() => !hiddenLayoutTypes.has(formState.value.type));
 const columns = computed(() => {
   if (singleColumnTypes.has(formState.value.type)) return 1;
   if (clockLayoutTypes.has(formState.value.type)) return clockColumns;
+  if (isThreeColumnArithmetic.value) return 3;
   return isFixedLayout.value ? 3 : formState.value.columns;
 });
 const rows = computed(() => {
@@ -113,6 +129,7 @@ const problemList = computed<MathProblem[]>(() => {
   const config = {
     maxNumber: formState.value.maxNumber,
     count: problemCount.value,
+    moneyExchangeUnitMode: formState.value.moneyExchangeUnitMode,
   };
   
   if (formState.value.type === 'addition') {
@@ -208,9 +225,20 @@ const downloadPDF = () => {
             style="width: 100%"
           />
         </a-form-item>
+        <a-form-item v-if="formState.type === 'money-exchange'" label="金额格式">
+          <a-radio-group v-model:value="formState.moneyExchangeUnitMode" button-style="solid">
+            <a-radio-button value="yuan">元</a-radio-button>
+            <a-radio-button value="yuan-jiao">元角</a-radio-button>
+            <a-radio-button value="yuan-jiao-fen">元角分</a-radio-button>
+          </a-radio-group>
+        </a-form-item>
         <a-form-item v-if="showLayoutSettings" label="排版格式">
           <a-tag v-if="isFixedLayout" color="blue">固定 3列 × 5行 ({{ countLabel }})</a-tag>
           <a-tag v-else-if="formState.type === 'clock-reading'" color="blue">A4 自适应 3列 × {{ rows }}行 ({{ countLabel }})</a-tag>
+          <div v-else-if="isThreeColumnArithmetic" class="layout-controls arithmetic-layout-controls">
+            <a-input-number v-model:value="formState.rows" :min="1" :max="16" addon-before="行" />
+            <a-tag color="blue">固定 3列 × {{ rows }}行 ({{ countLabel }})</a-tag>
+          </div>
           <div v-else class="layout-controls">
             <a-input-number v-model:value="formState.columns" :min="1" :max="5" addon-before="列" />
             <a-input-number v-model:value="formState.rows" :min="1" :max="16" addon-before="行" />
@@ -323,6 +351,7 @@ const downloadPDF = () => {
 }
 .paper-content {
   display: grid;
+  grid-auto-flow: row;
   gap: 24px 10px;
 }
 .layout-controls {
@@ -334,12 +363,16 @@ const downloadPDF = () => {
   grid-column: 1 / -1;
   width: max-content;
 }
+.arithmetic-layout-controls {
+  grid-template-columns: 1fr;
+}
 .basic-content {
   min-height: 238mm;
   grid-auto-rows: minmax(0, 1fr);
+  justify-items: stretch;
   align-items: center;
   row-gap: 0;
-  column-gap: 8px;
+  column-gap: 10mm;
 }
 .split-tree-content {
   row-gap: 22px;
