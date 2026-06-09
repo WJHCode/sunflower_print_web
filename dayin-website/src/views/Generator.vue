@@ -22,6 +22,7 @@ import ClockEquation from '../components/math/ClockEquation.vue';
 import MakeTenEquation from '../components/math/MakeTenEquation.vue';
 import SplitTreeEquation from '../components/math/SplitTreeEquation.vue';
 import type { MathProblem } from '../types/math';
+import { getPdfSourceElement, printElement } from '../utils/print';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 
@@ -156,12 +157,13 @@ const countLabel = computed(() => {
 });
 
 const printPaper = () => {
-  window.print();
+  printElement('printable-paper', paperTitle.value);
 };
 
 const downloadPDF = () => {
   const element = document.getElementById('printable-paper');
   if (!element) return;
+  const sourceElement = getPdfSourceElement(element);
   
   const opt = {
     margin:       0, // Changed to 0 so it doesn't add extra height
@@ -171,7 +173,7 @@ const downloadPDF = () => {
     jsPDF:        { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
   };
   
-  html2pdf().set(opt).from(element).save();
+  html2pdf().set(opt).from(sourceElement).save();
 };
 </script>
 
@@ -298,7 +300,7 @@ const downloadPDF = () => {
 }
 .paper-container {
   width: 210mm;
-  min-height: 297mm;
+  height: 296mm;
   box-sizing: border-box; /* This ensures padding doesn't add to the total width/height */
   background: white;
   padding: 15mm;
@@ -309,13 +311,15 @@ const downloadPDF = () => {
   text-align: center;
   font-size: 24px;
   font-family: "Kaiti", "STKaiti", serif;
-  margin-bottom: 24px;
+  line-height: 1.2;
+  margin: 0 0 6mm;
 }
 .paper-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 8mm;
   font-size: 14px;
+  line-height: 1.3;
 }
 .paper-content {
   display: grid;
@@ -440,14 +444,19 @@ const downloadPDF = () => {
     padding: 0 !important;
     background: transparent !important;
     display: block;
+    overflow: visible !important;
+    border-radius: 0 !important;
   }
   .paper-container {
     zoom: 1 !important;
     box-shadow: none !important;
     width: 210mm !important;
-    height: 297mm !important;
+    height: 296mm !important;
+    min-height: 0 !important;
     padding: 15mm !important;
     margin: 0 auto;
+    overflow: hidden !important;
+    break-after: auto;
     page-break-after: avoid; /* Prevent browser from adding a blank page */
   }
 }

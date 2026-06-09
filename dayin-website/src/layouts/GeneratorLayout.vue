@@ -244,6 +244,16 @@ const selectedKeys = computed({
     height: auto !important;
     min-height: 0 !important;
     background: #fff !important;
+    overflow: visible !important;
+  }
+  .generator-layout :deep(.ant-layout),
+  .generator-layout :deep(.ant-layout-content) {
+    display: block !important;
+    flex: none !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
   .header,
   .sider {

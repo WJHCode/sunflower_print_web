@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
+import { getPdfSourceElement, printElement } from '../utils/print';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 
@@ -108,13 +109,14 @@ const strokeRows = computed(() => {
 });
 
 const printPaper = () => {
-  window.print();
+  printElement('chinese-printable-paper', paperTitle.value);
 };
 
 const downloadPDF = () => {
   const element = document.getElementById('chinese-printable-paper');
   if (!element) return;
   element.classList.add('exporting');
+  const sourceElement = getPdfSourceElement(element);
 
   const opt = {
     margin: 0,
@@ -125,7 +127,7 @@ const downloadPDF = () => {
     pagebreak: { mode: ['css'] }
   };
 
-  html2pdf().set(opt).from(element).save().finally(() => {
+  html2pdf().set(opt).from(sourceElement).save().finally(() => {
     element.classList.remove('exporting');
   });
 };
@@ -316,7 +318,12 @@ const downloadPDF = () => {
           <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
 
-        <div v-for="(page, pageIndex) in pinyinPages" v-else :key="pageIndex" class="paper-container">
+        <div
+          v-for="(page, pageIndex) in pinyinPages"
+          v-else
+          :key="pageIndex"
+          :class="['paper-container', { 'has-next-page': pageIndex < pinyinPages.length - 1 }]"
+        >
           <div class="paper-header">
             <h2>{{ paperTitle }}</h2>
             <div class="paper-info">
@@ -385,7 +392,7 @@ const downloadPDF = () => {
 }
 .paper-container {
   width: 210mm;
-  min-height: 297mm;
+  height: 296mm;
   box-sizing: border-box;
   background: white;
   padding: 15mm;
@@ -393,12 +400,13 @@ const downloadPDF = () => {
   border-radius: 4px;
 }
 .paper-stack.exporting .paper-container {
-  height: 297mm;
-  min-height: 297mm;
+  height: 296mm;
+  min-height: 0;
   box-shadow: none;
   border-radius: 0;
+  overflow: hidden;
 }
-.paper-stack.exporting .paper-container:not(:last-child) {
+.paper-stack.exporting .paper-container.has-next-page {
   break-after: page;
   page-break-after: always;
 }
@@ -406,13 +414,15 @@ const downloadPDF = () => {
   text-align: center;
   font-size: 24px;
   font-family: "Kaiti", "STKaiti", serif;
-  margin: 0 0 18px;
+  line-height: 1.2;
+  margin: 0 0 6mm;
 }
 .paper-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 6mm;
   font-size: 14px;
+  line-height: 1.3;
 }
 .input-tip {
   margin-top: 6px;
@@ -831,16 +841,26 @@ const downloadPDF = () => {
     padding: 0 !important;
     background: transparent !important;
     display: block;
+    overflow: visible !important;
+    border-radius: 0 !important;
+  }
+  .paper-stack {
+    display: block !important;
+    gap: 0 !important;
   }
   .paper-container {
     zoom: 1 !important;
     box-shadow: none !important;
     width: 210mm !important;
-    height: 297mm !important;
+    height: 296mm !important;
+    min-height: 0 !important;
     padding: 15mm !important;
     margin: 0 auto;
+    overflow: hidden !important;
+    break-after: auto;
+    page-break-after: auto;
   }
-  .paper-container:not(:last-child) {
+  .paper-container.has-next-page {
     break-after: page;
     page-break-after: always;
   }
