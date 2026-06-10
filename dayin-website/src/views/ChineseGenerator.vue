@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
 import { getPdfSourceElement, printElement } from '../utils/print';
 // @ts-ignore
@@ -19,6 +19,15 @@ type StrokeCellMode = 'blank' | 'sample' | 'trace';
 type StrokeCell = {
   char: string;
   mode: StrokeCellMode;
+};
+type StrokeRow = {
+  char: string;
+  cells: StrokeCell[];
+};
+type HanziStrokeData = {
+  strokes: string[];
+  loading: boolean;
+  error: boolean;
 };
 
 const finals = ['a', 'o', 'e', 'i', 'u', 'ü', 'ai', 'ei', 'ui', 'ao', 'ou', 'iu', 'ie', 'üe', 'er', 'an', 'en', 'in', 'un', 'ün', 'ang', 'eng', 'ing', 'ong'];
@@ -78,9 +87,9 @@ const strokeOrderChars = computed(() => (
     .replace(/\s/g, '')
     .split('')
     .filter(Boolean)
-    .slice(0, 16)
+    .slice(0, 11)
 ));
-const limitStrokeChars = (value: string) => value.replace(/\s/g, '').slice(0, 16);
+const limitStrokeChars = (value: string) => value.replace(/\s/g, '').slice(0, 11);
 const updateStrokeChars = (value: string) => {
   formState.value.strokeChars = limitStrokeChars(value);
 };
@@ -101,12 +110,63 @@ const buildStrokeCells = (char?: string): StrokeCell[] => {
   return cells;
 };
 const strokeRows = computed(() => {
-  const rows = strokeOrderChars.value.map((char) => buildStrokeCells(char));
-  while (rows.length < 16) {
-    rows.push(buildStrokeCells());
-  }
+  const rows: StrokeRow[] = strokeOrderChars.value.map((char) => ({
+    char,
+    cells: buildStrokeCells(char),
+  }));
   return rows;
 });
+const strokePages = computed(() => {
+  const pageSize = 11;
+  const pages: StrokeRow[][] = [];
+  for (let i = 0; i < strokeRows.value.length; i += pageSize) {
+    pages.push(strokeRows.value.slice(i, i + pageSize));
+  }
+  if (!pages.length) {
+    pages.push([]);
+  }
+  return pages.map((page) => {
+    const rows = [...page];
+    while (rows.length < pageSize) {
+      rows.push({ char: '', cells: buildStrokeCells() });
+    }
+    return rows;
+  });
+});
+const strokeDataByChar = reactive<Record<string, HanziStrokeData>>({});
+const strokeSvgViewBox = '0 0 1024 1024';
+const strokeSvgTransform = 'scale(1, -1) translate(0, -900)';
+const getStrokeData = (char: string) => strokeDataByChar[char];
+const getStrokeSteps = (char: string) => {
+  const strokes = getStrokeData(char)?.strokes ?? [];
+  return strokes.map((_, index) => strokes.slice(0, index + 1));
+};
+const getStrokeCount = (char: string) => getStrokeData(char)?.strokes.length ?? 0;
+const loadStrokeData = async (char: string) => {
+  const cached = strokeDataByChar[char];
+  if (cached?.loading || cached?.strokes.length || cached?.error) return;
+
+  strokeDataByChar[char] = { strokes: [], loading: true, error: false };
+
+  try {
+    const response = await fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(char)}.json`);
+    if (!response.ok) throw new Error(`Failed to load stroke data for ${char}`);
+    const data = await response.json() as { strokes?: string[] };
+    strokeDataByChar[char] = {
+      strokes: Array.isArray(data.strokes) ? data.strokes : [],
+      loading: false,
+      error: false,
+    };
+  } catch {
+    strokeDataByChar[char] = { strokes: [], loading: false, error: true };
+  }
+};
+
+watch(strokeOrderChars, (chars) => {
+  chars.forEach((char) => {
+    void loadStrokeData(char);
+  });
+}, { immediate: true });
 
 const printPaper = () => {
   printElement('chinese-printable-paper', paperTitle.value);
@@ -153,13 +213,13 @@ const downloadPDF = () => {
         <a-form-item v-if="isStrokeOrder" label="练习汉字">
           <a-textarea
             :value="formState.strokeChars"
-            :maxlength="16"
+            :maxlength="11"
             :rows="3"
-            placeholder="最多输入 16 个汉字"
+            placeholder="最多输入 11 个汉字"
             show-count
             @update:value="updateStrokeChars"
           />
-          <div class="input-tip">最多可输入 16 个字，复制粘贴会自动截取前 16 个字。</div>
+          <div class="input-tip">最多可输入 11 个字，复制粘贴会自动截取前 11 个字。</div>
         </a-form-item>
         <a-form-item label="纸张">
           <a-tag color="blue">A4 纵向</a-tag>
@@ -198,40 +258,89 @@ const downloadPDF = () => {
           <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
 
-        <div v-else-if="isStrokeOrder" class="paper-container">
-          <div class="paper-header">
-            <h2>{{ paperTitle }}</h2>
-            <div class="paper-info">
-              <span>姓名：__________</span>
-              <span>日期：__________</span>
-              <span>用时：__________</span>
+        <template v-else-if="isStrokeOrder">
+          <div
+            v-for="(page, pageIndex) in strokePages"
+            :key="pageIndex"
+            :class="['paper-container', { 'has-next-page': pageIndex < strokePages.length - 1 }]"
+          >
+            <div class="paper-header">
+              <h2>{{ paperTitle }}</h2>
+              <div class="paper-info">
+                <span>姓名：__________</span>
+                <span>日期：__________</span>
+                <span>用时：__________</span>
+              </div>
             </div>
-          </div>
 
-          <div class="stroke-sheet">
-            <div v-for="(row, rowIndex) in strokeRows" :key="rowIndex" class="stroke-row">
-              <span
-                v-for="(cell, cellIndex) in row"
-                :key="cellIndex"
-                class="stroke-cell"
-              >
-                <span
-                  v-if="cell.mode === 'sample'"
-                  class="stroke-char sample"
-                >
-                  {{ cell.char }}
-                </span>
-                <span
-                  v-else-if="cell.mode === 'trace'"
-                  class="stroke-char trace"
-                >
-                  {{ cell.char }}
-                </span>
-              </span>
+            <div class="stroke-sheet">
+              <div v-for="(row, rowIndex) in page" :key="`${row.char || 'blank'}-${rowIndex}`" class="stroke-practice-row">
+                <div class="stroke-order-guide">
+                  <span class="stroke-order-label">笔顺：</span>
+                  <template v-if="row.char">
+                    <span v-if="getStrokeData(row.char)?.loading" class="stroke-order-status">加载中...</span>
+                    <span v-else-if="getStrokeData(row.char)?.error" class="stroke-order-status">暂无笔顺数据</span>
+                    <template v-else>
+                      <svg
+                        v-for="(step, stepIndex) in getStrokeSteps(row.char)"
+                        :key="stepIndex"
+                        class="stroke-step-svg"
+                        :viewBox="strokeSvgViewBox"
+                        aria-hidden="true"
+                      >
+                        <g :transform="strokeSvgTransform">
+                          <path
+                            v-for="(path, pathIndex) in step"
+                            :key="pathIndex"
+                            :d="path"
+                            :class="{ current: pathIndex === step.length - 1 }"
+                          />
+                        </g>
+                      </svg>
+                    </template>
+                    <span class="stroke-count">{{ getStrokeCount(row.char) || '-' }} 画</span>
+                  </template>
+                </div>
+
+                <div class="stroke-row">
+                  <span
+                    v-for="(cell, cellIndex) in row.cells"
+                    :key="cellIndex"
+                    class="stroke-cell"
+                  >
+                    <svg
+                      v-if="cell.char && getStrokeData(cell.char)?.strokes.length"
+                      :class="['stroke-char-svg', cell.mode]"
+                      :viewBox="strokeSvgViewBox"
+                      aria-hidden="true"
+                    >
+                      <g :transform="strokeSvgTransform">
+                        <path
+                          v-for="(path, pathIndex) in getStrokeData(cell.char)?.strokes"
+                          :key="pathIndex"
+                          :d="path"
+                        />
+                      </g>
+                    </svg>
+                    <span
+                      v-else-if="cell.mode === 'sample'"
+                      class="stroke-char sample"
+                    >
+                      {{ cell.char }}
+                    </span>
+                    <span
+                      v-else-if="cell.mode === 'trace'"
+                      class="stroke-char trace"
+                    >
+                      {{ cell.char }}
+                    </span>
+                  </span>
+                </div>
+              </div>
             </div>
+            <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
           </div>
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
-        </div>
+        </template>
 
         <div v-else-if="isFourLineSquare" class="paper-container">
           <div class="paper-header">
@@ -543,8 +652,54 @@ const downloadPDF = () => {
 }
 .stroke-sheet {
   display: grid;
-  gap: 3.2mm;
-  padding-top: 2mm;
+  align-content: space-between;
+  height: 231mm;
+  gap: 2.8mm;
+  padding-top: 1mm;
+}
+.stroke-practice-row {
+  display: grid;
+  grid-template-rows: 6.2mm 12mm;
+}
+.stroke-order-guide {
+  display: flex;
+  align-items: center;
+  gap: 1.2mm;
+  width: 180mm;
+  height: 6.2mm;
+  box-sizing: border-box;
+  border: 1px solid #8fb3cf;
+  border-bottom: 0;
+  padding: 0 2mm;
+  overflow: hidden;
+  color: #333;
+  font-family: "Kaiti", "STKaiti", serif;
+  font-size: 14px;
+  line-height: 1;
+}
+.stroke-order-label {
+  flex: 0 0 auto;
+}
+.stroke-order-status {
+  color: #777;
+  font-size: 12px;
+}
+.stroke-step-svg {
+  width: 5.2mm;
+  height: 5.2mm;
+  flex: 0 0 auto;
+}
+.stroke-step-svg path {
+  fill: #222;
+}
+.stroke-step-svg path.current {
+  fill: #c93b3b;
+}
+.stroke-count {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 14px;
+  color: #222;
 }
 .stroke-row {
   display: grid;
@@ -594,6 +749,21 @@ const downloadPDF = () => {
 }
 .stroke-char.trace {
   color: rgba(100, 110, 125, 0.2);
+}
+.stroke-char-svg {
+  position: relative;
+  z-index: 1;
+  width: 10.2mm;
+  height: 10.2mm;
+}
+.stroke-char-svg path {
+  fill: currentColor;
+}
+.stroke-char-svg.sample {
+  color: #111;
+}
+.stroke-char-svg.trace {
+  color: rgba(100, 110, 125, 0.18);
 }
 .four-line-square-sheet {
   display: grid;
