@@ -9,7 +9,8 @@ import {
   PrinterOutlined,
   ReadOutlined,
   RightOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  PictureOutlined
 } from '@ant-design/icons-vue';
 import heroImage from '../assets/home-study-desk.png';
 
@@ -43,6 +44,13 @@ const categories = [
     path: '/generator/note',
     icon: FileTextOutlined,
     tone: 'yellow'
+  },
+  {
+    title: '儿童简笔画',
+    description: '描红临摹、填色大图、多图卡片等多功能简笔画模板。',
+    path: '/generator/drawing',
+    icon: PictureOutlined,
+    tone: 'purple'
   }
 ];
 
@@ -74,6 +82,7 @@ const steps = [
           <a-button type="text" @click="router.push('/generator/chinese')">语文</a-button>
           <a-button type="text" @click="router.push('/generator/english')">英语</a-button>
           <a-button type="text" @click="router.push('/generator/note')">笔记</a-button>
+          <a-button type="text" @click="router.push('/generator/drawing')">绘画</a-button>
         </nav>
       </header>
 
@@ -353,6 +362,11 @@ const steps = [
 .tone-yellow .category-icon {
   color: #8c6c1f;
   background: #fbf5e6;
+}
+
+.tone-purple .category-icon {
+  color: #722ed1;
+  background: #f9f0ff;
 }
 
 .category-body {

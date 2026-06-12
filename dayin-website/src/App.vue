@@ -50,6 +50,7 @@ body {
 
   body:has(#printable-paper),
   body:has(#english-printable-paper),
+  body:has(#drawing-printable-paper),
   body:has(#chinese-printable-paper .paper-container:only-child) {
     width: 210mm !important;
     height: 296mm !important;
@@ -59,6 +60,7 @@ body {
 
   body:has(#printable-paper) #app,
   body:has(#english-printable-paper) #app,
+  body:has(#drawing-printable-paper) #app,
   body:has(#chinese-printable-paper .paper-container:only-child) #app {
     height: 296mm !important;
     max-height: 296mm !important;
