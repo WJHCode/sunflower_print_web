@@ -220,6 +220,12 @@ const downloadPDF = () => {
             <p class="reference-subtitle">Months of the Year</p>
             <div v-for="month in months" :key="month.text" class="word-practice-row">
               <div class="reference-line word-line six-columns">
+                <svg class="reference-ruling" viewBox="0 0 180 10" preserveAspectRatio="none" aria-hidden="true">
+                  <line x1="0" y1="0.25" x2="180" y2="0.25" stroke="#b8dcc4" stroke-width="0.35" />
+                  <line x1="0" y1="3.33" x2="180" y2="3.33" stroke="#b8dcc4" stroke-width="0.35" />
+                  <line x1="0" y1="6.66" x2="180" y2="6.66" stroke="#f0b3b3" stroke-width="0.35" />
+                  <line x1="0" y1="9.75" x2="180" y2="9.75" stroke="#b8dcc4" stroke-width="0.35" />
+                </svg>
                 <span class="trace-word sample">{{ month.text }}</span>
                 <span v-for="copy in wordTraceCopies" :key="copy" class="trace-word faded">{{ month.text }}</span>
                 <span v-for="blank in monthBlankCopies" :key="blank" class="trace-word blank" aria-hidden="true"></span>
@@ -237,6 +243,12 @@ const downloadPDF = () => {
             </div>
             <div v-for="word in customWordRows" :key="word.text" class="word-practice-row">
               <div class="reference-line word-line seven-columns">
+                <svg class="reference-ruling" viewBox="0 0 180 10" preserveAspectRatio="none" aria-hidden="true">
+                  <line x1="0" y1="0.25" x2="180" y2="0.25" stroke="#b8dcc4" stroke-width="0.35" />
+                  <line x1="0" y1="3.33" x2="180" y2="3.33" stroke="#b8dcc4" stroke-width="0.35" />
+                  <line x1="0" y1="6.66" x2="180" y2="6.66" stroke="#f0b3b3" stroke-width="0.35" />
+                  <line x1="0" y1="9.75" x2="180" y2="9.75" stroke="#b8dcc4" stroke-width="0.35" />
+                </svg>
                 <span class="trace-word sample">{{ word.text }}</span>
                 <span v-for="copy in wordTraceCopies" :key="copy" class="trace-word faded">{{ word.text }}</span>
                 <span v-for="blank in wordBlankCopies" :key="blank" class="trace-word blank" aria-hidden="true"></span>
@@ -251,6 +263,12 @@ const downloadPDF = () => {
             <h4 v-if="paragraphSubtitle">{{ paragraphSubtitle }}</h4>
             <div class="paragraph-copy-area">
               <div v-for="(line, index) in paragraphLines" :key="`${line}-${index}`" class="reference-line paragraph-line">
+                <svg class="reference-ruling" viewBox="0 0 180 10" preserveAspectRatio="none" aria-hidden="true">
+                  <line x1="0" y1="0.25" x2="180" y2="0.25" stroke="#b8dcc4" stroke-width="0.35" />
+                  <line x1="0" y1="3.33" x2="180" y2="3.33" stroke="#b8dcc4" stroke-width="0.35" />
+                  <line x1="0" y1="6.66" x2="180" y2="6.66" stroke="#f0b3b3" stroke-width="0.35" />
+                  <line x1="0" y1="9.75" x2="180" y2="9.75" stroke="#b8dcc4" stroke-width="0.35" />
+                </svg>
                 <span class="paragraph-copy">{{ line }}</span>
               </div>
             </div>
@@ -268,6 +286,12 @@ const downloadPDF = () => {
               <div v-for="(column, columnIndex) in alphabetColumns" :key="columnIndex" class="alphabet-column">
                 <div v-for="pair in column" :key="pair" class="alphabet-practice-row">
                   <div class="reference-line alphabet-line four-columns">
+                    <svg class="reference-ruling" viewBox="0 0 180 10" preserveAspectRatio="none" aria-hidden="true">
+                      <line x1="0" y1="0.25" x2="180" y2="0.25" stroke="#b8dcc4" stroke-width="0.35" />
+                      <line x1="0" y1="3.33" x2="180" y2="3.33" stroke="#b8dcc4" stroke-width="0.35" />
+                      <line x1="0" y1="6.66" x2="180" y2="6.66" stroke="#f0b3b3" stroke-width="0.35" />
+                      <line x1="0" y1="9.75" x2="180" y2="9.75" stroke="#b8dcc4" stroke-width="0.35" />
+                    </svg>
                     <span class="trace-word sample">{{ pair }}</span>
                     <span class="trace-word faded">{{ pair }}</span>
                     <span class="trace-word faded">{{ pair }}</span>
@@ -450,11 +474,24 @@ const downloadPDF = () => {
   width: 100%;
   height: 10mm;
   overflow: hidden;
-  background-image:
-    linear-gradient(to bottom, #b8dcc4 0, #b8dcc4 1px, transparent 1px),
-    linear-gradient(to bottom, transparent calc(33.333% - 0.5px), #b8dcc4 calc(33.333% - 0.5px), #b8dcc4 calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px)),
-    linear-gradient(to bottom, transparent calc(66.666% - 0.5px), #f0b3b3 calc(66.666% - 0.5px), #f0b3b3 calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px)),
-    linear-gradient(to bottom, transparent calc(100% - 1px), #b8dcc4 calc(100% - 1px), #b8dcc4 100%);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  forced-color-adjust: none;
+}
+.reference-ruling {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  forced-color-adjust: none;
+}
+.reference-ruling line {
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
   forced-color-adjust: none;
@@ -487,6 +524,8 @@ const downloadPDF = () => {
   line-height: 1.55;
   letter-spacing: 0;
   white-space: nowrap;
+  position: relative;
+  z-index: 1;
 }
 .trace-word + .trace-word {
   border-left: 1px dashed #cfd3da;
@@ -567,11 +606,6 @@ const downloadPDF = () => {
 .paragraph-line {
   height: 10mm;
   margin-bottom: 5mm;
-  background-image:
-    linear-gradient(to bottom, #b8dcc4 0, #b8dcc4 1px, transparent 1px),
-    linear-gradient(to bottom, transparent calc(33.333% - 0.5px), #b8dcc4 calc(33.333% - 0.5px), #b8dcc4 calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px)),
-    linear-gradient(to bottom, transparent calc(66.666% - 0.5px), #f0b3b3 calc(66.666% - 0.5px), #f0b3b3 calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px)),
-    linear-gradient(to bottom, transparent calc(100% - 1px), #b8dcc4 calc(100% - 1px), #b8dcc4 100%);
 }
 .paragraph-copy {
   justify-content: flex-start;
@@ -698,7 +732,9 @@ const downloadPDF = () => {
     forced-color-adjust: none !important;
   }
   .english-line svg,
-  .english-line line {
+  .english-line line,
+  .reference-ruling,
+  .reference-ruling line {
     print-color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     forced-color-adjust: none !important;
