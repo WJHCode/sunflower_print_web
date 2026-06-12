@@ -8,7 +8,8 @@ import {
   FileDoneOutlined,
   PrinterOutlined,
   ReadOutlined,
-  RightOutlined
+  RightOutlined,
+  FileTextOutlined
 } from '@ant-design/icons-vue';
 import heroImage from '../assets/home-study-desk.png';
 
@@ -35,6 +36,13 @@ const categories = [
     path: '/generator/english',
     icon: EditOutlined,
     tone: 'blue'
+  },
+  {
+    title: '笔记模板',
+    description: '周餐计划、待办清单、康奈尔笔记和周计划模板。',
+    path: '/generator/note',
+    icon: FileTextOutlined,
+    tone: 'yellow'
   }
 ];
 
@@ -65,6 +73,7 @@ const steps = [
           <a-button type="text" @click="router.push('/generator/math')">数学</a-button>
           <a-button type="text" @click="router.push('/generator/chinese')">语文</a-button>
           <a-button type="text" @click="router.push('/generator/english')">英语</a-button>
+          <a-button type="text" @click="router.push('/generator/note')">笔记</a-button>
         </nav>
       </header>
 
@@ -339,6 +348,11 @@ const steps = [
 .tone-blue .category-icon {
   color: #406d91;
   background: #e8f0f6;
+}
+
+.tone-yellow .category-icon {
+  color: #8c6c1f;
+  background: #fbf5e6;
 }
 
 .category-body {

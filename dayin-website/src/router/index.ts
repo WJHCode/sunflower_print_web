@@ -5,6 +5,7 @@ import GeneratorLayout from '@/layouts/GeneratorLayout.vue'
 import GeneratorView from '@/views/Generator.vue'
 import ChineseGeneratorView from '@/views/ChineseGenerator.vue'
 import EnglishGeneratorView from '@/views/EnglishGenerator.vue'
+import NoteGeneratorView from '@/views/NoteGenerator.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -36,6 +37,11 @@ const routes: Array<RouteRecordRaw> = [
         path: 'english',
         name: 'EnglishGenerator',
         component: EnglishGeneratorView
+      },
+      {
+        path: 'note',
+        name: 'NoteGenerator',
+        component: NoteGeneratorView
       }
     ]
   }

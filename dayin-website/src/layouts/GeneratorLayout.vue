@@ -5,7 +5,8 @@ import {
   FormatPainterOutlined, 
   CalculatorOutlined, 
   ReadOutlined,
-  HomeOutlined
+  HomeOutlined,
+  FileTextOutlined
 } from '@ant-design/icons-vue';
 
 const route = useRoute();
@@ -15,6 +16,7 @@ const selectedKeys = computed({
   get: () => {
     if (route.path.includes('/chinese')) return ['chinese'];
     if (route.path.includes('/english')) return ['english'];
+    if (route.path.includes('/note')) return ['note'];
     return ['math'];
   },
   set: (keys: string[]) => {
@@ -22,6 +24,7 @@ const selectedKeys = computed({
     if (key === 'math') router.push('/generator/math');
     if (key === 'chinese') router.push('/generator/chinese');
     if (key === 'english') router.push('/generator/english');
+    if (key === 'note') router.push('/generator/note');
   }
 });
 </script>
@@ -59,6 +62,10 @@ const selectedKeys = computed({
           <a-menu-item key="english">
             <template #icon><FormatPainterOutlined /></template>
             英语练习题
+          </a-menu-item>
+          <a-menu-item key="note">
+            <template #icon><FileTextOutlined /></template>
+            笔记模板
           </a-menu-item>
         </a-menu>
       </a-layout-sider>
