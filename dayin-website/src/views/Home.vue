@@ -83,6 +83,7 @@ const steps = [
           <a-button type="text" @click="router.push('/generator/english')">英语</a-button>
           <a-button type="text" @click="router.push('/generator/note')">笔记</a-button>
           <a-button type="text" @click="router.push('/generator/drawing')">绘画</a-button>
+          <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">留言</a-button>
         </nav>
       </header>
 
@@ -422,6 +423,18 @@ const steps = [
   color: #7a837c;
   font-size: 14px;
   text-align: center;
+}
+
+.nav-links :deep(.ant-btn) {
+  font-weight: 700 !important;
+}
+
+.suggest-nav-btn {
+  color: #000000 !important;
+}
+.suggest-nav-btn:hover {
+  color: #222222 !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
 @media (max-width: 860px) {

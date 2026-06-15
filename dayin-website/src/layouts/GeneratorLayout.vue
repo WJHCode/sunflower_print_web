@@ -7,7 +7,8 @@ import {
   ReadOutlined,
   HomeOutlined,
   FileTextOutlined,
-  PictureOutlined
+  PictureOutlined,
+  MessageOutlined
 } from '@ant-design/icons-vue';
 
 const route = useRoute();
@@ -19,6 +20,7 @@ const selectedKeys = computed({
     if (route.path.includes('/english')) return ['english'];
     if (route.path.includes('/note')) return ['note'];
     if (route.path.includes('/drawing')) return ['drawing'];
+    if (route.path.includes('/feedback')) return ['feedback'];
     return ['math'];
   },
   set: (keys: string[]) => {
@@ -28,6 +30,7 @@ const selectedKeys = computed({
     if (key === 'english') router.push('/generator/english');
     if (key === 'note') router.push('/generator/note');
     if (key === 'drawing') router.push('/generator/drawing');
+    if (key === 'feedback') router.push('/generator/feedback');
   }
 });
 </script>
@@ -73,6 +76,10 @@ const selectedKeys = computed({
           <a-menu-item key="drawing">
             <template #icon><PictureOutlined /></template>
             儿童简笔画
+          </a-menu-item>
+          <a-menu-item key="feedback" class="feedback-menu-item">
+            <template #icon><MessageOutlined /></template>
+            提个意见
           </a-menu-item>
         </a-menu>
       </a-layout-sider>
