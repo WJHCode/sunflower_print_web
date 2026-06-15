@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
+import { DownloadOutlined, PrinterOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import {
   generateBasicAddition,
   generateBasicSubtraction,
@@ -34,6 +34,11 @@ const formState = ref({
   showAnswer: false,
   moneyExchangeUnitMode: 'yuan-jiao-fen' as 'yuan' | 'yuan-jiao' | 'yuan-jiao-fen',
 });
+
+const regenerateKey = ref(0);
+const handleRegenerate = () => {
+  regenerateKey.value++;
+};
 
 const problemTypeLabels: Record<string, string> = {
   addition: '基础加法练习题',
@@ -75,6 +80,7 @@ const threeColumnArithmeticTypes = new Set([
   'weight-unit',
   'length-unit',
   'time-unit',
+  'clock-reading',
 ]);
 const isFixedLayout = computed(() => fixedLayoutTypes.has(formState.value.type));
 const isThreeColumnArithmetic = computed(() => threeColumnArithmeticTypes.has(formState.value.type));
@@ -111,6 +117,7 @@ const contentClass = computed(() => ({
 watch(
   () => formState.value.type,
   (type) => {
+    regenerateKey.value = 0; // Reset regenerate key on type change
     if (type === 'triple-addition' || type === 'triple-subtraction') {
       formState.value.maxNumber = 50;
       return;
@@ -126,6 +133,9 @@ watch(
 
 // Generate problems using the new engines
 const problemList = computed<MathProblem[]>(() => {
+  // Establish dependency on regenerateKey
+  void regenerateKey.value;
+  
   const config = {
     maxNumber: formState.value.maxNumber,
     count: problemCount.value,
@@ -250,6 +260,10 @@ const downloadPDF = () => {
         </a-form-item>
         <a-divider />
         <div class="action-buttons">
+          <a-button type="default" block size="large" @click="handleRegenerate" style="margin-bottom: 16px; background-color: #f6c84c; color: #2c3b2b; border-color: #f6c84c;">
+            <template #icon><RedoOutlined /></template>
+            重新生成题目
+          </a-button>
           <a-button type="primary" block size="large" @click="printPaper">
             <template #icon><PrinterOutlined /></template>
             直接打印
