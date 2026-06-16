@@ -5,16 +5,22 @@ import { message } from 'ant-design-vue';
 
 interface Comment {
   id: number;
+  nickname: string;
+  email?: string;
   content: string;
   createdAt: string;
 }
 
 const commentsList = ref<Comment[]>([]);
-const newComment = ref('');
+const commentForm = ref({
+  nickname: '',
+  email: '',
+  content: ''
+});
 
 // Load comments from localStorage or initialize with mock data
 onMounted(() => {
-  const saved = localStorage.getItem('dayin_comments');
+  const saved = localStorage.getItem('dayin_comments_v2');
   if (saved) {
     commentsList.value = JSON.parse(saved);
   } else {
@@ -22,23 +28,38 @@ onMounted(() => {
     commentsList.value = [
       {
         id: 1,
+        nickname: '天天向上',
         content: '向日葵打印非常好用，希望能增加更多的一年级数学口算题型！',
         createdAt: '2026-06-12 10:24'
       },
       {
         id: 2,
+        nickname: '豆豆妈妈',
         content: '这个网站的排版非常干净，下载 PDF 打印出来效果特别好，给作者赞一个！',
         createdAt: '2026-06-14 15:30'
       }
     ];
-    localStorage.setItem('dayin_comments', JSON.stringify(commentsList.value));
+    localStorage.setItem('dayin_comments_v2', JSON.stringify(commentsList.value));
   }
 });
 
 const submitComment = () => {
-  const text = newComment.value.trim();
-  if (!text) {
-    message.warning('留言内容不能为空');
+  const nickname = commentForm.value.nickname.trim();
+  const email = commentForm.value.email.trim();
+  const content = commentForm.value.content.trim();
+
+  if (!nickname) {
+    message.warning('请输入您的昵称');
+    return;
+  }
+  if (!content) {
+    message.warning('请输入留言内容');
+    return;
+  }
+
+  // Basic email validation if entered
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    message.warning('请输入格式正确的邮箱地址');
     return;
   }
   
@@ -47,13 +68,17 @@ const submitComment = () => {
   
   const newMsg: Comment = {
     id: Date.now(),
-    content: text,
+    nickname,
+    email: email || undefined,
+    content,
     createdAt: dateStr
   };
   
   commentsList.value.unshift(newMsg);
-  localStorage.setItem('dayin_comments', JSON.stringify(commentsList.value));
-  newComment.value = '';
+  localStorage.setItem('dayin_comments_v2', JSON.stringify(commentsList.value));
+  
+  // Clear only content after submission, keep nickname/email for convenience
+  commentForm.value.content = '';
   message.success('留言发表成功');
 };
 </script>
@@ -91,16 +116,52 @@ const submitComment = () => {
     <div class="comments-section-card">
       <div class="write-comment-title">发表留言</div>
       <div class="comment-form">
-        <a-textarea 
-          v-model:value="newComment" 
-          placeholder="写下您的建议或留言..." 
-          :rows="4" 
-          class="comment-textarea"
-          maxLength="500"
-        />
-        <div class="form-actions">
-          <span class="limit-tip">最多输入 500 字</span>
-          <a-button type="primary" class="submit-btn" @click="submitComment">发表留言</a-button>
+        <!-- 昵称与邮箱表单行 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <span>昵称</span>
+              <span class="required-tag">*</span>
+            </label>
+            <a-input 
+              v-model:value="commentForm.nickname" 
+              placeholder="请输入您的公开昵称" 
+              maxLength="20"
+            />
+            <div class="form-hint">将在留言列表中公开展示。建议使用匿名昵称，保护您的隐私。</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>电子邮箱</span>
+              <span class="optional-tag">(可选)</span>
+            </label>
+            <a-input 
+              v-model:value="commentForm.email" 
+              placeholder="example@email.com" 
+              maxLength="50"
+            />
+            <div class="form-hint">仅用于作者答复您或留言审核通过时接收邮件通知，绝不对外公开。</div>
+          </div>
+        </div>
+
+        <!-- 留言内容 -->
+        <div class="form-group message-group">
+          <label class="form-label">
+            <span>留言内容</span>
+            <span class="required-tag">*</span>
+          </label>
+          <a-textarea 
+            v-model:value="commentForm.content" 
+            placeholder="写下您的建议、问题反馈或新模板想法..." 
+            :rows="4" 
+            class="comment-textarea"
+            maxLength="500"
+          />
+          <div class="form-actions">
+            <span class="limit-tip">最多输入 500 字</span>
+            <a-button type="primary" class="submit-btn" @click="submitComment">发表留言</a-button>
+          </div>
         </div>
       </div>
 
@@ -117,7 +178,7 @@ const submitComment = () => {
             </div>
             <div class="comment-content-box">
               <div class="comment-meta">
-                <span class="comment-author">匿名访客</span>
+                <span class="comment-author">{{ item.nickname }}</span>
                 <span class="comment-time">{{ item.createdAt }}</span>
               </div>
               <div class="comment-text">{{ item.content }}</div>
@@ -133,28 +194,7 @@ const submitComment = () => {
 .feedback-view {
   max-width: 800px;
   margin: 0 auto;
-  padding: 0 8px 40px 0;
-  height: 100%;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(58, 74, 62, 0.2) transparent;
-}
-
-.feedback-view::-webkit-scrollbar {
-  width: 6px;
-}
-
-.feedback-view::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.feedback-view::-webkit-scrollbar-thumb {
-  background-color: rgba(58, 74, 62, 0.2);
-  border-radius: 3px;
-}
-
-.feedback-view::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(58, 74, 62, 0.3);
+  padding-bottom: 24px;
 }
 
 .feedback-header-card {
@@ -260,13 +300,55 @@ const submitComment = () => {
   font-size: 18px;
   font-weight: 700;
   color: #233126;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   border-left: 4px solid #2f7d46;
   padding-left: 10px;
 }
 
 .comment-form {
-  margin-bottom: 32px;
+  margin-bottom: 36px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334235;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.required-tag {
+  color: #ff4d4f;
+}
+
+.optional-tag {
+  font-size: 12px;
+  color: #8c968e;
+  font-weight: normal;
+}
+
+.form-hint {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8c968e;
+}
+
+.message-group {
+  margin-top: 12px;
 }
 
 .comment-textarea {
@@ -300,7 +382,7 @@ const submitComment = () => {
   color: #ffffff !important;
   border-radius: 6px;
   font-weight: 500;
-  padding: 4px 16px;
+  padding: 4px 20px;
   height: 36px;
   transition: all 0.2s;
 }
@@ -313,19 +395,19 @@ const submitComment = () => {
 
 .comments-list-section {
   border-top: 1px solid rgba(58, 74, 62, 0.1);
-  padding-top: 24px;
+  padding-top: 28px;
 }
 
 .list-header {
   font-size: 16px;
   font-weight: 700;
   color: #233126;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .empty-comments {
   text-align: center;
-  padding: 32px 0;
+  padding: 40px 0;
   color: #8c968e;
   font-size: 14px;
 }
@@ -333,13 +415,13 @@ const submitComment = () => {
 .comments-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .comment-item {
   display: flex;
-  gap: 12px;
-  padding-bottom: 16px;
+  gap: 16px;
+  padding-bottom: 20px;
   border-bottom: 1px solid rgba(58, 74, 62, 0.06);
 }
 
@@ -349,15 +431,15 @@ const submitComment = () => {
 }
 
 .comment-avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #e8f3ea;
   color: #2f7d46;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
   flex-shrink: 0;
 }
 
@@ -369,11 +451,11 @@ const submitComment = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .comment-author {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #334235;
 }
@@ -395,6 +477,10 @@ const submitComment = () => {
   .feedback-header-card,
   .comments-section-card {
     padding: 20px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   .features-grid {
     grid-template-columns: 1fr;

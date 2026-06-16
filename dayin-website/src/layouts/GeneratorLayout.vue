@@ -14,6 +14,8 @@ import {
 const route = useRoute();
 const router = useRouter();
 
+const isScrollableLayout = computed(() => route.path.includes('/feedback'));
+
 const selectedKeys = computed({
   get: () => {
     if (route.path.includes('/chinese')) return ['chinese'];
@@ -83,7 +85,7 @@ const selectedKeys = computed({
           </a-menu-item>
         </a-menu>
       </a-layout-sider>
-      <a-layout class="main-layout">
+      <a-layout class="main-layout" :class="{ 'scrollable-layout': isScrollableLayout }">
         <a-layout-content class="content">
           <router-view />
         </a-layout-content>
@@ -291,5 +293,9 @@ const selectedKeys = computed({
     min-height: 0 !important;
     background: #fff !important;
   }
+}
+
+.scrollable-layout {
+  overflow-y: auto !important;
 }
 </style>

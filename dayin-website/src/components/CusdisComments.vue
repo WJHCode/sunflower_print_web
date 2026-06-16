@@ -19,11 +19,14 @@ const containerRef = ref<HTMLDivElement | null>(null);
 const appId = import.meta.env.VITE_CUSDIS_APP_ID || '35b01c49-15f9-46b3-807f-9240f6cadc1a';
 const host = import.meta.env.VITE_CUSDIS_HOST || 'https://cusdis.com';
 
-const getPageMeta = () => {
-  const currentId = props.pageId || route.path;
-  const currentTitle = props.pageTitle || document.title || '向日葵打印';
-  const currentUrl = window.location.href;
-  return { currentId, currentTitle, currentUrl };
+const pageId = ref('');
+const pageTitle = ref('');
+const pageUrl = ref('');
+
+const updatePageMeta = () => {
+  pageId.value = props.pageId || route.path;
+  pageTitle.value = props.pageTitle || document.title || '向日葵打印';
+  pageUrl.value = window.location.href;
 };
 
 const loadCusdisScript = () => {
@@ -51,22 +54,15 @@ const loadCusdisScript = () => {
 };
 
 const renderComments = async () => {
+  updatePageMeta();
   await nextTick();
-  const { currentId, currentTitle, currentUrl } = getPageMeta();
-
+  
   if (containerRef.value && (window as any).CUSDIS) {
     // Clear the container first to avoid duplicate frames
     containerRef.value.innerHTML = '';
     
-    // Call the Cusdis renderTo method
-    (window as any).CUSDIS.renderTo(containerRef.value, {
-      host,
-      appId,
-      pageId: currentId,
-      pageTitle: currentTitle,
-      pageUrl: currentUrl,
-      theme: 'auto'
-    });
+    // Call the Cusdis renderTo method which reads the data attributes from target
+    (window as any).CUSDIS.renderTo(containerRef.value);
   }
 };
 
@@ -90,6 +86,11 @@ watch(
       ref="containerRef"
       id="cusdis_thread"
       class="cusdis-thread"
+      :data-host="host"
+      :data-app-id="appId"
+      :data-page-id="pageId"
+      :data-page-url="pageUrl"
+      :data-page-title="pageTitle"
     ></div>
   </div>
 </template>
