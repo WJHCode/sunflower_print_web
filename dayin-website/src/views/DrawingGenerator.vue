@@ -836,8 +836,8 @@ const downloadPDF = () => {
                 }"
                 @click="formState.layout === 'single' || formState.layout === 'combo' ? selectSingle(item.id) : toggleSelect(item.id)"
               >
-                <div class="thumb-svg-wrap">
-                  <svg viewBox="0 0 100 100" :class="{ 'comic-style': formState.colorMode }">
+                <div class="thumb-svg-wrap" :class="{ 'comic-style': formState.colorMode }">
+                  <svg viewBox="0 0 100 100">
                     <path 
                       v-for="(p, pi) in item.paths" 
                       :key="pi" 
@@ -873,8 +873,8 @@ const downloadPDF = () => {
                 }"
                 @click="formState.layout === 'single' || formState.layout === 'combo' ? selectSingle(item.id) : toggleSelect(item.id)"
               >
-                <div class="thumb-svg-wrap">
-                  <svg viewBox="0 0 100 100" :class="{ 'comic-style': formState.colorMode }">
+                <div class="thumb-svg-wrap" :class="{ 'comic-style': formState.colorMode }">
+                  <svg viewBox="0 0 100 100">
                     <path 
                       v-for="(p, pi) in item.paths" 
                       :key="pi" 
@@ -910,8 +910,8 @@ const downloadPDF = () => {
                 }"
                 @click="formState.layout === 'single' || formState.layout === 'combo' ? selectSingle(item.id) : toggleSelect(item.id)"
               >
-                <div class="thumb-svg-wrap">
-                  <svg viewBox="0 0 100 100" :class="{ 'comic-style': formState.colorMode }">
+                <div class="thumb-svg-wrap" :class="{ 'comic-style': formState.colorMode }">
+                  <svg viewBox="0 0 100 100">
                     <path 
                       v-for="(p, pi) in item.paths" 
                       :key="pi" 
@@ -947,8 +947,8 @@ const downloadPDF = () => {
                 }"
                 @click="formState.layout === 'single' || formState.layout === 'combo' ? selectSingle(item.id) : toggleSelect(item.id)"
               >
-                <div class="thumb-svg-wrap">
-                  <svg viewBox="0 0 100 100" :class="{ 'comic-style': formState.colorMode }">
+                <div class="thumb-svg-wrap" :class="{ 'comic-style': formState.colorMode }">
+                  <svg viewBox="0 0 100 100">
                     <path 
                       v-for="(p, pi) in item.paths" 
                       :key="pi" 
@@ -1012,8 +1012,8 @@ const downloadPDF = () => {
           <div class="paper-content-area">
             <!-- 1. Single Large Drawing Layout -->
             <div v-if="formState.layout === 'single'" class="single-layout">
-              <div class="canvas-card">
-                <svg viewBox="0 0 100 100" class="main-svg" :class="{ 'comic-style': formState.colorMode }">
+              <div class="canvas-card" :class="{ 'comic-style': formState.colorMode }">
+                <svg viewBox="0 0 100 100" class="main-svg">
                   <!-- Guide lines -->
                   <g v-if="formState.guideLines !== 'none'" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="2 2">
                     <path v-if="formState.guideLines === 'cross'" d="M 50 0 L 50 100 M 0 50 L 100 50" />
@@ -1066,8 +1066,8 @@ const downloadPDF = () => {
               <div class="combo-bottom-grid">
                 <div class="combo-half">
                   <span class="card-tag">描红练习 (Trace)</span>
-                  <div class="grid-canvas">
-                    <svg viewBox="0 0 100 100" :class="{ 'comic-style': formState.colorMode }">
+                  <div class="grid-canvas" :class="{ 'comic-style': formState.colorMode }">
+                    <svg viewBox="0 0 100 100">
                       <!-- Guide lines -->
                       <g v-if="formState.guideLines !== 'none'" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="2 2">
                         <path v-if="formState.guideLines === 'cross'" d="M 50 0 L 50 100 M 0 50 L 100 50" />
@@ -1111,8 +1111,8 @@ const downloadPDF = () => {
                 :key="item.id" 
                 class="grid-cell"
               >
-                <div class="grid-canvas-box">
-                  <svg viewBox="0 0 100 100" class="grid-cell-svg" :class="{ 'comic-style': formState.colorMode }">
+                <div class="grid-canvas-box" :class="{ 'comic-style': formState.colorMode }">
+                  <svg viewBox="0 0 100 100" class="grid-cell-svg">
                     <!-- Guide lines -->
                     <g v-if="formState.guideLines !== 'none'" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="2 2">
                       <path v-if="formState.guideLines === 'cross'" d="M 50 0 L 50 100 M 0 50 L 100 50" />
@@ -1146,8 +1146,8 @@ const downloadPDF = () => {
                 :key="item.id" 
                 class="grid-cell compact"
               >
-                <div class="grid-canvas-box compact">
-                  <svg viewBox="0 0 100 100" class="grid-cell-svg compact" :class="{ 'comic-style': formState.colorMode }">
+                <div class="grid-canvas-box compact" :class="{ 'comic-style': formState.colorMode }">
+                  <svg viewBox="0 0 100 100" class="grid-cell-svg compact">
                     <!-- Guide lines -->
                     <g v-if="formState.guideLines !== 'none'" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="2 2">
                       <path v-if="formState.guideLines === 'cross'" d="M 50 0 L 50 100 M 0 50 L 100 50" />
@@ -1445,7 +1445,7 @@ const downloadPDF = () => {
 }
 
 /* Comic hand-drawn drop-shadow style */
-svg.comic-style {
+.comic-style {
   filter: drop-shadow(3px 3px 0px rgba(29, 41, 57, 0.16));
   transition: filter 0.25s ease;
 }
@@ -1667,11 +1667,27 @@ svg.comic-style {
   .preview-panel {
     width: 100%;
     padding: 12px;
-    overflow-x: auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
   }
   
   .paper-stack {
-    zoom: 0.45;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .paper-container {
+    flex: 0 0 auto;
+    --zoom-factor: 0.45;
+    transform: scale(var(--zoom-factor));
+    transform-origin: top left;
+    margin-right: calc(-210mm * (1 - var(--zoom-factor)));
+    margin-bottom: calc(-296mm * (1 - var(--zoom-factor)));
+    border-radius: 6px;
   }
 }
 
@@ -1689,7 +1705,14 @@ svg.comic-style {
     overflow: visible !important;
   }
   
+  .paper-stack {
+    display: block !important;
+    gap: 0 !important;
+    transform: none !important;
+  }
+  
   .paper-container {
+    transform: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     margin: 0 !important;

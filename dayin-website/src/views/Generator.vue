@@ -416,9 +416,9 @@ const downloadPDF = () => {
     width: 100%;
     flex-direction: column;
     gap: 12px;
-    height: 100%;
+    height: auto;
     min-width: 0;
-    overflow-y: auto;
+    overflow: visible;
     padding-bottom: 12px;
   }
 
@@ -446,14 +446,18 @@ const downloadPDF = () => {
     min-width: 0;
     min-height: 430px;
     padding: 12px;
-    overflow: auto;
+    overflow: hidden;
     justify-content: center;
     align-items: flex-start;
   }
 
   .paper-container {
     flex: 0 0 auto;
-    zoom: 0.43;
+    --zoom-factor: 0.43;
+    transform: scale(var(--zoom-factor));
+    transform-origin: top left;
+    margin-right: calc(-210mm * (1 - var(--zoom-factor)));
+    margin-bottom: calc(-296mm * (1 - var(--zoom-factor)));
     border-radius: 6px;
   }
 
@@ -465,13 +469,13 @@ const downloadPDF = () => {
 
 @media (min-width: 430px) and (max-width: 768px) {
   .paper-container {
-    zoom: 0.5;
+    --zoom-factor: 0.5;
   }
 }
 
 @media (min-width: 560px) and (max-width: 768px) {
   .paper-container {
-    zoom: 0.65;
+    --zoom-factor: 0.65;
   }
 }
 
@@ -495,13 +499,14 @@ const downloadPDF = () => {
     border-radius: 0 !important;
   }
   .paper-container {
+    transform: none !important;
     zoom: 1 !important;
     box-shadow: none !important;
     width: 210mm !important;
     height: 296mm !important;
     min-height: 0 !important;
     padding: 15mm !important;
-    margin: 0 auto;
+    margin: 0 auto !important;
     overflow: hidden !important;
     break-after: auto;
     page-break-after: avoid; /* Prevent browser from adding a blank page */

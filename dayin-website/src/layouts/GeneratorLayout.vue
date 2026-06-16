@@ -318,14 +318,15 @@ onUnmounted(() => {
     min-width: 0;
     min-height: 0;
     padding: 12px;
-    overflow: hidden;
+    overflow-y: auto !important;
   }
 
   .content {
     width: 100% !important;
     min-width: 0;
     min-height: 0;
-    overflow: hidden;
+    height: auto !important;
+    overflow: visible !important;
   }
 }
 
@@ -365,6 +366,13 @@ onUnmounted(() => {
 
 .scrollable-layout {
   overflow-y: auto !important;
+}
+
+@media (max-width: 768px) {
+  .scrollable-layout .content {
+    height: auto !important;
+    overflow: visible !important;
+  }
 }
 
 .scroll-indicator-wrapper {
