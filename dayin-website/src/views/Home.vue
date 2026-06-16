@@ -93,6 +93,19 @@ const steps = [
         <p class="hero-copy">
           给每天的练习留一张安静、清楚、好打印的纸。快速生成小学阶段常用的数学、语文、英语练习模板。
         </p>
+        <div class="user-social-proof">
+          <div class="avatar-stack">
+            <span class="avatar avatar-1"></span>
+            <span class="avatar avatar-2"></span>
+            <span class="avatar avatar-3"></span>
+          </div>
+          <div class="proof-text">
+            <span>已服务 <strong class="accent-text">8,000+</strong> 位用户</span>
+            <span class="divider">|</span>
+            <span class="star-rating">★★★★★</span>
+            <span>深得用户好评！</span>
+          </div>
+        </div>
         <div class="hero-actions">
           <a-button type="primary" size="large" @click="router.push('/generator/math')">
             开始生成
@@ -214,6 +227,74 @@ const steps = [
   padding: 24px clamp(24px, 5vw, 72px) 10vh;
 }
 
+.user-social-proof {
+  margin-top: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 253, 247, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(47, 125, 70, 0.12);
+  padding: 6px 16px 6px 8px;
+  border-radius: 100px;
+  box-shadow: 0 6px 20px rgba(60, 54, 38, 0.05);
+}
+
+.avatar-stack {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #fffdf7;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.avatar:not(:first-child) {
+  margin-left: -8px;
+}
+
+.avatar-1 {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+
+.avatar-2 {
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+.avatar-3 {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+}
+
+.proof-text {
+  font-size: 13px;
+  color: #3d4a3f;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.proof-text .accent-text {
+  color: #2f7d46;
+  font-weight: 700;
+}
+
+.proof-text .divider {
+  color: rgba(58, 74, 62, 0.2);
+  margin: 0 4px;
+}
+
+.star-rating {
+  color: #ffb800;
+  margin-right: 4px;
+  font-weight: bold;
+}
+
 .eyebrow {
   margin: 0 0 12px;
   font-size: 13px;
@@ -242,7 +323,7 @@ const steps = [
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 32px;
+  margin-top: 18px;
 }
 
 .hero-actions :deep(.ant-btn-primary) {
