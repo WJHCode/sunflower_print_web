@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { 
   FormatPainterOutlined, 
@@ -35,6 +35,67 @@ const selectedKeys = computed({
     if (key === 'feedback') router.push('/generator/feedback');
   }
 });
+
+// Scroll indicator state and logic
+const menuRef = ref<any>(null);
+const scrollProgress = ref(0);
+const showIndicator = ref(false);
+
+const updateScrollInfo = () => {
+  nextTick(() => {
+    const el = menuRef.value?.$el;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    if (scrollWidth > clientWidth) {
+      showIndicator.value = window.innerWidth <= 768;
+      const maxScroll = scrollWidth - clientWidth;
+      scrollProgress.value = maxScroll > 0 ? Math.min(Math.max(scrollLeft / maxScroll, 0), 1) : 0;
+    } else {
+      showIndicator.value = false;
+    }
+  });
+};
+
+const onMenuScroll = () => {
+  updateScrollInfo();
+};
+
+const thumbStyle = computed(() => {
+  const trackWidth = 80;
+  const thumbWidth = 24;
+  const maxTravel = trackWidth - thumbWidth;
+  const translateX = scrollProgress.value * maxTravel;
+  return {
+    transform: `translateX(${translateX}px)`
+  };
+});
+
+watch(() => route.path, () => {
+  updateScrollInfo();
+});
+
+let resizeObserver: ResizeObserver | null = null;
+
+onMounted(() => {
+  // Give a small delay to ensure rendering and measurements are complete
+  setTimeout(updateScrollInfo, 100);
+  window.addEventListener('resize', updateScrollInfo);
+  
+  const el = menuRef.value?.$el;
+  if (el && typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver(() => {
+      updateScrollInfo();
+    });
+    resizeObserver.observe(el);
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScrollInfo);
+  if (resizeObserver) {
+    resizeObserver.disconnect();
+  }
+});
 </script>
 
 <template>
@@ -54,10 +115,12 @@ const selectedKeys = computed({
     <a-layout>
       <a-layout-sider width="212" class="sider">
         <a-menu
+          ref="menuRef"
           v-model:selectedKeys="selectedKeys"
           class="subject-menu"
           mode="inline"
           :style="{ height: '100%', borderRight: 0 }"
+          @scroll="onMenuScroll"
         >
           <a-menu-item key="math">
             <template #icon><CalculatorOutlined /></template>
@@ -84,6 +147,11 @@ const selectedKeys = computed({
             提个意见
           </a-menu-item>
         </a-menu>
+        <div v-if="showIndicator" class="scroll-indicator-wrapper">
+          <div class="scroll-indicator-track">
+            <div class="scroll-indicator-thumb" :style="thumbStyle"></div>
+          </div>
+        </div>
       </a-layout-sider>
       <a-layout class="main-layout" :class="{ 'scrollable-layout': isScrollableLayout }">
         <a-layout-content class="content">
@@ -216,7 +284,7 @@ const selectedKeys = computed({
     max-width: none !important;
     min-width: 0 !important;
     flex: 0 0 auto !important;
-    padding: 8px 8px 6px;
+    padding: 8px 8px 1px;
     box-shadow: 0 1px 0 rgba(58, 74, 62, 0.1);
   }
 
@@ -297,5 +365,41 @@ const selectedKeys = computed({
 
 .scrollable-layout {
   overflow-y: auto !important;
+}
+
+.scroll-indicator-wrapper {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .scroll-indicator-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 2px;
+    margin-top: -3px;
+    background: transparent;
+    width: 100%;
+  }
+
+  .scroll-indicator-track {
+    width: 80px;
+    height: 3px;
+    background: rgba(47, 125, 70, 0.12);
+    border-radius: 1.5px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scroll-indicator-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 24px;
+    background: #2f7d46;
+    border-radius: 1.5px;
+    transition: transform 0.05s linear;
+  }
 }
 </style>
