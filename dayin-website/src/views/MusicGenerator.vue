@@ -2538,27 +2538,33 @@ const handlePrint = () => {
 
   .preview-area {
     width: 100%;
-    overflow-x: auto;
+    min-height: 430px;
     padding: 12px;
-    justify-content: flex-start;
+    overflow: hidden;
+    justify-content: center;
+    align-items: flex-start;
   }
 
   .paper-container {
+    flex: 0 0 auto;
+    --zoom-factor: 0.85;
+    transform: scale(var(--zoom-factor));
     transform-origin: top left;
-    /* Allow zooming on mobile to fit the viewport */
-    zoom: 0.85; 
+    margin-right: calc(-210mm * (1 - var(--zoom-factor)));
+    margin-bottom: calc(-297mm * (1 - var(--zoom-factor)));
+    border-radius: 6px;
   }
 }
 
 @media (max-width: 768px) {
   .paper-container {
-    zoom: 0.45;
+    --zoom-factor: 0.45;
   }
 }
 
 @media (max-width: 480px) {
   .paper-container {
-    zoom: 0.38;
+    --zoom-factor: 0.38;
   }
 }
 
@@ -2592,15 +2598,18 @@ const handlePrint = () => {
   }
 
   .paper-container {
+    transform: none !important;
+    zoom: 1 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     padding: 0 !important;
     width: 210mm !important;
-    height: 297mm !important;
-    page-break-after: always;
-    break-after: page;
+    height: 296mm !important;
+    overflow: hidden !important;
     background: #fff !important;
+    page-break-after: avoid;
+    break-after: auto;
   }
   
   .paper-container.has-next-page {
