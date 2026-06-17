@@ -1446,18 +1446,24 @@ const trebleClefPath = "M12.1,38.2 C11.5,35.7 10.8,33.4 10.2,31.2 C14.2,27.4 17.
 
 // Trigger PDF Generation
 const handleDownloadPdf = () => {
-  const element = getPdfSourceElement(document.getElementById('music-print-container')!);
+  const element = document.getElementById('music-print-container');
   if (!element) return;
+  
+  element.classList.add('exporting');
+  const sourceElement = getPdfSourceElement(element);
   
   const opt = {
     margin: 0,
     filename: `${sheetTitle.value || '乐谱'}.pdf`,
     image: { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+    html2canvas: { scale: 2, useCORS: true, windowWidth: 794 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+    pagebreak: { mode: ['css'] }
   };
   
-  html2pdf().from(element).set(opt).save();
+  html2pdf().set(opt).from(sourceElement).save().finally(() => {
+    element.classList.remove('exporting');
+  });
 };
 
 const handlePrint = () => {
@@ -2627,5 +2633,23 @@ const handlePrint = () => {
   font-size: 10px;
   line-height: 1;
   pointer-events: none;
+}
+
+.paper-stack.exporting {
+  gap: 0 !important;
+}
+
+.paper-stack.exporting .paper-container {
+  height: 296mm !important;
+  min-height: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  margin: 0 auto !important;
+}
+
+.paper-stack.exporting .paper-container.has-next-page {
+  break-after: page;
+  page-break-after: always;
 }
 </style>
