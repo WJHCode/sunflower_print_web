@@ -63,7 +63,11 @@ const updateScrollInfo = () => {
   });
 };
 
-const onMenuScroll = () => {
+const onMenuScroll = (e: Event) => {
+  const el = e.target as HTMLElement;
+  if (el) {
+    sessionStorage.setItem('subjectMenuScrollLeft', String(el.scrollLeft));
+  }
   updateScrollInfo();
 };
 
@@ -83,7 +87,23 @@ watch(() => route.path, () => {
 
 let resizeObserver: ResizeObserver | null = null;
 
+const restoreScrollPosition = () => {
+  nextTick(() => {
+    const el = menuRef.value?.$el;
+    if (el) {
+      const savedScrollLeft = sessionStorage.getItem('subjectMenuScrollLeft');
+      if (savedScrollLeft) {
+        el.scrollLeft = Number(savedScrollLeft);
+      }
+    }
+    updateScrollInfo();
+  });
+};
+
 onMounted(() => {
+  restoreScrollPosition();
+  window.addEventListener('pageshow', restoreScrollPosition);
+
   // Give a small delay to ensure rendering and measurements are complete
   setTimeout(updateScrollInfo, 100);
   window.addEventListener('resize', updateScrollInfo);
@@ -98,6 +118,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  window.removeEventListener('pageshow', restoreScrollPosition);
   window.removeEventListener('resize', updateScrollInfo);
   if (resizeObserver) {
     resizeObserver.disconnect();
