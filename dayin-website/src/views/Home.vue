@@ -13,6 +13,8 @@ import {
   PictureOutlined,
   HighlightOutlined
 } from '@ant-design/icons-vue';
+import BrandMark from '../components/BrandMark.vue';
+import MusicNoteIcon from '../components/MusicNoteIcon.vue';
 import heroImage from '../assets/home-study-desk.png';
 
 const router = useRouter();
@@ -59,6 +61,13 @@ const categories = [
     path: '/generator/sticker',
     icon: HighlightOutlined,
     tone: 'pink'
+  },
+  {
+    title: '空白与经典乐谱',
+    description: '支持五线谱、简谱、吉他/尤克里里谱自定义打印，包含经典曲目渲染。',
+    path: '/generator/music',
+    icon: MusicNoteIcon,
+    tone: 'orange'
   }
 ];
 
@@ -82,7 +91,7 @@ const steps = [
       <div class="hero-shade"></div>
       <header class="home-nav">
         <button class="brand" type="button" @click="router.push('/')">
-          <span class="brand-mark">日</span>
+          <span class="brand-mark"><BrandMark /></span>
           <span>向日葵打印</span>
         </button>
         <nav class="nav-links" aria-label="主要导航">
@@ -92,6 +101,7 @@ const steps = [
           <a-button type="text" @click="router.push('/generator/note')">笔记</a-button>
           <a-button type="text" @click="router.push('/generator/drawing')">绘画</a-button>
           <a-button type="text" @click="router.push('/generator/sticker')">贴纸</a-button>
+          <a-button type="text" @click="router.push('/generator/music')">乐谱</a-button>
           <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">留言</a-button>
         </nav>
       </header>
@@ -217,12 +227,10 @@ const steps = [
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f6c84c;
-  color: #2c3b2b;
-  box-shadow: 0 8px 18px rgba(140, 108, 31, 0.18);
+  display: block;
+  overflow: hidden;
+  background: #fff7d8;
+  box-shadow: 0 8px 18px rgba(140, 108, 31, 0.18), inset 0 0 0 1px rgba(140, 108, 31, 0.1);
 }
 
 .nav-links {
@@ -417,52 +425,58 @@ const steps = [
   text-align: left;
   cursor: pointer;
   box-shadow: 0 12px 30px rgba(60, 54, 38, 0.08);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .category-card:hover {
   border-color: rgba(47, 125, 70, 0.34);
   transform: translateY(-2px);
-  transition: transform 0.18s ease, border-color 0.18s ease;
+  box-shadow: 0 18px 38px rgba(60, 54, 38, 0.11);
 }
 
 .category-icon {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 23px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 8px 18px rgba(60, 54, 38, 0.06);
+}
+
+.category-icon :deep(svg) {
+  stroke-width: 1.7;
 }
 
 .tone-green .category-icon {
   color: #2f7d46;
-  background: #e8f3ea;
+  background: linear-gradient(145deg, #eff8ea, #dcefe2);
 }
 
 .tone-red .category-icon {
   color: #ad5546;
-  background: #f8ece7;
+  background: linear-gradient(145deg, #fff2ea, #f4dfd9);
 }
 
 .tone-blue .category-icon {
   color: #406d91;
-  background: #e8f0f6;
+  background: linear-gradient(145deg, #eef7fb, #dceaf3);
 }
 
 .tone-yellow .category-icon {
   color: #8c6c1f;
-  background: #fbf5e6;
+  background: linear-gradient(145deg, #fff9df, #f3e9bf);
 }
 
 .tone-purple .category-icon {
-  color: #722ed1;
-  background: #f9f0ff;
+  color: #6f4ca3;
+  background: linear-gradient(145deg, #f4effb, #e8ddf5);
 }
 
 .tone-pink .category-icon {
   color: #c2255c;
-  background: #fff0f6;
+  background: linear-gradient(145deg, #fff0f5, #f7dce8);
 }
 
 .category-body {

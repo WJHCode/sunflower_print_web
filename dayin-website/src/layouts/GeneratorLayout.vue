@@ -11,6 +11,8 @@ import {
   MessageOutlined,
   HighlightOutlined
 } from '@ant-design/icons-vue';
+import BrandMark from '../components/BrandMark.vue';
+import MusicNoteIcon from '../components/MusicNoteIcon.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -24,6 +26,7 @@ const selectedKeys = computed({
     if (route.path.includes('/note')) return ['note'];
     if (route.path.includes('/drawing')) return ['drawing'];
     if (route.path.includes('/sticker')) return ['sticker'];
+    if (route.path.includes('/music')) return ['music'];
     if (route.path.includes('/feedback')) return ['feedback'];
     return ['math'];
   },
@@ -35,6 +38,7 @@ const selectedKeys = computed({
     if (key === 'note') router.push('/generator/note');
     if (key === 'drawing') router.push('/generator/drawing');
     if (key === 'sticker') router.push('/generator/sticker');
+    if (key === 'music') router.push('/generator/music');
     if (key === 'feedback') router.push('/generator/feedback');
   }
 });
@@ -105,7 +109,7 @@ onUnmounted(() => {
   <a-layout class="generator-layout">
     <a-layout-header class="header">
       <button class="logo" type="button" @click="router.push('/')">
-        <span class="logo-mark">日</span>
+        <span class="logo-mark"><BrandMark /></span>
         <span>向日葵打印</span>
       </button>
       <div class="actions">
@@ -148,6 +152,10 @@ onUnmounted(() => {
           <a-menu-item key="sticker">
             <template #icon><HighlightOutlined /></template>
             趣味贴纸
+          </a-menu-item>
+          <a-menu-item key="music">
+            <template #icon><MusicNoteIcon /></template>
+            乐谱打印
           </a-menu-item>
           <a-menu-item key="feedback" class="feedback-menu-item">
             <template #icon><MessageOutlined /></template>
@@ -199,12 +207,10 @@ onUnmounted(() => {
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f6c84c;
-  color: #2c3b2b;
-  box-shadow: 0 8px 18px rgba(140, 108, 31, 0.16);
+  display: block;
+  overflow: hidden;
+  background: #fff7d8;
+  box-shadow: 0 8px 18px rgba(140, 108, 31, 0.16), inset 0 0 0 1px rgba(140, 108, 31, 0.1);
 }
 .actions {
   display: flex;
@@ -229,11 +235,28 @@ onUnmounted(() => {
   margin: 6px 14px;
   border-radius: 8px;
   color: #4b5b4d;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.subject-menu :deep(.ant-menu-item .ant-menu-item-icon) {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(47, 125, 70, 0.08);
+  color: #4e7156;
+  font-size: 15px;
+  transition: background 0.18s ease, color 0.18s ease;
 }
 .subject-menu :deep(.ant-menu-item-selected) {
   background: #e8f3ea;
   color: #2f7d46;
   font-weight: 700;
+}
+.subject-menu :deep(.ant-menu-item-selected .ant-menu-item-icon) {
+  background: #2f7d46;
+  color: #fffdf7;
 }
 .subject-menu :deep(.ant-menu-item-selected::after) {
   display: none;

@@ -8,6 +8,7 @@ import EnglishGeneratorView from '@/views/EnglishGenerator.vue'
 import NoteGeneratorView from '@/views/NoteGenerator.vue'
 import DrawingGeneratorView from '@/views/DrawingGenerator.vue'
 import StickerGeneratorView from '@/views/StickerGenerator.vue'
+import MusicGeneratorView from '@/views/MusicGenerator.vue'
 import FeedbackView from '@/views/Feedback.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -55,6 +56,11 @@ const routes: Array<RouteRecordRaw> = [
         path: 'sticker',
         name: 'StickerGenerator',
         component: StickerGeneratorView
+      },
+      {
+        path: 'music',
+        name: 'MusicGenerator',
+        component: MusicGeneratorView
       },
       {
         path: 'feedback',
