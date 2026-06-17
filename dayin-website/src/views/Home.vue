@@ -10,7 +10,8 @@ import {
   ReadOutlined,
   RightOutlined,
   FileTextOutlined,
-  PictureOutlined
+  PictureOutlined,
+  HighlightOutlined
 } from '@ant-design/icons-vue';
 import heroImage from '../assets/home-study-desk.png';
 
@@ -51,6 +52,13 @@ const categories = [
     path: '/generator/drawing',
     icon: PictureOutlined,
     tone: 'purple'
+  },
+  {
+    title: '趣味文字贴纸',
+    description: '输入中文、拼音或字母，生成带白色描边的卡通贴纸。',
+    path: '/generator/sticker',
+    icon: HighlightOutlined,
+    tone: 'pink'
   }
 ];
 
@@ -83,6 +91,7 @@ const steps = [
           <a-button type="text" @click="router.push('/generator/english')">英语</a-button>
           <a-button type="text" @click="router.push('/generator/note')">笔记</a-button>
           <a-button type="text" @click="router.push('/generator/drawing')">绘画</a-button>
+          <a-button type="text" @click="router.push('/generator/sticker')">贴纸</a-button>
           <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">留言</a-button>
         </nav>
       </header>
@@ -449,6 +458,11 @@ const steps = [
 .tone-purple .category-icon {
   color: #722ed1;
   background: #f9f0ff;
+}
+
+.tone-pink .category-icon {
+  color: #c2255c;
+  background: #fff0f6;
 }
 
 .category-body {

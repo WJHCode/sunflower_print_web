@@ -8,7 +8,8 @@ import {
   HomeOutlined,
   FileTextOutlined,
   PictureOutlined,
-  MessageOutlined
+  MessageOutlined,
+  HighlightOutlined
 } from '@ant-design/icons-vue';
 
 const route = useRoute();
@@ -22,6 +23,7 @@ const selectedKeys = computed({
     if (route.path.includes('/english')) return ['english'];
     if (route.path.includes('/note')) return ['note'];
     if (route.path.includes('/drawing')) return ['drawing'];
+    if (route.path.includes('/sticker')) return ['sticker'];
     if (route.path.includes('/feedback')) return ['feedback'];
     return ['math'];
   },
@@ -32,6 +34,7 @@ const selectedKeys = computed({
     if (key === 'english') router.push('/generator/english');
     if (key === 'note') router.push('/generator/note');
     if (key === 'drawing') router.push('/generator/drawing');
+    if (key === 'sticker') router.push('/generator/sticker');
     if (key === 'feedback') router.push('/generator/feedback');
   }
 });
@@ -141,6 +144,10 @@ onUnmounted(() => {
           <a-menu-item key="drawing">
             <template #icon><PictureOutlined /></template>
             儿童简笔画
+          </a-menu-item>
+          <a-menu-item key="sticker">
+            <template #icon><HighlightOutlined /></template>
+            趣味贴纸
           </a-menu-item>
           <a-menu-item key="feedback" class="feedback-menu-item">
             <template #icon><MessageOutlined /></template>
