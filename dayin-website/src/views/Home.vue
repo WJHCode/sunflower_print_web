@@ -26,7 +26,7 @@ const categories = [
   },
   {
     title: '语文作业纸',
-    description: '田字格、拼音格、作文纸和笔顺练习。',
+    description: '田字格、拼音格、作文纸、笔顺、偏旁和笔画练习。',
     path: '/generator/chinese',
     icon: ReadOutlined,
     tone: 'red'

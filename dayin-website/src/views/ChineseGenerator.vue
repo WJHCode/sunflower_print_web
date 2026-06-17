@@ -7,6 +7,8 @@ import html2pdf from 'html2pdf.js';
 
 type ChinesePaperType =
   | 'tianzi'
+  | 'radical'
+  | 'stroke-type'
   | 'pinyin-finals'
   | 'pinyin-initials'
   | 'pinyin-syllables'
@@ -37,10 +39,14 @@ const syllables = ['zhi', 'chi', 'shi', 'ri', 'zi', 'ci', 'si', 'yi', 'wu', 'yu'
 const formState = ref({
   type: 'tianzi' as ChinesePaperType,
   strokeChars: '一二三上口日田目',
+  radicalChars: '亻冫氵辶艹宀口土木扌忄讠纟钅疒竹雨礻衤女子犭饣月日山石田禾白目足',
+  strokeTypeChars: '一,丨,丿,丶,乀,乛,亅,乚,\uD840\uDC0B,\uD840\uDCD1,\uD840\uDD0E,乙,フ',
 });
 
 const paperTitles: Record<ChinesePaperType, string> = {
   tianzi: '田字格作业纸',
+  radical: '汉字偏旁练习',
+  'stroke-type': '汉字笔画练习',
   'pinyin-finals': '汉语拼音描红字帖（韵母）',
   'pinyin-initials': '汉语拼音描红字帖（声母）',
   'pinyin-syllables': '汉语拼音描红字帖（整体认读）',
@@ -53,6 +59,8 @@ const paperTitles: Record<ChinesePaperType, string> = {
 
 const paperTitle = computed(() => paperTitles[formState.value.type]);
 const isTianzi = computed(() => formState.value.type === 'tianzi');
+const isRadical = computed(() => formState.value.type === 'radical');
+const isStrokeType = computed(() => formState.value.type === 'stroke-type');
 const isStrokeOrder = computed(() => formState.value.type === 'stroke-order');
 const isFourLineSquare = computed(() => formState.value.type === 'four-line-square');
 const isPinyinPaper = computed(() => formState.value.type === 'pinyin-paper');
@@ -133,6 +141,64 @@ const strokePages = computed(() => {
     return rows;
   });
 });
+const splitPages = computed(() => {
+  const inputStr = (
+    formState.value.type === 'radical'
+      ? formState.value.radicalChars
+      : formState.value.strokeTypeChars
+  ) || '';
+
+  const hasDelimiters = /[,，\n]/.test(inputStr);
+  const chars = hasDelimiters
+    ? inputStr.split(/[,，\n]+/).map(s => s.trim()).filter(Boolean)
+    : Array.from(inputStr.replace(/\s/g, '')).filter(Boolean);
+
+  const pageSize = 16;
+  const pages: { left: string; right: string }[][] = [];
+  const itemsPerPage = pageSize * 2;
+
+  for (let i = 0; i < chars.length; i += itemsPerPage) {
+    const pageChars = chars.slice(i, i + itemsPerPage);
+    const rows: { left: string; right: string }[] = [];
+
+    for (let r = 0; r < pageSize; r++) {
+      const leftIndex = r * 2;
+      const rightIndex = r * 2 + 1;
+
+      rows.push({
+        left: pageChars[leftIndex] || '',
+        right: pageChars[rightIndex] || '',
+      });
+    }
+    pages.push(rows);
+  }
+
+  if (!pages.length) {
+    const emptyRows = Array.from({ length: pageSize }, () => ({ left: '', right: '' }));
+    pages.push(emptyRows);
+  }
+
+  return pages;
+});
+
+const getCharStyle = (text?: string) => {
+  if (!text) return {};
+  const len = text.length;
+  if (len <= 1) {
+    return {};
+  }
+  if (len === 2) {
+    return { fontSize: '16px', lineHeight: '1.2' };
+  }
+  if (len === 3) {
+    return { fontSize: '12px', lineHeight: '1.2' };
+  }
+  if (len === 4) {
+    return { fontSize: '9px', lineHeight: '1.2' };
+  }
+  return { fontSize: '8px', lineHeight: '1.1' };
+};
+
 const strokeDataByChar = reactive<Record<string, HanziStrokeData>>({});
 const strokeSvgViewBox = '0 0 1024 1024';
 const strokeSvgTransform = 'scale(1, -1) translate(0, -900)';
@@ -200,6 +266,8 @@ const downloadPDF = () => {
         <a-form-item label="题型">
           <a-select v-model:value="formState.type">
             <a-select-option value="tianzi">田字格作业纸</a-select-option>
+            <a-select-option value="radical">汉字偏旁练习</a-select-option>
+            <a-select-option value="stroke-type">汉字笔画练习</a-select-option>
             <a-select-option value="four-line-square">四线方格作业纸</a-select-option>
             <a-select-option value="pinyin-paper">拼音作业纸</a-select-option>
             <a-select-option value="composition">作文纸</a-select-option>
@@ -209,6 +277,22 @@ const downloadPDF = () => {
             <a-select-option value="pinyin-syllables">汉语拼音描红字帖（整体认读）</a-select-option>
             <a-select-option value="stroke-order">按笔顺描红</a-select-option>
           </a-select>
+        </a-form-item>
+        <a-form-item v-if="isRadical" label="偏旁部首">
+          <a-textarea
+            v-model:value="formState.radicalChars"
+            :rows="3"
+            placeholder="请输入偏旁部首，可连写（如：亻氵辶）或用逗号隔开"
+          />
+          <div class="input-tip">支持连写输入（每个字符一格）或逗号/换行隔开输入。一行可练习两个，左右各占 7 个田字格。</div>
+        </a-form-item>
+        <a-form-item v-if="isStrokeType" label="笔画符号">
+          <a-textarea
+            v-model:value="formState.strokeTypeChars"
+            :rows="3"
+            placeholder="请输入想要练习的笔画，可以用逗号隔开，例如：一,丨,丿,丶"
+          />
+          <div class="input-tip">请输入要练习的笔画。支持连写或用逗号、换行隔开。一行可练习两个，左右各占 7 个田字格。</div>
         </a-form-item>
         <a-form-item v-if="isStrokeOrder" label="练习汉字">
           <a-textarea
@@ -257,6 +341,39 @@ const downloadPDF = () => {
           </div>
           <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
+
+        <template v-else-if="isRadical || isStrokeType">
+          <div
+            v-for="(page, pageIndex) in splitPages"
+            :key="pageIndex"
+            :class="['paper-container', { 'has-next-page': pageIndex < splitPages.length - 1 }]"
+          >
+            <div class="paper-header">
+              <h2>{{ paperTitle }}</h2>
+              <div class="paper-info">
+                <span>姓名：__________</span>
+                <span>日期：__________</span>
+                <span>用时：__________</span>
+              </div>
+            </div>
+
+            <div class="tianzi-sheet">
+              <div v-for="(row, rowIndex) in page" :key="rowIndex" class="split-tianzi-row">
+                <div class="tianzi-block">
+                  <span v-for="cell in 7" :key="`left-${cell}`" class="tianzi-cell">
+                    <span v-if="cell === 1 && row.left" class="radical-char-container" :style="getCharStyle(row.left)">{{ row.left }}</span>
+                  </span>
+                </div>
+                <div class="tianzi-block">
+                  <span v-for="cell in 7" :key="`right-${cell}`" class="tianzi-cell">
+                    <span v-if="cell === 1 && row.right" class="radical-char-container" :style="getCharStyle(row.right)">{{ row.right }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          </div>
+        </template>
 
         <template v-else-if="isStrokeOrder">
           <div
@@ -550,6 +667,18 @@ const downloadPDF = () => {
   width: 180mm;
   height: 12mm;
 }
+.split-tianzi-row {
+  display: flex;
+  justify-content: space-between;
+  width: 180mm;
+  height: 12mm;
+}
+.tianzi-block {
+  display: grid;
+  grid-template-columns: repeat(7, 12mm);
+  width: 84mm;
+  height: 12mm;
+}
 .tianzi-cell {
   position: relative;
   box-sizing: border-box;
@@ -577,6 +706,17 @@ const downloadPDF = () => {
   top: 50%;
   width: 100%;
   border-top: 1px dashed #aaa;
+}
+.radical-char-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Kaiti", "STKaiti", "PingFang SC", "Microsoft YaHei", "Source Han Sans CN", sans-serif;
+  font-size: 28px;
+  color: #111;
+  z-index: 1;
 }
 .pinyin-sheet {
   display: grid;
