@@ -28,6 +28,160 @@ body {
   overflow: hidden;
 }
 
+:root {
+  --print-theme-color: #2f7d46;
+  --print-theme-color-hover: #235d34;
+  --print-theme-color-soft: #e8f3ea;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .action-buttons .ant-btn-primary {
+  background: var(--print-theme-color) !important;
+  border-color: var(--print-theme-color) !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .action-buttons .ant-btn-primary:hover,
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .action-buttons .ant-btn-primary:focus {
+  background: var(--print-theme-color-hover) !important;
+  border-color: var(--print-theme-color-hover) !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background: var(--print-theme-color) !important;
+  border-color: var(--print-theme-color) !important;
+  color: #ffffff !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {
+  background: var(--print-theme-color-hover) !important;
+  border-color: var(--print-theme-color-hover) !important;
+  color: #ffffff !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-radio-button-wrapper:hover,
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-select-focused .ant-select-selector,
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-input:focus,
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-input-number-focused {
+  border-color: var(--print-theme-color) !important;
+  color: var(--print-theme-color);
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-switch.ant-switch-checked {
+  background: var(--print-theme-color) !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-switch.ant-switch-checked:hover {
+  background: var(--print-theme-color-hover) !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-slider-track {
+  background: var(--print-theme-color) !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-slider-handle::after {
+  box-shadow: 0 0 0 2px var(--print-theme-color) !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-checkbox-checked .ant-checkbox-inner {
+  background: var(--print-theme-color) !important;
+  border-color: var(--print-theme-color) !important;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .settings-panel .ant-tag-blue {
+  color: var(--print-theme-color);
+  background: var(--print-theme-color-soft);
+  border-color: #cde4d1;
+}
+
 @media (max-width: 768px) {
   html,
   body,

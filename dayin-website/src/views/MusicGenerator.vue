@@ -4,9 +4,7 @@ import {
   DownloadOutlined, 
   PrinterOutlined
 } from '@ant-design/icons-vue';
-import { getPdfSourceElement, printElement } from '../utils/print';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
+import { printElement, savePdfFromElement } from '../utils/print';
 
 // Define sheet music settings state
 const formState = ref({
@@ -1448,22 +1446,8 @@ const trebleClefPath = "M12.1,38.2 C11.5,35.7 10.8,33.4 10.2,31.2 C14.2,27.4 17.
 const handleDownloadPdf = () => {
   const element = document.getElementById('music-print-container');
   if (!element) return;
-  
-  element.classList.add('exporting');
-  const sourceElement = getPdfSourceElement(element);
-  
-  const opt = {
-    margin: 0,
-    filename: `${sheetTitle.value || '乐谱'}.pdf`,
-    image: { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, windowWidth: 794 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-    pagebreak: { mode: ['css'] }
-  };
-  
-  html2pdf().set(opt).from(sourceElement).save().finally(() => {
-    element.classList.remove('exporting');
-  });
+
+  savePdfFromElement(element, `${sheetTitle.value || '乐谱'}.pdf`, { pagebreak: true });
 };
 
 const handlePrint = () => {
@@ -1676,18 +1660,6 @@ const handlePrint = () => {
                 <text x="25" y="2.5">Time: {{ songs[formState.selectedSong]?.timeSig }}</text>
               </g>
             </g>
-
-            <!-- Page Number -->
-            <text 
-              x="105" 
-              y="288" 
-              text-anchor="middle" 
-              font-size="2.8" 
-              fill="#999999"
-              font-family="sans-serif"
-            >
-              - 第 {{ page.pageIndex + 1 }} 页 / 共 {{ pages.length }} 页 -
-            </text>
 
             <!-- Chord Diagrams Grid (at top of Page 1 if active) -->
             <g v-if="page.showChords && (formState.sheetType === 'guitar' || formState.sheetType === 'ukulele')" transform="translate(15, 24)">
@@ -2551,13 +2523,18 @@ const handlePrint = () => {
     align-items: flex-start;
   }
 
+  .a4-size {
+    height: 296mm;
+    min-height: 296mm;
+  }
+
   .paper-container {
     flex: 0 0 auto;
     --zoom-factor: 0.85;
     transform: scale(var(--zoom-factor));
     transform-origin: top left;
     margin-right: calc(-210mm * (1 - var(--zoom-factor)));
-    margin-bottom: calc(-297mm * (1 - var(--zoom-factor)));
+    margin-bottom: calc(-296mm * (1 - var(--zoom-factor)));
     border-radius: 6px;
   }
 }
@@ -2628,10 +2605,12 @@ const handlePrint = () => {
   position: absolute;
   right: 15mm;
   bottom: 8mm;
-  color: #9ca3af;
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  color: #8a8a8a;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 10px;
   line-height: 1;
+  letter-spacing: 0;
+  text-align: right;
   pointer-events: none;
 }
 
