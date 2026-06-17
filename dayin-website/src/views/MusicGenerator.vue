@@ -1229,11 +1229,11 @@ const sheetAuthor = computed(() => {
 
 // A4 Dimensions: 210mm x 297mm.
 // Safe margins: Left/Right = 15mm, Top = 18mm, Bottom = 18mm.
-// Printable area width = 210 - 30 = 180mm.
+// Music systems use a slightly wider span to balance the visual weight of clefs on the left.
 // Printable area height = 297 - 36 = 261mm.
 const marginX = 15;
 const marginTop = 22; // extra room for headers
-const width = 180;
+const width = 186;
 const pageHeight = 297;
 const printableHeight = 260;
 
