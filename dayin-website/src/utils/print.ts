@@ -213,7 +213,10 @@ export const savePdfFromElement = async (
 
 const printMobilePdfPreview = (element: HTMLElement, title: string) => {
   const previewWindow = window.open('', '_blank');
-  previewWindow?.document.write('<!doctype html><title>正在生成打印预览</title><p style="font:16px system-ui;padding:24px;">正在生成打印预览...</p>');
+  if (previewWindow) {
+    previewWindow.document.write('<!doctype html><title>正在生成打印预览</title><p style="font:16px system-ui;padding:24px;">正在生成打印预览...</p>');
+    previewWindow.document.close();
+  }
 
   const fallbackDownload = (blob: Blob) => {
     const link = document.createElement('a');
@@ -232,8 +235,22 @@ const printMobilePdfPreview = (element: HTMLElement, title: string) => {
       const url = URL.createObjectURL(blob);
 
       if (previewWindow) {
-        previewWindow.location.href = url;
-        window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+        let printRequested = false;
+        const requestSystemPrint = () => {
+          if (printRequested || previewWindow.closed) return;
+          printRequested = true;
+          previewWindow.focus();
+          previewWindow.print();
+        };
+
+        previewWindow.addEventListener('load', () => {
+          window.setTimeout(requestSystemPrint, 400);
+        }, { once: true });
+        previewWindow.location.replace(url);
+
+        // Some mobile PDF viewers do not dispatch a window load event for Blob URLs.
+        window.setTimeout(requestSystemPrint, 1500);
+        window.setTimeout(() => URL.revokeObjectURL(url), 300000);
       } else {
         fallbackDownload(blob);
       }
