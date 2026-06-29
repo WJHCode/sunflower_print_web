@@ -189,6 +189,16 @@ body {
     min-width: 0;
     overflow-x: hidden;
   }
+
+  .settings-panel .ant-select,
+  .settings-panel .ant-select-selector,
+  .settings-panel .ant-select-selection-item,
+  .settings-panel .ant-select-selection-placeholder,
+  .ant-select-dropdown,
+  .ant-select-dropdown .ant-select-item,
+  .ant-select-dropdown .ant-select-selection-search-input {
+    font-size: 16px !important;
+  }
 }
 
 @media print {
