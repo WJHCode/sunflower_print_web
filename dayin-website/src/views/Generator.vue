@@ -22,9 +22,7 @@ import ClockEquation from '../components/math/ClockEquation.vue';
 import MakeTenEquation from '../components/math/MakeTenEquation.vue';
 import SplitTreeEquation from '../components/math/SplitTreeEquation.vue';
 import type { MathProblem } from '../types/math';
-import { getPdfSourceElement, printElement } from '../utils/print';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
+import { printElement, savePdfFromElement } from '../utils/print';
 
 const formState = ref({
   type: 'addition',
@@ -190,17 +188,7 @@ const printPaper = () => {
 const downloadPDF = () => {
   const element = document.getElementById('printable-paper');
   if (!element) return;
-  const sourceElement = getPdfSourceElement(element);
-  
-  const opt = {
-    margin:       0, // Changed to 0 so it doesn't add extra height
-    filename:     `${paperTitle.value}.pdf`,
-    image:        { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, windowWidth: 794 }, // 794px is roughly 210mm at 96dpi
-    jsPDF:        { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
-  };
-  
-  html2pdf().set(opt).from(sourceElement).save();
+  void savePdfFromElement(element, `${paperTitle.value}.pdf`);
 };
 </script>
 

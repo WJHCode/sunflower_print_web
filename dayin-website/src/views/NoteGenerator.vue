@@ -4,9 +4,7 @@ import {
   DownloadOutlined, 
   PrinterOutlined
 } from '@ant-design/icons-vue';
-import { getPdfSourceElement, printElement } from '../utils/print';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
+import { printElement, savePdfFromElement } from '../utils/print';
 
 const formState = ref({
   templateType: 'meal-planner' as 'meal-planner' | 'cornell-notes' | 'todo-list' | 'weekly-planner' | 'dot-grid' | 'hex-grid' | 'college-ruled' | 'study-planner',
@@ -216,17 +214,7 @@ const printPaper = () => {
 const downloadPDF = () => {
   const element = document.getElementById('printable-paper');
   if (!element) return;
-  const sourceElement = getPdfSourceElement(element);
-  
-  const opt = {
-    margin:       0,
-    filename:     `${paperTitle.value}.pdf`,
-    image:        { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, windowWidth: 794 }, // 794px is roughly 210mm at 96dpi
-    jsPDF:        { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
-  };
-  
-  html2pdf().set(opt).from(sourceElement).save();
+  void savePdfFromElement(element, `${paperTitle.value}.pdf`);
 };
 </script>
 

@@ -1,4 +1,7 @@
-import html2pdf from 'html2pdf.js';
+const loadHtml2pdf = async () => {
+  const module = await import('html2pdf.js');
+  return module.default;
+};
 
 export const printElement = (elementId: string, title = '向日葵打印') => {
   const element = document.getElementById(elementId);
@@ -185,6 +188,7 @@ export const createPdfBlobFromElement = async (
   const { sourceElement, cleanup } = createPdfSource(element, options.normalizeForMobile);
 
   try {
+    const html2pdf = await loadHtml2pdf();
     return await html2pdf()
       .set(getPdfOptions(filename, options.pagebreak))
       .from(sourceElement)
@@ -202,6 +206,7 @@ export const savePdfFromElement = async (
   const { sourceElement, cleanup } = createPdfSource(element, options.normalizeForMobile);
 
   try {
+    const html2pdf = await loadHtml2pdf();
     await html2pdf()
       .set(getPdfOptions(filename, options.pagebreak))
       .from(sourceElement)

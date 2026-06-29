@@ -5,9 +5,7 @@ import {
   PrinterOutlined,
   CheckOutlined
 } from '@ant-design/icons-vue';
-import { getPdfSourceElement, printElement } from '../utils/print';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
+import { printElement, savePdfFromElement } from '../utils/print';
 
 interface DrawingPath {
   d: string;
@@ -721,21 +719,7 @@ const printPaper = () => {
 const downloadPDF = () => {
   const element = document.getElementById('drawing-printable-paper');
   if (!element) return;
-  element.classList.add('exporting');
-  const sourceElement = getPdfSourceElement(element);
-  
-  const opt = {
-    margin:       0,
-    filename:     `${paperTitle.value}.pdf`,
-    image:        { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, windowWidth: 794 },
-    jsPDF:        { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const },
-    pagebreak:    { mode: ['css'] }
-  };
-  
-  html2pdf().set(opt).from(sourceElement).save().finally(() => {
-    element.classList.remove('exporting');
-  });
+  void savePdfFromElement(element, `${paperTitle.value}.pdf`, { pagebreak: true });
 };
 </script>
 

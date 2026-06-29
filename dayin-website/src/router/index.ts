@@ -1,15 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import HomeView from '@/views/Home.vue'
-import GeneratorLayout from '@/layouts/GeneratorLayout.vue'
-import GeneratorView from '@/views/Generator.vue'
-import ChineseGeneratorView from '@/views/ChineseGenerator.vue'
-import EnglishGeneratorView from '@/views/EnglishGenerator.vue'
-import NoteGeneratorView from '@/views/NoteGenerator.vue'
-import DrawingGeneratorView from '@/views/DrawingGenerator.vue'
-import StickerGeneratorView from '@/views/StickerGenerator.vue'
-import MusicGeneratorView from '@/views/MusicGenerator.vue'
-import FeedbackView from '@/views/Feedback.vue'
+
+const HomeView = () => import('@/views/Home.vue')
+const GeneratorLayout = () => import('@/layouts/GeneratorLayout.vue')
+const GeneratorView = () => import('@/views/Generator.vue')
+const ChineseGeneratorView = () => import('@/views/ChineseGenerator.vue')
+const EnglishGeneratorView = () => import('@/views/EnglishGenerator.vue')
+const NoteGeneratorView = () => import('@/views/NoteGenerator.vue')
+const DrawingGeneratorView = () => import('@/views/DrawingGenerator.vue')
+const StickerGeneratorView = () => import('@/views/StickerGenerator.vue')
+const MusicGeneratorView = () => import('@/views/MusicGenerator.vue')
+const FeedbackView = () => import('@/views/Feedback.vue')
 
 const routes: Array<RouteRecordRaw> = [
   {
