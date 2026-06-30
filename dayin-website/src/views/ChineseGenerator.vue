@@ -769,7 +769,7 @@ const downloadPDF = () => {
   transform: translateY(-3px);
 }
 .pinyin-text.trace {
-  color: rgba(40, 40, 40, 0.18);
+  color: rgba(40, 40, 40, 0.32);
 }
 .pinyin-text.blank {
   visibility: hidden;
@@ -872,7 +872,7 @@ const downloadPDF = () => {
   color: #111;
 }
 .stroke-char.trace {
-  color: rgba(100, 110, 125, 0.2);
+  color: rgba(100, 110, 125, 0.35);
 }
 .stroke-char-svg {
   position: relative;
@@ -887,7 +887,7 @@ const downloadPDF = () => {
   color: #111;
 }
 .stroke-char-svg.trace {
-  color: rgba(100, 110, 125, 0.18);
+  color: rgba(100, 110, 125, 0.32);
 }
 .four-line-square-sheet {
   display: grid;
