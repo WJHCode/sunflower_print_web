@@ -233,7 +233,7 @@ watch(strokeOrderChars, (chars) => {
 }, { immediate: true });
 
 const printPaper = () => {
-  printElement('chinese-printable-paper', paperTitle.value);
+  printElement('chinese-printable-paper', paperTitle.value, { pagebreak: true });
 };
 
 const downloadPDF = () => {

@@ -19,7 +19,7 @@ const formState = ref({
   
   // Layout settings
   lineSpacing: 2.8, // mm (space between staff lines)
-  staffSpacing: 18, // mm (space between staff systems)
+  staffSpacing: 10, // mm (space between staff systems)
   clefType: 'treble' as 'treble' | 'bass' | 'alto' | 'none',
   lineColor: 'dark-gray' as 'dark-gray' | 'green' | 'blue' | 'brown' | 'pencil-gray',
   
@@ -1234,7 +1234,6 @@ const sheetAuthor = computed(() => {
 const marginX = 15;
 const marginTop = 22; // extra room for headers
 const width = 186;
-const pageHeight = 297;
 const printableHeight = 260;
 
 // Determine how many lines are in a single system/staff block
@@ -1267,6 +1266,26 @@ const getSystemHeight = (type: string, spacing: number) => {
   return (4 * lineSpacing) + 20;
 };
 
+const getSystemStepHeight = (visualHeight: number, spacing: number) => {
+  return visualHeight + Math.max(4, spacing - 6);
+};
+
+const getSystemsPerPage = (startY: number, visualHeight: number, stepHeight: number) => {
+  const availableHeight = printableHeight - startY - visualHeight;
+  return Math.max(1, Math.floor(availableHeight / stepHeight) + 1);
+};
+
+const positionSystemsOnPage = (
+  systems: StaffSystem[],
+  startY: number,
+  stepHeight: number,
+) => {
+  return systems.map((system, index) => ({
+    ...system,
+    yOffset: startY + (index * stepHeight),
+  }));
+};
+
 // Calculate and generate layout pagination dynamically!
 interface StaffSystem {
   index: number;
@@ -1289,7 +1308,8 @@ const pages = computed(() => {
   const lineSpacing = formState.value.lineSpacing;
   const staffSpacing = formState.value.staffSpacing;
   
-  const systemHeight = getSystemHeight(sheetType, lineSpacing) + staffSpacing - 6; // adjust bottom padding
+  const systemVisualHeight = getSystemHeight(sheetType, lineSpacing);
+  const systemStepHeight = getSystemStepHeight(systemVisualHeight, staffSpacing);
   
   // Calculate how many systems we can fit on Page 1 (which has header) and Page 2+ (which doesn't)
   const headerHeight = 22; // Titles, subtitle heights
@@ -1298,46 +1318,18 @@ const pages = computed(() => {
   const generatedPages: PageData[] = [];
   
   if (contentMode === 'blank') {
-    // Blank Sheet Mode: simply fill pages with empty staves
-    let currentY = marginTop + headerHeight + chordHeaderHeight;
-    let currentPageIndex = 0;
-    let pageSystems: StaffSystem[] = [];
-    
-    // Create a reasonable default amount of staves (e.g. 2 pages worth)
-    const totalStavesToGenerate = sheetType === 'grand' ? 10 : 18; 
-    let systemIdx = 0;
-    
-    for (let i = 0; i < totalStavesToGenerate; i++) {
-      const localY = currentY - (currentPageIndex === 0 ? 0 : (currentPageIndex * pageHeight));
-      
-      // If system exceeds page boundary, push to new page
-      if (localY + systemHeight > (currentPageIndex === 0 ? printableHeight : printableHeight)) {
-        generatedPages.push({
-          pageIndex: currentPageIndex,
-          systems: pageSystems,
-          showChords: currentPageIndex === 0 && formState.value.showChords !== 'none'
-        });
-        currentPageIndex++;
-        currentY = currentPageIndex * pageHeight + marginTop; // start fresh on new page
-        pageSystems = [];
-      }
-      
-      const systemY = currentY - (currentPageIndex * pageHeight);
-      pageSystems.push({
-        index: systemIdx++,
-        yOffset: systemY
-      });
-      currentY += systemHeight;
-    }
-    
-    // Push final page
-    if (pageSystems.length > 0) {
-      generatedPages.push({
-        pageIndex: currentPageIndex,
-        systems: pageSystems,
-        showChords: currentPageIndex === 0 && formState.value.showChords !== 'none'
-      });
-    }
+    const startY = marginTop + headerHeight + chordHeaderHeight;
+    const systemsOnPage = getSystemsPerPage(startY, systemVisualHeight, systemStepHeight);
+    const pageSystems = Array.from({ length: systemsOnPage }, (_, index) => ({
+      index,
+      yOffset: 0,
+    }));
+
+    generatedPages.push({
+      pageIndex: 0,
+      systems: positionSystemsOnPage(pageSystems, startY, systemStepHeight),
+      showChords: formState.value.showChords !== 'none'
+    });
   } else {
     // Song Notation Mode: Group notes/measures into lines
     const song = songs[formState.value.selectedSong];
@@ -1347,49 +1339,51 @@ const pages = computed(() => {
     // We group measures into lines. For simple songs, 4 measures per line is standard.
     const measuresPerLine = 4;
     const linesNeeded = Math.ceil(songMeasures.length / measuresPerLine);
-    
-    let currentY = marginTop + headerHeight + chordHeaderHeight;
-    let currentPageIndex = 0;
-    let pageSystems: StaffSystem[] = [];
-    let systemIdx = 0;
-    
+
+    const allSystems: StaffSystem[] = [];
+
     for (let i = 0; i < linesNeeded; i++) {
-      const localY = currentY - (currentPageIndex * pageHeight);
-      
-      // If exceeds page boundary, break page
-      if (localY + systemHeight > (currentPageIndex === 0 ? printableHeight : printableHeight)) {
-        generatedPages.push({
-          pageIndex: currentPageIndex,
-          systems: pageSystems,
-          showChords: currentPageIndex === 0 && formState.value.showChords !== 'none'
-        });
-        currentPageIndex++;
-        currentY = currentPageIndex * pageHeight + marginTop;
-        pageSystems = [];
-      }
-      
-      const systemY = currentY - (currentPageIndex * pageHeight);
       const mStart = i * measuresPerLine;
       const mEnd = Math.min((i + 1) * measuresPerLine, songMeasures.length);
       const lineMeasures = songMeasures.slice(mStart, mEnd);
-      
-      pageSystems.push({
-        index: systemIdx++,
-        yOffset: systemY,
+
+      allSystems.push({
+        index: i,
+        yOffset: 0,
         measures: lineMeasures,
         measureIndexStart: mStart
       });
-      
-      currentY += systemHeight;
     }
-    
-    if (pageSystems.length > 0) {
+
+    const pageCapacities: number[] = [];
+    let remainingSystems = allSystems.length;
+
+    while (remainingSystems > 0) {
+      const pageIndex = pageCapacities.length;
+      const startY = pageIndex === 0
+        ? marginTop + headerHeight + chordHeaderHeight
+        : marginTop;
+      const systemsOnPage = getSystemsPerPage(startY, systemVisualHeight, systemStepHeight);
+      pageCapacities.push(systemsOnPage);
+      remainingSystems -= systemsOnPage;
+    }
+
+    let nextSystemIndex = 0;
+
+    pageCapacities.forEach((systemsOnPage, currentPageIndex) => {
+      const startY = currentPageIndex === 0
+        ? marginTop + headerHeight + chordHeaderHeight
+        : marginTop;
+      const pageSystems = allSystems.slice(nextSystemIndex, nextSystemIndex + systemsOnPage);
+
       generatedPages.push({
         pageIndex: currentPageIndex,
-        systems: pageSystems,
+        systems: positionSystemsOnPage(pageSystems, startY, systemStepHeight),
         showChords: currentPageIndex === 0 && formState.value.showChords !== 'none'
       });
-    }
+
+      nextSystemIndex += pageSystems.length;
+    });
   }
   
   return generatedPages;
@@ -1447,11 +1441,11 @@ const handleDownloadPdf = () => {
   const element = document.getElementById('music-print-container');
   if (!element) return;
 
-  savePdfFromElement(element, `${sheetTitle.value || '乐谱'}.pdf`, { pagebreak: true });
+  savePdfFromElement(element, `${sheetTitle.value || '乐谱'}.pdf`, { paperHeightMm: 296.6 });
 };
 
 const handlePrint = () => {
-  printElement('music-print-container', sheetTitle.value);
+  printElement('music-print-container', sheetTitle.value, { paperHeightMm: 297 });
 };
 </script>
 
@@ -2356,9 +2350,17 @@ const handlePrint = () => {
                 </g>
               </g>
             </g>
+            <text
+              x="195"
+              y="289"
+              text-anchor="end"
+              font-size="2.65"
+              fill="#8a8a8a"
+              font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+            >
+              向日葵打印　https://sunflower.ccwu.cc
+            </text>
           </svg>
-          <!-- Footer Watermark/Badge -->
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
         </div>
       </div>
     </div>
@@ -2601,30 +2603,32 @@ const handlePrint = () => {
   }
 }
 
-.paper-footer {
-  position: absolute;
-  right: 15mm;
-  bottom: 8mm;
-  color: #8a8a8a;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: 0;
-  text-align: right;
-  pointer-events: none;
-}
-
 .paper-stack.exporting {
+  display: block !important;
   gap: 0 !important;
+  width: 210mm !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  background: #fff !important;
+  align-items: stretch !important;
 }
 
 .paper-stack.exporting .paper-container {
-  height: 296mm !important;
-  min-height: 0 !important;
+  position: relative !important;
+  transform: none !important;
+  transform-origin: top left !important;
+  zoom: 1 !important;
+  width: 210mm !important;
+  height: 297mm !important;
+  min-height: 297mm !important;
+  padding: 0 !important;
   box-shadow: none !important;
   border-radius: 0 !important;
   overflow: hidden !important;
+  background: #fff !important;
   margin: 0 auto !important;
+  margin-right: auto !important;
+  margin-bottom: 0 !important;
 }
 
 .paper-stack.exporting .paper-container.has-next-page {

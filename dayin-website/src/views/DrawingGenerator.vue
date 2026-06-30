@@ -713,7 +713,7 @@ const getDrawingStyle = (forceType?: 'solid' | 'trace' | 'grey') => {
 };
 
 const printPaper = () => {
-  printElement('drawing-printable-paper', paperTitle.value);
+  printElement('drawing-printable-paper', paperTitle.value, { pagebreak: true });
 };
 
 const downloadPDF = () => {

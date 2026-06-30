@@ -104,7 +104,7 @@ const paragraphLines = computed(() => {
 });
 
 const printPaper = () => {
-  printElement('english-printable-paper', paperTitle.value);
+  printElement('english-printable-paper', paperTitle.value, { pagebreak: true });
 };
 
 const downloadPDF = () => {

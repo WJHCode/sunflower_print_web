@@ -3,25 +3,32 @@ const loadHtml2pdf = async () => {
   return module.default;
 };
 
-export const printElement = (elementId: string, title = '向日葵打印') => {
+type PdfExportOptions = {
+  paperHeightMm?: number;
+  pagebreak?: boolean;
+};
+
+export const printElement = (elementId: string, title = '向日葵打印', options: PdfExportOptions = {}) => {
   const element = document.getElementById(elementId);
   if (!element) return;
 
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                   (window.innerWidth <= 768) || 
+  const paperHeightMm = options.paperHeightMm ?? 296;
+
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (window.innerWidth <= 768) ||
                    ('ontouchstart' in window);
 
   if (isMobile) {
-    printMobilePdfPreview(element, title);
+    printPdfPreview(element, title, options);
     return;
   }
 
   const frame = document.createElement('iframe');
   frame.style.position = 'fixed';
-  frame.style.right = '0';
-  frame.style.bottom = '0';
-  frame.style.width = '0';
-  frame.style.height = '0';
+  frame.style.left = '-10000px';
+  frame.style.top = '0';
+  frame.style.width = '210mm';
+  frame.style.height = `${paperHeightMm}mm`;
   frame.style.border = '0';
   frame.setAttribute('aria-hidden', 'true');
   document.body.appendChild(frame);
@@ -66,9 +73,11 @@ export const printElement = (elementId: string, title = '向日葵打印') => {
           .paper-container {
             zoom: 1 !important;
             width: 210mm !important;
-            height: 296mm !important;
-            min-height: 0 !important;
+            height: ${paperHeightMm}mm !important;
+            min-height: ${paperHeightMm}mm !important;
             margin: 0 auto !important;
+            margin-right: auto !important;
+            margin-bottom: 0 !important;
             box-shadow: none !important;
             border-radius: 0 !important;
             overflow: hidden !important;
@@ -105,38 +114,23 @@ export const getPdfSourceElement = (rootElement: HTMLElement) => {
   return papers.length === 1 ? papers[0] : rootElement;
 };
 
-type PdfExportOptions = {
-  normalizeForMobile?: boolean;
-  pagebreak?: boolean;
-};
-
 const getPdfOptions = (filename: string, pagebreak = false) => {
   const opt: Record<string, unknown> = {
     margin: 0,
     filename,
     image: { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, windowWidth: 794 },
+    html2canvas: { scale: 2, useCORS: true, windowWidth: 1200, windowHeight: 1600, scrollX: 0, scrollY: 0 },
     jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const },
   };
 
-  if (pagebreak) {
-    opt.pagebreak = { mode: ['css'] };
-  }
+  opt.pagebreak = { mode: pagebreak ? ['css'] : [] };
 
   return opt;
 };
 
-const createPdfSource = (element: HTMLElement, normalizeForMobile = false) => {
-  if (!normalizeForMobile) {
-    element.classList.add('exporting');
-    return {
-      sourceElement: getPdfSourceElement(element),
-      cleanup: () => element.classList.remove('exporting'),
-    };
-  }
-
+const createPdfSource = (element: HTMLElement, paperHeightMm = 296) => {
   const pdfHost = document.createElement('div');
-  pdfHost.id = 'mobile-pdf-preview-source';
+  pdfHost.id = 'pdf-export-source';
   pdfHost.setAttribute('aria-hidden', 'true');
   pdfHost.style.position = 'fixed';
   pdfHost.style.left = '-10000px';
@@ -148,18 +142,27 @@ const createPdfSource = (element: HTMLElement, normalizeForMobile = false) => {
 
   const pdfStyle = document.createElement('style');
   pdfStyle.innerHTML = `
-    #mobile-pdf-preview-source,
-    #mobile-pdf-preview-source .paper-stack {
+    #pdf-export-root:not(.paper-container),
+    #pdf-export-root.paper-stack,
+    #pdf-export-root .paper-stack {
       display: block !important;
       gap: 0 !important;
+      width: 210mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #fff !important;
+      transform: none !important;
     }
-    #mobile-pdf-preview-source .paper-container {
+    #pdf-export-root.paper-container,
+    #pdf-export-root .paper-container {
       transform: none !important;
       zoom: 1 !important;
       width: 210mm !important;
-      height: 296mm !important;
-      min-height: 0 !important;
-      margin: 0 auto !important;
+      height: ${paperHeightMm}mm !important;
+      min-height: ${paperHeightMm}mm !important;
+      margin: 0 !important;
+      margin-right: 0 !important;
+      margin-bottom: 0 !important;
       box-shadow: none !important;
       border-radius: 0 !important;
       overflow: hidden !important;
@@ -168,14 +171,15 @@ const createPdfSource = (element: HTMLElement, normalizeForMobile = false) => {
   `;
 
   const clone = element.cloneNode(true) as HTMLElement;
+  clone.id = 'pdf-export-root';
   clone.classList.add('exporting');
-  normalizeMobilePdfSource(clone);
-  pdfHost.appendChild(pdfStyle);
+  normalizePdfSource(clone, paperHeightMm);
+  clone.prepend(pdfStyle);
   pdfHost.appendChild(clone);
   document.body.appendChild(pdfHost);
 
   return {
-    sourceElement: getPdfSourceElement(clone),
+    sourceElement: clone,
     cleanup: () => pdfHost.remove(),
   };
 };
@@ -185,7 +189,7 @@ export const createPdfBlobFromElement = async (
   filename: string,
   options: PdfExportOptions = {},
 ) => {
-  const { sourceElement, cleanup } = createPdfSource(element, options.normalizeForMobile);
+  const { sourceElement, cleanup } = createPdfSource(element, options.paperHeightMm);
 
   try {
     const html2pdf = await loadHtml2pdf();
@@ -203,7 +207,7 @@ export const savePdfFromElement = async (
   filename: string,
   options: PdfExportOptions = {},
 ) => {
-  const { sourceElement, cleanup } = createPdfSource(element, options.normalizeForMobile);
+  const { sourceElement, cleanup } = createPdfSource(element, options.paperHeightMm);
 
   try {
     const html2pdf = await loadHtml2pdf();
@@ -216,7 +220,7 @@ export const savePdfFromElement = async (
   }
 };
 
-const printMobilePdfPreview = (element: HTMLElement, title: string) => {
+const printPdfPreview = (element: HTMLElement, title: string, options: PdfExportOptions = {}) => {
   const previewWindow = window.open('', '_blank');
   if (previewWindow) {
     previewWindow.document.write('<!doctype html><title>正在生成打印预览</title><p style="font:16px system-ui;padding:24px;">正在生成打印预览...</p>');
@@ -236,7 +240,9 @@ const printMobilePdfPreview = (element: HTMLElement, title: string) => {
 
   const runPrint = async () => {
     try {
-      const blob = await createPdfBlobFromElement(element, `${title}.pdf`, { normalizeForMobile: true });
+      const blob = await createPdfBlobFromElement(element, `${title}.pdf`, {
+        ...options,
+      });
       const url = URL.createObjectURL(blob);
 
       if (previewWindow) {
@@ -261,7 +267,7 @@ const printMobilePdfPreview = (element: HTMLElement, title: string) => {
       }
     } catch (error) {
       previewWindow?.close();
-      console.error('Failed to generate mobile print preview PDF.', error);
+      console.error('Failed to generate print preview PDF.', error);
     }
   };
 
@@ -273,21 +279,31 @@ const printMobilePdfPreview = (element: HTMLElement, title: string) => {
   window.setTimeout(runPrint, 300);
 };
 
-const normalizeMobilePdfSource = (root: HTMLElement) => {
-  root.style.display = 'block';
-  root.style.width = '210mm';
-  root.style.margin = '0';
-  root.style.padding = '0';
-  root.style.gap = '0';
-  root.style.transform = 'none';
+const normalizePdfSource = (root: HTMLElement, paperHeightMm: number) => {
+  const setImportant = (target: HTMLElement, property: string, value: string) => {
+    target.style.setProperty(property, value, 'important');
+  };
+
+  if (!root.matches('.paper-container')) {
+    setImportant(root, 'display', 'block');
+    setImportant(root, 'padding', '0');
+  }
+  setImportant(root, 'width', '210mm');
+  setImportant(root, 'margin', '0');
+  setImportant(root, 'margin-right', '0');
+  setImportant(root, 'margin-bottom', '0');
+  setImportant(root, 'gap', '0');
+  setImportant(root, 'transform', 'none');
 
   root.querySelectorAll<HTMLElement>('.paper-stack').forEach((stack) => {
-    stack.style.display = 'block';
-    stack.style.width = '210mm';
-    stack.style.margin = '0';
-    stack.style.padding = '0';
-    stack.style.gap = '0';
-    stack.style.transform = 'none';
+    setImportant(stack, 'display', 'block');
+    setImportant(stack, 'width', '210mm');
+    setImportant(stack, 'margin', '0');
+    setImportant(stack, 'margin-right', '0');
+    setImportant(stack, 'margin-bottom', '0');
+    setImportant(stack, 'padding', '0');
+    setImportant(stack, 'gap', '0');
+    setImportant(stack, 'transform', 'none');
   });
 
   const papers = root.matches('.paper-container')
@@ -295,18 +311,20 @@ const normalizeMobilePdfSource = (root: HTMLElement) => {
     : Array.from(root.querySelectorAll<HTMLElement>('.paper-container'));
 
   papers.forEach((paper) => {
-    paper.style.display = 'block';
-    paper.style.width = '210mm';
-    paper.style.height = '296mm';
-    paper.style.minHeight = '0';
-    paper.style.margin = '0 auto';
-    paper.style.padding = paper.style.padding || '';
-    paper.style.boxShadow = 'none';
-    paper.style.borderRadius = '0';
-    paper.style.overflow = 'hidden';
-    paper.style.boxSizing = 'border-box';
-    paper.style.transform = 'none';
-    paper.style.transformOrigin = 'top left';
-    paper.style.zoom = '1';
+    setImportant(paper, 'width', '210mm');
+    setImportant(paper, 'height', `${paperHeightMm}mm`);
+    setImportant(paper, 'min-height', `${paperHeightMm}mm`);
+    setImportant(paper, 'margin', '0');
+    setImportant(paper, 'margin-right', '0');
+    setImportant(paper, 'margin-bottom', '0');
+    setImportant(paper, 'box-shadow', 'none');
+    setImportant(paper, 'border-radius', '0');
+    setImportant(paper, 'overflow', 'hidden');
+    setImportant(paper, 'box-sizing', 'border-box');
+    setImportant(paper, 'transform', 'none');
+    setImportant(paper, 'transform-origin', 'top left');
+    setImportant(paper, 'zoom', '1');
+    setImportant(paper, 'break-after', paper.classList.contains('has-next-page') ? 'page' : 'auto');
+    setImportant(paper, 'page-break-after', paper.classList.contains('has-next-page') ? 'always' : 'auto');
   });
 };

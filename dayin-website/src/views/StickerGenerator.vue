@@ -136,7 +136,7 @@ const textY = (lineCount: number, index: number) => {
 };
 
 const printPaper = () => {
-  printElement('sticker-printable-paper', paperTitle);
+  printElement('sticker-printable-paper', paperTitle, { pagebreak: true });
 };
 
 const downloadPDF = () => {
