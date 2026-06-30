@@ -2,6 +2,9 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
 import { printElement, savePdfFromElement } from '../utils/print';
+import { pinyin } from 'pinyin-pro';
+import { GRADE_1_2_WORDS } from '../utils/wordBank';
+import { message } from 'ant-design-vue';
 
 type ChinesePaperType =
   | 'tianzi'
@@ -11,6 +14,7 @@ type ChinesePaperType =
   | 'pinyin-initials'
   | 'pinyin-syllables'
   | 'stroke-order'
+  | 'pinyin-stroke-order'
   | 'four-line-square'
   | 'pinyin-paper'
   | 'composition'
@@ -23,6 +27,18 @@ type StrokeCell = {
 type StrokeRow = {
   char: string;
   cells: StrokeCell[];
+};
+type PinyinStrokeCellMode = 'blank' | 'sample' | 'trace' | 'stroke-step';
+type PinyinStrokeCell = {
+  char: string;
+  pinyin: string;
+  mode: PinyinStrokeCellMode;
+  stepIndex: number;
+};
+type PinyinStrokeRow = {
+  char: string;
+  pinyin: string;
+  cells: PinyinStrokeCell[];
 };
 type HanziStrokeData = {
   strokes: string[];
@@ -37,6 +53,7 @@ const syllables = ['zhi', 'chi', 'shi', 'ri', 'zi', 'ci', 'si', 'yi', 'wu', 'yu'
 const formState = ref({
   type: 'tianzi' as ChinesePaperType,
   strokeChars: '一二三上口日田目',
+  pinyinStrokeChars: '一二三上口日田目',
   radicalChars: '亻冫氵辶艹宀口土木扌忄讠纟钅疒竹雨礻衤女子犭饣月日山石田禾白目足',
   strokeTypeChars: '一,丨,丿,丶,乀,乛,亅,乚,\uD840\uDC0B,\uD840\uDCD1,\uD840\uDD0E,乙,フ',
 });
@@ -49,6 +66,7 @@ const paperTitles: Record<ChinesePaperType, string> = {
   'pinyin-initials': '汉语拼音描红字帖（声母）',
   'pinyin-syllables': '汉语拼音描红字帖（整体认读）',
   'stroke-order': '按笔顺描红',
+  'pinyin-stroke-order': '拼音笔画描红',
   'four-line-square': '四线方格作业纸',
   'pinyin-paper': '拼音作业纸',
   composition: '作文纸',
@@ -60,6 +78,7 @@ const isTianzi = computed(() => formState.value.type === 'tianzi');
 const isRadical = computed(() => formState.value.type === 'radical');
 const isStrokeType = computed(() => formState.value.type === 'stroke-type');
 const isStrokeOrder = computed(() => formState.value.type === 'stroke-order');
+const isPinyinStrokeOrder = computed(() => formState.value.type === 'pinyin-stroke-order');
 const isFourLineSquare = computed(() => formState.value.type === 'four-line-square');
 const isPinyinPaper = computed(() => formState.value.type === 'pinyin-paper');
 const isComposition = computed(() => formState.value.type === 'composition');
@@ -93,9 +112,9 @@ const strokeOrderChars = computed(() => (
     .replace(/\s/g, '')
     .split('')
     .filter(Boolean)
-    .slice(0, 11)
+    .slice(0, 200)
 ));
-const limitStrokeChars = (value: string) => value.replace(/\s/g, '').slice(0, 11);
+const limitStrokeChars = (value: string) => value.replace(/\s/g, '').slice(0, 200);
 const updateStrokeChars = (value: string) => {
   formState.value.strokeChars = limitStrokeChars(value);
 };
@@ -135,6 +154,87 @@ const strokePages = computed(() => {
     const rows = [...page];
     while (rows.length < pageSize) {
       rows.push({ char: '', cells: buildStrokeCells() });
+    }
+    return rows;
+  });
+});
+const pinyinStrokeOrderChars = computed(() => (
+  formState.value.pinyinStrokeChars
+    .replace(/\s/g, '')
+    .split('')
+    .filter(Boolean)
+    .slice(0, 200)
+));
+const limitPinyinStrokeChars = (value: string) => value.replace(/\s/g, '').slice(0, 200);
+const updatePinyinStrokeChars = (value: string) => {
+  formState.value.pinyinStrokeChars = limitPinyinStrokeChars(value);
+};
+const getCharPinyin = (char: string): string => {
+  if (!char) return '';
+  return pinyin(char, { toneType: 'symbol' });
+};
+const buildPinyinStrokeCells = (char?: string): PinyinStrokeCell[] => {
+  const charPinyin = char ? getCharPinyin(char) : '';
+  if (!char) {
+    return Array.from({ length: 15 }, () => ({ char: '', pinyin: '', mode: 'blank', stepIndex: -1 }));
+  }
+
+  const strokes = getStrokeData(char)?.strokes ?? [];
+  const S = strokes.length;
+
+  const cells: PinyinStrokeCell[] = [];
+
+  // Cell 0 is always the sample cell (black)
+  cells.push({ char, pinyin: charPinyin, mode: 'sample', stepIndex: -1 });
+
+  if (S > 0) {
+    // We have stroke data
+    for (let i = 1; i <= 14; i++) {
+      if (i <= S) {
+        // Step i (indices 0 to i-1)
+        cells.push({ char, pinyin: charPinyin, mode: 'stroke-step', stepIndex: i - 1 });
+      } else {
+        if (i < 8) {
+          cells.push({ char, pinyin: charPinyin, mode: 'trace', stepIndex: -1 });
+        } else {
+          cells.push({ char: '', pinyin: '', mode: 'blank', stepIndex: -1 });
+        }
+      }
+    }
+  } else {
+    // Fallback if stroke data is not loaded yet (or has error)
+    for (let i = 1; i <= 14; i++) {
+      if (i < 8) {
+        cells.push({ char, pinyin: charPinyin, mode: 'trace', stepIndex: -1 });
+      } else {
+        cells.push({ char: '', pinyin: '', mode: 'blank', stepIndex: -1 });
+      }
+    }
+  }
+
+  return cells;
+};
+const pinyinStrokeRows = computed(() => {
+  const rows: PinyinStrokeRow[] = pinyinStrokeOrderChars.value.map((char) => ({
+    char,
+    pinyin: getCharPinyin(char),
+    cells: buildPinyinStrokeCells(char),
+  }));
+  return rows;
+});
+const pinyinStrokePages = computed(() => {
+  const pageSize = 8;
+  const pages: PinyinStrokeRow[][] = [];
+  for (let i = 0; i < pinyinStrokeRows.value.length; i += pageSize) {
+    pages.push(pinyinStrokeRows.value.slice(i, i + pageSize));
+  }
+  if (!pages.length) {
+    pages.push([]);
+  }
+  return pages.map((page) => {
+    const rows = [...page];
+    while (rows.length < pageSize) {
+      rows.push({ char: '', pinyin: '', cells: buildPinyinStrokeCells() });
     }
     return rows;
   });
@@ -232,6 +332,64 @@ watch(strokeOrderChars, (chars) => {
   });
 }, { immediate: true });
 
+watch(pinyinStrokeOrderChars, (chars) => {
+  chars.forEach((char) => {
+    void loadStrokeData(char);
+  });
+}, { immediate: true });
+
+watch(() => formState.value.type, (newType) => {
+  if (newType === 'stroke-order') {
+    const shuffled = [...GRADE_1_2_WORDS].sort(() => 0.5 - Math.random());
+    formState.value.strokeChars = shuffled.slice(0, 11).join('');
+  } else if (newType === 'pinyin-stroke-order') {
+    const shuffled = [...GRADE_1_2_WORDS].sort(() => 0.5 - Math.random());
+    formState.value.pinyinStrokeChars = shuffled.slice(0, 8).join('');
+  }
+});
+
+const currentWordBankIndex = ref(0);
+const importPages = ref(1);
+
+const handleOrderImport = () => {
+  const pageSize = isPinyinStrokeOrder.value ? 8 : 11;
+  const count = pageSize * importPages.value;
+  
+  const chars: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const idx = (currentWordBankIndex.value + i) % GRADE_1_2_WORDS.length;
+    chars.push(GRADE_1_2_WORDS[idx]);
+  }
+  
+  const charStr = chars.join('');
+  if (isPinyinStrokeOrder.value) {
+    formState.value.pinyinStrokeChars = charStr;
+  } else {
+    formState.value.strokeChars = charStr;
+  }
+  
+  const prevIndex = currentWordBankIndex.value;
+  currentWordBankIndex.value = (currentWordBankIndex.value + count) % GRADE_1_2_WORDS.length;
+  
+  void message.success(`已顺序导入 ${count} 个汉字（字库索引：${prevIndex} - ${prevIndex + count - 1}）`);
+};
+
+const handleRandomImport = () => {
+  const pageSize = isPinyinStrokeOrder.value ? 8 : 11;
+  const count = pageSize * importPages.value;
+  
+  const shuffled = [...GRADE_1_2_WORDS].sort(() => 0.5 - Math.random());
+  const charStr = shuffled.slice(0, count).join('');
+  
+  if (isPinyinStrokeOrder.value) {
+    formState.value.pinyinStrokeChars = charStr;
+  } else {
+    formState.value.strokeChars = charStr;
+  }
+  
+  void message.success(`已随机导入 ${count} 个一二年级汉字`);
+};
+
 const printPaper = () => {
   printElement('chinese-printable-paper', paperTitle.value, { pagebreak: true });
 };
@@ -260,6 +418,7 @@ const downloadPDF = () => {
             <a-select-option value="pinyin-initials">汉语拼音描红字帖（声母）</a-select-option>
             <a-select-option value="pinyin-syllables">汉语拼音描红字帖（整体认读）</a-select-option>
             <a-select-option value="stroke-order">按笔顺描红</a-select-option>
+            <a-select-option value="pinyin-stroke-order">拼音笔画描红</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item v-if="isRadical" label="偏旁部首">
@@ -281,14 +440,44 @@ const downloadPDF = () => {
         <a-form-item v-if="isStrokeOrder" label="练习汉字">
           <a-textarea
             :value="formState.strokeChars"
-            :maxlength="11"
+            :maxlength="200"
             :rows="3"
-            placeholder="最多输入 11 个汉字"
+            placeholder="最多输入 200 个汉字"
             show-count
             @update:value="updateStrokeChars"
           />
-          <div class="input-tip">最多可输入 11 个字，复制粘贴会自动截取前 11 个字。</div>
+          <div class="input-tip">最多可输入 200 个字，每页自动分页渲染 11 个。</div>
         </a-form-item>
+        <a-form-item v-if="isPinyinStrokeOrder" label="练习汉字">
+          <a-textarea
+            :value="formState.pinyinStrokeChars"
+            :maxlength="200"
+            :rows="3"
+            placeholder="最多输入 200 个汉字"
+            show-count
+            @update:value="updatePinyinStrokeChars"
+          />
+          <div class="input-tip">最多可输入 200 个字，每页自动分页渲染 8 个。</div>
+        </a-form-item>
+        
+        <template v-if="isStrokeOrder || isPinyinStrokeOrder">
+          <a-form-item label="一二年级字库导入">
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <span style="line-height: 32px; flex-shrink: 0;">导入页数：</span>
+              <a-select v-model:value="importPages" style="flex-grow: 1;">
+                <a-select-option :value="1">1 页</a-select-option>
+                <a-select-option :value="2">2 页</a-select-option>
+                <a-select-option :value="3">3 页</a-select-option>
+                <a-select-option :value="5">5 页</a-select-option>
+                <a-select-option :value="10">10 页</a-select-option>
+              </a-select>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <a-button type="dashed" style="flex: 1;" @click="handleOrderImport">顺序导入</a-button>
+              <a-button type="dashed" style="flex: 1;" @click="handleRandomImport">随机导入</a-button>
+            </div>
+          </a-form-item>
+        </template>
         <a-form-item label="纸张">
           <a-tag color="blue">A4 纵向</a-tag>
         </a-form-item>
@@ -436,6 +625,100 @@ const downloadPDF = () => {
                       {{ cell.char }}
                     </span>
                   </span>
+                </div>
+              </div>
+            </div>
+            <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          </div>
+        </template>
+
+        <template v-else-if="isPinyinStrokeOrder">
+          <div
+            v-for="(page, pageIndex) in pinyinStrokePages"
+            :key="pageIndex"
+            :class="['paper-container', { 'has-next-page': pageIndex < pinyinStrokePages.length - 1 }]"
+          >
+            <div class="paper-header">
+              <h2>{{ paperTitle }}</h2>
+              <div class="paper-info">
+                <span>姓名：__________</span>
+                <span>日期：__________</span>
+                <span>用时：__________</span>
+              </div>
+            </div>
+
+            <div class="pinyin-stroke-sheet">
+              <div v-for="(row, rowIndex) in page" :key="`${row.char || 'blank'}-${rowIndex}`" class="pinyin-stroke-practice-row">
+                <div class="pinyin-stroke-row">
+                  <div
+                    v-for="(cell, cellIndex) in row.cells"
+                    :key="cellIndex"
+                    class="pinyin-stroke-cell"
+                  >
+                    <div class="pinyin-box">
+                      <span :class="['pinyin-char', cell.mode === 'sample' ? 'sample' : 'trace', { blank: cell.mode === 'blank' }]">
+                        {{ cell.pinyin }}
+                      </span>
+                    </div>
+                    <div class="tianzi-box">
+                      <!-- sample: full black character -->
+                      <template v-if="cell.mode === 'sample'">
+                        <svg
+                          v-if="cell.char && getStrokeData(cell.char)?.strokes.length"
+                          class="stroke-char-svg sample"
+                          :viewBox="strokeSvgViewBox"
+                          aria-hidden="true"
+                        >
+                          <g :transform="strokeSvgTransform">
+                            <path
+                              v-for="(path, pathIndex) in getStrokeData(cell.char)?.strokes"
+                              :key="pathIndex"
+                              :d="path"
+                            />
+                          </g>
+                        </svg>
+                        <span v-else class="stroke-char sample">{{ cell.char }}</span>
+                      </template>
+
+                      <!-- stroke-step: step-by-step building character -->
+                      <template v-else-if="cell.mode === 'stroke-step'">
+                        <svg
+                          v-if="cell.char && getStrokeData(cell.char)?.strokes.length"
+                          class="stroke-char-svg step"
+                          :viewBox="strokeSvgViewBox"
+                          aria-hidden="true"
+                        >
+                          <g :transform="strokeSvgTransform">
+                            <path
+                              v-for="(path, pathIndex) in getStrokeData(cell.char)?.strokes.slice(0, cell.stepIndex + 1)"
+                              :key="pathIndex"
+                              :d="path"
+                              :class="{ current: pathIndex === cell.stepIndex }"
+                            />
+                          </g>
+                        </svg>
+                      </template>
+
+                      <!-- trace: full grey character -->
+                      <template v-else-if="cell.mode === 'trace'">
+                        <svg
+                          v-if="cell.char && getStrokeData(cell.char)?.strokes.length"
+                          class="stroke-char-svg trace"
+                          :viewBox="strokeSvgViewBox"
+                          aria-hidden="true"
+                        >
+                          <g :transform="strokeSvgTransform">
+                            <path
+                              v-for="(path, pathIndex) in getStrokeData(cell.char)?.strokes"
+                              :key="pathIndex"
+                              :d="path"
+                            />
+                          </g>
+                        </svg>
+                        <span v-else class="stroke-char trace">{{ cell.char }}</span>
+                      </template>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -829,6 +1112,114 @@ const downloadPDF = () => {
   display: grid;
   grid-template-columns: repeat(15, 12mm);
   justify-content: center;
+}
+.pinyin-stroke-sheet {
+  display: grid;
+  align-content: space-between;
+  height: 231mm;
+  gap: 2.8mm;
+  padding-top: 1mm;
+}
+.pinyin-stroke-practice-row {
+  display: block;
+  height: 18mm;
+}
+.pinyin-stroke-row {
+  display: grid;
+  grid-template-columns: repeat(15, 12mm);
+  justify-content: center;
+}
+.pinyin-stroke-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 12mm;
+  height: 18mm;
+  border-top: 1px solid #333;
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
+.pinyin-stroke-cell:first-child {
+  border-left: 1px solid #333;
+}
+.pinyin-box {
+  position: relative;
+  height: 6mm;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid #333;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pinyin-box::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 33.333%;
+  width: 100%;
+  border-top: 1px dashed #aaa;
+  pointer-events: none;
+}
+.pinyin-box::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 66.666%;
+  width: 100%;
+  border-top: 1px dashed #aaa;
+  pointer-events: none;
+}
+.pinyin-char {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  font-family: "Edu NSW ACT Foundation", "Kaiti", "STKaiti", serif;
+  font-size: 16px;
+  line-height: 1;
+  color: #333;
+  transform: translateY(-2px);
+}
+.pinyin-char.trace {
+  color: rgba(40, 40, 40, 0.32);
+}
+.pinyin-char.blank {
+  visibility: hidden;
+}
+.tianzi-box {
+  position: relative;
+  height: 12mm;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tianzi-box::before,
+.tianzi-box::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.tianzi-box::before {
+  left: 50%;
+  top: 0;
+  height: 100%;
+  border-left: 1px dashed #aaa;
+}
+.tianzi-box::after {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  border-top: 1px dashed #aaa;
+}
+.stroke-char-svg.step path {
+  fill: rgba(100, 110, 125, 0.32);
+}
+.stroke-char-svg.step path.current {
+  fill: #c93b3b;
 }
 .stroke-cell {
   position: relative;
