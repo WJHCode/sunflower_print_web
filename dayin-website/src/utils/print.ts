@@ -19,7 +19,10 @@ export const printElement = (elementId: string, title = '向日葵打印', optio
                    ('ontouchstart' in window);
 
   if (isMobile) {
-    printPdfPreview(element, title, options);
+    printPdfPreview(element, title, {
+      ...options,
+      paperHeightMm: Math.min(options.paperHeightMm ?? 296.6, 296.6),
+    });
     return;
   }
 
