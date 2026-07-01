@@ -5,6 +5,9 @@ import { printElement, savePdfFromElement } from '../utils/print';
 import { pinyin } from 'pinyin-pro';
 import { GRADE_1_2_WORDS } from '../utils/wordBank';
 import { message } from 'ant-design-vue';
+import { useI18n } from '@/i18n';
+
+const { t } = useI18n();
 
 type ChinesePaperType =
   | 'tianzi'
@@ -58,22 +61,22 @@ const formState = ref({
   strokeTypeChars: '一,丨,丿,丶,乀,乛,亅,乚,\uD840\uDC0B,\uD840\uDCD1,\uD840\uDD0E,乙,フ',
 });
 
-const paperTitles: Record<ChinesePaperType, string> = {
-  tianzi: '田字格作业纸',
-  radical: '汉字偏旁练习',
-  'stroke-type': '汉字笔画练习',
-  'pinyin-finals': '汉语拼音描红字帖（韵母）',
-  'pinyin-initials': '汉语拼音描红字帖（声母）',
-  'pinyin-syllables': '汉语拼音描红字帖（整体认读）',
-  'stroke-order': '按笔顺描红',
-  'pinyin-stroke-order': '拼音笔画描红',
-  'four-line-square': '四线方格作业纸',
-  'pinyin-paper': '拼音作业纸',
-  composition: '作文纸',
-  'cornell-note': '康奈尔笔记纸（A4）',
+const paperTitleKeys: Record<ChinesePaperType, string> = {
+  tianzi: 'options.tianzi',
+  radical: 'options.radical',
+  'stroke-type': 'options.strokeType',
+  'pinyin-finals': 'options.pinyinFinals',
+  'pinyin-initials': 'options.pinyinInitials',
+  'pinyin-syllables': 'options.pinyinSyllables',
+  'stroke-order': 'options.strokeOrder',
+  'pinyin-stroke-order': 'options.pinyinStrokeOrder',
+  'four-line-square': 'options.fourLineSquare',
+  'pinyin-paper': 'options.pinyinPaper',
+  composition: 'options.composition',
+  'cornell-note': 'options.cornellNote',
 };
 
-const paperTitle = computed(() => paperTitles[formState.value.type]);
+const paperTitle = computed(() => t(paperTitleKeys[formState.value.type]));
 const isTianzi = computed(() => formState.value.type === 'tianzi');
 const isRadical = computed(() => formState.value.type === 'radical');
 const isStrokeType = computed(() => formState.value.type === 'stroke-type');
@@ -371,7 +374,7 @@ const handleOrderImport = () => {
   const prevIndex = currentWordBankIndex.value;
   currentWordBankIndex.value = (currentWordBankIndex.value + count) % GRADE_1_2_WORDS.length;
   
-  void message.success(`已顺序导入 ${count} 个汉字（字库索引：${prevIndex} - ${prevIndex + count - 1}）`);
+  void message.success(t('generatorSettings.importedOrdered', { count, start: prevIndex, end: prevIndex + count - 1 }));
 };
 
 const handleRandomImport = () => {
@@ -387,7 +390,7 @@ const handleRandomImport = () => {
     formState.value.strokeChars = charStr;
   }
   
-  void message.success(`已随机导入 ${count} 个一二年级汉字`);
+  void message.success(t('generatorSettings.importedRandom', { count }));
 };
 
 const printPaper = () => {
@@ -403,93 +406,93 @@ const downloadPDF = () => {
 
 <template>
   <div class="chinese-container">
-    <a-card class="settings-panel no-print" :bordered="false" title="生成设置">
+    <a-card class="settings-panel no-print" :bordered="false" :title="t('common.settings')">
       <a-form layout="vertical" :model="formState">
-        <a-form-item label="题型">
+        <a-form-item :label="t('generatorSettings.type')">
           <a-select v-model:value="formState.type">
-            <a-select-option value="tianzi">田字格作业纸</a-select-option>
-            <a-select-option value="radical">汉字偏旁练习</a-select-option>
-            <a-select-option value="stroke-type">汉字笔画练习</a-select-option>
-            <a-select-option value="four-line-square">四线方格作业纸</a-select-option>
-            <a-select-option value="pinyin-paper">拼音作业纸</a-select-option>
-            <a-select-option value="composition">作文纸</a-select-option>
-            <a-select-option value="cornell-note">康奈尔笔记纸（A4）</a-select-option>
-            <a-select-option value="pinyin-finals">汉语拼音描红字帖（韵母）</a-select-option>
-            <a-select-option value="pinyin-initials">汉语拼音描红字帖（声母）</a-select-option>
-            <a-select-option value="pinyin-syllables">汉语拼音描红字帖（整体认读）</a-select-option>
-            <a-select-option value="stroke-order">按笔顺描红</a-select-option>
-            <a-select-option value="pinyin-stroke-order">拼音笔画描红</a-select-option>
+            <a-select-option value="tianzi">{{ t('options.tianzi') }}</a-select-option>
+            <a-select-option value="radical">{{ t('options.radical') }}</a-select-option>
+            <a-select-option value="stroke-type">{{ t('options.strokeType') }}</a-select-option>
+            <a-select-option value="four-line-square">{{ t('options.fourLineSquare') }}</a-select-option>
+            <a-select-option value="pinyin-paper">{{ t('options.pinyinPaper') }}</a-select-option>
+            <a-select-option value="composition">{{ t('options.composition') }}</a-select-option>
+            <a-select-option value="cornell-note">{{ t('options.cornellNote') }}</a-select-option>
+            <a-select-option value="pinyin-finals">{{ t('options.pinyinFinals') }}</a-select-option>
+            <a-select-option value="pinyin-initials">{{ t('options.pinyinInitials') }}</a-select-option>
+            <a-select-option value="pinyin-syllables">{{ t('options.pinyinSyllables') }}</a-select-option>
+            <a-select-option value="stroke-order">{{ t('options.strokeOrder') }}</a-select-option>
+            <a-select-option value="pinyin-stroke-order">{{ t('options.pinyinStrokeOrder') }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item v-if="isRadical" label="偏旁部首">
+        <a-form-item v-if="isRadical" :label="t('generatorSettings.radicals')">
           <a-textarea
             v-model:value="formState.radicalChars"
             :rows="3"
-            placeholder="请输入偏旁部首，可连写（如：亻氵辶）或用逗号隔开"
+            :placeholder="t('generatorSettings.radicalsPlaceholder')"
           />
-          <div class="input-tip">支持连写输入（每个字符一格）或逗号/换行隔开输入。一行可练习两个，左右各占 7 个田字格。</div>
+          <div class="input-tip">{{ t('generatorSettings.radicalsTip') }}</div>
         </a-form-item>
-        <a-form-item v-if="isStrokeType" label="笔画符号">
+        <a-form-item v-if="isStrokeType" :label="t('generatorSettings.strokes')">
           <a-textarea
             v-model:value="formState.strokeTypeChars"
             :rows="3"
-            placeholder="请输入想要练习的笔画，可以用逗号隔开，例如：一,丨,丿,丶"
+            :placeholder="t('generatorSettings.strokesPlaceholder')"
           />
-          <div class="input-tip">请输入要练习的笔画。支持连写或用逗号、换行隔开。一行可练习两个，左右各占 7 个田字格。</div>
+          <div class="input-tip">{{ t('generatorSettings.strokesTip') }}</div>
         </a-form-item>
-        <a-form-item v-if="isStrokeOrder" label="练习汉字">
+        <a-form-item v-if="isStrokeOrder" :label="t('generatorSettings.practiceChars')">
           <a-textarea
             :value="formState.strokeChars"
             :maxlength="200"
             :rows="3"
-            placeholder="最多输入 200 个汉字"
+            :placeholder="t('generatorSettings.charsPlaceholder')"
             show-count
             @update:value="updateStrokeChars"
           />
-          <div class="input-tip">最多可输入 200 个字，每页自动分页渲染 11 个。</div>
+          <div class="input-tip">{{ t('generatorSettings.strokeOrderTip') }}</div>
         </a-form-item>
-        <a-form-item v-if="isPinyinStrokeOrder" label="练习汉字">
+        <a-form-item v-if="isPinyinStrokeOrder" :label="t('generatorSettings.practiceChars')">
           <a-textarea
             :value="formState.pinyinStrokeChars"
             :maxlength="200"
             :rows="3"
-            placeholder="最多输入 200 个汉字"
+            :placeholder="t('generatorSettings.charsPlaceholder')"
             show-count
             @update:value="updatePinyinStrokeChars"
           />
-          <div class="input-tip">最多可输入 200 个字，每页自动分页渲染 8 个。</div>
+          <div class="input-tip">{{ t('generatorSettings.pinyinStrokeOrderTip') }}</div>
         </a-form-item>
         
         <template v-if="isStrokeOrder || isPinyinStrokeOrder">
-          <a-form-item label="一二年级字库导入">
+          <a-form-item :label="t('generatorSettings.wordBankImport')">
             <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-              <span style="line-height: 32px; flex-shrink: 0;">导入页数：</span>
+              <span style="line-height: 32px; flex-shrink: 0;">{{ t('generatorSettings.importPages') }}</span>
               <a-select v-model:value="importPages" style="flex-grow: 1;">
-                <a-select-option :value="1">1 页</a-select-option>
-                <a-select-option :value="2">2 页</a-select-option>
-                <a-select-option :value="3">3 页</a-select-option>
-                <a-select-option :value="5">5 页</a-select-option>
-                <a-select-option :value="10">10 页</a-select-option>
+                <a-select-option :value="1">1</a-select-option>
+                <a-select-option :value="2">2</a-select-option>
+                <a-select-option :value="3">3</a-select-option>
+                <a-select-option :value="5">5</a-select-option>
+                <a-select-option :value="10">10</a-select-option>
               </a-select>
             </div>
             <div style="display: flex; gap: 8px;">
-              <a-button type="dashed" style="flex: 1;" @click="handleOrderImport">顺序导入</a-button>
-              <a-button type="dashed" style="flex: 1;" @click="handleRandomImport">随机导入</a-button>
+              <a-button type="dashed" style="flex: 1;" @click="handleOrderImport">{{ t('generatorSettings.orderedImport') }}</a-button>
+              <a-button type="dashed" style="flex: 1;" @click="handleRandomImport">{{ t('generatorSettings.randomImport') }}</a-button>
             </div>
           </a-form-item>
         </template>
-        <a-form-item label="纸张">
-          <a-tag color="blue">A4 纵向</a-tag>
+        <a-form-item :label="t('common.paper')">
+          <a-tag color="blue">{{ t('common.a4Portrait') }}</a-tag>
         </a-form-item>
         <a-divider />
         <div class="action-buttons">
           <a-button type="primary" block size="large" @click="printPaper">
             <template #icon><PrinterOutlined /></template>
-            直接打印
+            {{ t('common.print') }}
           </a-button>
           <a-button block size="large" style="margin-top: 16px" @click="downloadPDF">
             <template #icon><DownloadOutlined /></template>
-            下载 PDF
+            {{ t('common.downloadPdf') }}
           </a-button>
         </div>
       </a-form>

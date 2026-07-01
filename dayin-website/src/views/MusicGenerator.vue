@@ -5,6 +5,9 @@ import {
   PrinterOutlined
 } from '@ant-design/icons-vue';
 import { printElement, savePdfFromElement } from '../utils/print';
+import { useI18n } from '@/i18n';
+
+const { t } = useI18n();
 
 // Define sheet music settings state
 const formState = ref({
@@ -1452,77 +1455,77 @@ const handlePrint = () => {
 <template>
   <div class="music-generator-view">
     <!-- Settings Panel -->
-    <a-card class="settings-panel no-print" :bordered="false" title="生成设置">
+    <a-card class="settings-panel no-print" :bordered="false" :title="t('common.settings')">
       <a-form layout="vertical">
-        <a-form-item label="分类选项">
+        <a-form-item :label="t('generatorSettings.categoryOptions')">
           <a-radio-group v-model:value="formState.sheetType" option-type="button" button-style="solid">
-            <a-radio-button value="staff">五线谱</a-radio-button>
-            <a-radio-button value="grand">大谱表</a-radio-button>
-            <a-radio-button value="guitar">吉他谱</a-radio-button>
-            <a-radio-button value="ukulele">尤克里里</a-radio-button>
-            <a-radio-button value="numbered">简谱</a-radio-button>
+            <a-radio-button value="staff">{{ t('options.staff') }}</a-radio-button>
+            <a-radio-button value="grand">{{ t('options.grand') }}</a-radio-button>
+            <a-radio-button value="guitar">{{ t('options.guitar') }}</a-radio-button>
+            <a-radio-button value="ukulele">{{ t('options.ukulele') }}</a-radio-button>
+            <a-radio-button value="numbered">{{ t('options.numbered') }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
 
-        <a-form-item label="生成模式">
+        <a-form-item :label="t('generatorSettings.contentMode')">
           <a-radio-group v-model:value="formState.contentMode" option-type="button" button-style="solid">
-            <a-radio-button value="blank">空白练习纸</a-radio-button>
-            <a-radio-button value="song">经典曲目</a-radio-button>
+            <a-radio-button value="blank">{{ t('options.blankSheet') }}</a-radio-button>
+            <a-radio-button value="song">{{ t('options.classicSongs') }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
 
-        <a-form-item v-if="formState.contentMode === 'song'" label="选择经典曲目">
-          <a-select v-model:value="formState.selectedSong" placeholder="请选择经典歌曲">
-            <a-select-option value="twinkle">《小星星》 - 经典儿歌</a-select-option>
-            <a-select-option value="ode-to-joy">《欢乐颂》 - 贝多芬</a-select-option>
-            <a-select-option value="tigers">《两只老虎》 - 经典儿歌</a-select-option>
-            <a-select-option value="jingle-bells">《铃儿响叮当》 - 经典儿歌</a-select-option>
-            <a-select-option value="painter">《粉刷匠》 - 经典儿歌</a-select-option>
-            <a-select-option value="london-bridge">《伦敦大桥倒下来》 - 英国童谣</a-select-option>
-            <a-select-option value="mary">《玛丽有只小羔羊》 - 经典童谣</a-select-option>
-            <a-select-option value="red-riding">《小红帽》 - 经典童谣</a-select-option>
-            <a-select-option value="birthday">《生日快乐歌》 - 经典庆典歌曲</a-select-option>
-            <a-select-option value="red-river">《红河谷》 - 加拿大民歌</a-select-option>
-            <a-select-option value="new-year">《新年好》 - 经典民歌</a-select-option>
-            <a-select-option value="going-home">《念故乡》 - 德沃夏克</a-select-option>
-            <a-select-option value="bach-minuet">《小步舞曲》 - 巴赫</a-select-option>
-            <a-select-option value="brahms-lullaby">《摇篮曲》 - 勃拉姆斯</a-select-option>
-            <a-select-option value="schubert-lullaby">《摇篮曲》 - 舒伯特</a-select-option>
-            <a-select-option value="mozart-lullaby">《摇篮曲》 - 莫扎特</a-select-option>
-            <a-select-option value="surprise-sym">《惊愕交响曲》 - 海顿</a-select-option>
-            <a-select-option value="auld-lang">《友谊地久天长》 - 苏格兰民歌</a-select-option>
-            <a-select-option value="love-dream">《爱之梦》 - 李斯特</a-select-option>
+        <a-form-item v-if="formState.contentMode === 'song'" :label="t('generatorSettings.selectSong')">
+          <a-select v-model:value="formState.selectedSong" :placeholder="t('generatorSettings.selectSongPlaceholder')">
+            <a-select-option value="twinkle">{{ t('songOptions.twinkle') }}</a-select-option>
+            <a-select-option value="ode-to-joy">{{ t('songOptions.odeToJoy') }}</a-select-option>
+            <a-select-option value="tigers">{{ t('songOptions.tigers') }}</a-select-option>
+            <a-select-option value="jingle-bells">{{ t('songOptions.jingleBells') }}</a-select-option>
+            <a-select-option value="painter">{{ t('songOptions.painter') }}</a-select-option>
+            <a-select-option value="london-bridge">{{ t('songOptions.londonBridge') }}</a-select-option>
+            <a-select-option value="mary">{{ t('songOptions.mary') }}</a-select-option>
+            <a-select-option value="red-riding">{{ t('songOptions.redRiding') }}</a-select-option>
+            <a-select-option value="birthday">{{ t('songOptions.birthday') }}</a-select-option>
+            <a-select-option value="red-river">{{ t('songOptions.redRiver') }}</a-select-option>
+            <a-select-option value="new-year">{{ t('songOptions.newYear') }}</a-select-option>
+            <a-select-option value="going-home">{{ t('songOptions.goingHome') }}</a-select-option>
+            <a-select-option value="bach-minuet">{{ t('songOptions.bachMinuet') }}</a-select-option>
+            <a-select-option value="brahms-lullaby">{{ t('songOptions.brahmsLullaby') }}</a-select-option>
+            <a-select-option value="schubert-lullaby">{{ t('songOptions.schubertLullaby') }}</a-select-option>
+            <a-select-option value="mozart-lullaby">{{ t('songOptions.mozartLullaby') }}</a-select-option>
+            <a-select-option value="surprise-sym">{{ t('songOptions.surpriseSym') }}</a-select-option>
+            <a-select-option value="auld-lang">{{ t('songOptions.auldLang') }}</a-select-option>
+            <a-select-option value="love-dream">{{ t('songOptions.loveDream') }}</a-select-option>
           </a-select>
         </a-form-item>
 
         <a-divider style="margin: 12px 0;" />
 
         <template v-if="formState.contentMode === 'blank'">
-          <a-form-item label="主标题">
-            <a-input v-model:value="formState.title" placeholder="如：我的练习谱" />
+          <a-form-item :label="t('common.mainTitle')">
+            <a-input v-model:value="formState.title" :placeholder="t('common.mainTitle')" />
           </a-form-item>
-          <a-form-item label="副标题">
-            <a-input v-model:value="formState.subtitle" placeholder="如：钢琴独奏谱" />
+          <a-form-item :label="t('common.subtitle')">
+            <a-input v-model:value="formState.subtitle" :placeholder="t('common.subtitle')" />
           </a-form-item>
         </template>
         <template v-else>
           <div class="info-alert" style="margin-bottom: 12px;">
-            曲目模式下，标题与作者信息将自动使用乐谱的原版文献信息。
+            {{ t('generatorSettings.songModeHint') }}
           </div>
         </template>
 
         <a-divider style="margin: 12px 0;" />
 
-        <a-form-item v-if="formState.sheetType === 'staff'" label="谱号选择">
+        <a-form-item v-if="formState.sheetType === 'staff'" :label="t('generatorSettings.clefType')">
           <a-select v-model:value="formState.clefType">
-            <a-select-option value="treble">高音谱号 (G Clef)</a-select-option>
-            <a-select-option value="bass">低音谱号 (F Clef)</a-select-option>
-            <a-select-option value="alto">中音谱号 (C Clef)</a-select-option>
-            <a-select-option value="none">无谱号</a-select-option>
+            <a-select-option value="treble">{{ t('options.treble') }}</a-select-option>
+            <a-select-option value="bass">{{ t('options.bass') }}</a-select-option>
+            <a-select-option value="alto">{{ t('options.alto') }}</a-select-option>
+            <a-select-option value="none">{{ t('options.noClef') }}</a-select-option>
           </a-select>
         </a-form-item>
 
-        <a-form-item label="谱线间距 (mm)">
+        <a-form-item :label="t('generatorSettings.lineSpacing')">
           <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
             <a-slider 
               v-model:value="formState.lineSpacing" 
@@ -1541,7 +1544,7 @@ const handlePrint = () => {
           </div>
         </a-form-item>
 
-        <a-form-item label="谱表上下间距 (mm)">
+        <a-form-item :label="t('generatorSettings.staffSpacing')">
           <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
             <a-slider 
               v-model:value="formState.staffSpacing" 
@@ -1560,22 +1563,22 @@ const handlePrint = () => {
           </div>
         </a-form-item>
 
-        <a-form-item label="线条与墨水颜色">
+        <a-form-item :label="t('generatorSettings.lineColor')">
           <a-select v-model:value="formState.lineColor">
-            <a-select-option value="dark-gray">经典炭灰 (易读)</a-select-option>
-            <a-select-option value="pencil-gray">铅笔灰 (描红/自填)</a-select-option>
-            <a-select-option value="green">护眼绿</a-select-option>
-            <a-select-option value="blue">纯净蓝</a-select-option>
-            <a-select-option value="brown">复古棕</a-select-option>
+            <a-select-option value="dark-gray">{{ t('options.darkGray') }}</a-select-option>
+            <a-select-option value="pencil-gray">{{ t('options.pencilGray') }}</a-select-option>
+            <a-select-option value="green">{{ t('options.green') }}</a-select-option>
+            <a-select-option value="blue">{{ t('options.blue') }}</a-select-option>
+            <a-select-option value="brown">{{ t('options.brown') }}</a-select-option>
           </a-select>
         </a-form-item>
 
         <!-- Guitar/Ukulele chord box display options -->
-        <a-form-item v-if="formState.sheetType === 'guitar' || formState.sheetType === 'ukulele'" label="吉他和弦图表">
+        <a-form-item v-if="formState.sheetType === 'guitar' || formState.sheetType === 'ukulele'" :label="t('generatorSettings.chordCharts')">
           <a-select v-model:value="formState.showChords">
-            <a-select-option value="none">不显示和弦图</a-select-option>
-            <a-select-option value="common">显示常用和弦 (C, G, Am 等)</a-select-option>
-            <a-select-option value="blank">显示空白和弦格 (自填)</a-select-option>
+            <a-select-option value="none">{{ t('options.noChords') }}</a-select-option>
+            <a-select-option value="common">{{ t('options.commonChords') }}</a-select-option>
+            <a-select-option value="blank">{{ t('options.blankChords') }}</a-select-option>
           </a-select>
         </a-form-item>
 
@@ -1583,11 +1586,11 @@ const handlePrint = () => {
         <div class="action-buttons">
           <a-button type="primary" block size="large" @click="handlePrint">
             <template #icon><PrinterOutlined /></template>
-            直接打印
+            {{ t('common.print') }}
           </a-button>
           <a-button block size="large" style="margin-top: 12px" @click="handleDownloadPdf">
             <template #icon><DownloadOutlined /></template>
-            下载 PDF
+            {{ t('common.downloadPdf') }}
           </a-button>
         </div>
       </a-form>

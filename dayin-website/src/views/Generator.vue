@@ -23,6 +23,9 @@ import MakeTenEquation from '../components/math/MakeTenEquation.vue';
 import SplitTreeEquation from '../components/math/SplitTreeEquation.vue';
 import type { MathProblem } from '../types/math';
 import { printElement, savePdfFromElement } from '../utils/print';
+import { useI18n } from '@/i18n';
+
+const { t } = useI18n();
 
 const formState = ref({
   type: 'addition',
@@ -38,25 +41,7 @@ const handleRegenerate = () => {
   regenerateKey.value++;
 };
 
-const problemTypeLabels: Record<string, string> = {
-  addition: '基础加法练习题',
-  subtraction: '基础减法练习题',
-  'break-ten': '破十法练习题',
-  'make-ten': '凑十法练习题',
-  mixed: '加减混合运算练习题',
-  'triple-addition': '三个数连续加法练习题',
-  'triple-subtraction': '三个数连续减法练习题',
-  'table-division': '表内除法练习题',
-  'table-multiplication': '表内乘法练习题',
-  'currency-unit': '元角分单位换算练习题',
-  'money-exchange': '纸币面值兑换练习题',
-  'weight-unit': '质量单位换算练习题',
-  'length-unit': '长度单位换算练习题',
-  'time-unit': '时间单位换算练习题',
-  'clock-reading': '认识钟表练习题',
-};
-
-const paperTitle = computed(() => problemTypeLabels[formState.value.type] ?? '口算练习题');
+const paperTitle = computed(() => t(`math.paperTitles.${formState.value.type}`) || t('math.fallbackTitle'));
 
 const fixedLayoutTypes = new Set(['break-ten', 'make-ten']);
 const clockColumns = 3;
@@ -176,9 +161,9 @@ const problemList = computed<MathProblem[]>(() => {
 const generatedCount = computed(() => problemList.value.length);
 const countLabel = computed(() => {
   if (generatedCount.value === problemCount.value) {
-    return `共 ${generatedCount.value} 题`;
+    return t('math.problemCount', { count: generatedCount.value });
   }
-  return `最多可生成 ${generatedCount.value} 题（目标 ${problemCount.value} 题）`;
+  return t('math.partialCount', { count: generatedCount.value, target: problemCount.value });
 });
 
 const printPaper = () => {
@@ -194,28 +179,28 @@ const downloadPDF = () => {
 
 <template>
   <div class="generator-container">
-    <a-card class="settings-panel no-print" :bordered="false" title="生成设置">
+    <a-card class="settings-panel no-print" :bordered="false" :title="t('common.settings')">
       <a-form layout="vertical" :model="formState">
-        <a-form-item label="题型">
+        <a-form-item :label="t('math.problemType')">
           <a-select v-model:value="formState.type">
-            <a-select-option value="addition">基础加法</a-select-option>
-            <a-select-option value="subtraction">基础减法</a-select-option>
-            <a-select-option value="break-ten">破十法练习 (减法)</a-select-option>
-            <a-select-option value="make-ten">凑十法练习 (加法)</a-select-option>
-            <a-select-option value="mixed">加减混合运算</a-select-option>
-            <a-select-option value="triple-addition">三个数连续加法</a-select-option>
-            <a-select-option value="triple-subtraction">三个数连续减法</a-select-option>
-            <a-select-option value="table-division">表内除法</a-select-option>
-            <a-select-option value="table-multiplication">表内乘法</a-select-option>
-            <a-select-option value="currency-unit">元角分单位换算</a-select-option>
-            <a-select-option value="money-exchange">纸币面值兑换</a-select-option>
-            <a-select-option value="weight-unit">质量单位换算</a-select-option>
-            <a-select-option value="length-unit">长度单位换算</a-select-option>
-            <a-select-option value="time-unit">时间单位换算</a-select-option>
-            <a-select-option value="clock-reading">认识钟表</a-select-option>
+            <a-select-option value="addition">{{ t('math.problemTypes.addition') }}</a-select-option>
+            <a-select-option value="subtraction">{{ t('math.problemTypes.subtraction') }}</a-select-option>
+            <a-select-option value="break-ten">{{ t('math.problemTypes.break-ten') }}</a-select-option>
+            <a-select-option value="make-ten">{{ t('math.problemTypes.make-ten') }}</a-select-option>
+            <a-select-option value="mixed">{{ t('math.problemTypes.mixed') }}</a-select-option>
+            <a-select-option value="triple-addition">{{ t('math.problemTypes.triple-addition') }}</a-select-option>
+            <a-select-option value="triple-subtraction">{{ t('math.problemTypes.triple-subtraction') }}</a-select-option>
+            <a-select-option value="table-division">{{ t('math.problemTypes.table-division') }}</a-select-option>
+            <a-select-option value="table-multiplication">{{ t('math.problemTypes.table-multiplication') }}</a-select-option>
+            <a-select-option value="currency-unit">{{ t('math.problemTypes.currency-unit') }}</a-select-option>
+            <a-select-option value="money-exchange">{{ t('math.problemTypes.money-exchange') }}</a-select-option>
+            <a-select-option value="weight-unit">{{ t('math.problemTypes.weight-unit') }}</a-select-option>
+            <a-select-option value="length-unit">{{ t('math.problemTypes.length-unit') }}</a-select-option>
+            <a-select-option value="time-unit">{{ t('math.problemTypes.time-unit') }}</a-select-option>
+            <a-select-option value="clock-reading">{{ t('math.problemTypes.clock-reading') }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item v-if="showNumberRange" label="数字范围">
+        <a-form-item v-if="showNumberRange" :label="t('math.numberRange')">
           <a-input-number
             v-model:value="formState.maxNumber"
             :min="numberRangeMin"
@@ -223,42 +208,42 @@ const downloadPDF = () => {
             style="width: 100%"
           />
         </a-form-item>
-        <a-form-item v-if="formState.type === 'money-exchange'" label="金额格式">
+        <a-form-item v-if="formState.type === 'money-exchange'" :label="t('math.moneyFormat')">
           <a-radio-group v-model:value="formState.moneyExchangeUnitMode" button-style="solid">
-            <a-radio-button value="yuan">元</a-radio-button>
-            <a-radio-button value="yuan-jiao">元角</a-radio-button>
-            <a-radio-button value="yuan-jiao-fen">元角分</a-radio-button>
+            <a-radio-button value="yuan">{{ t('math.moneyFormats.yuan') }}</a-radio-button>
+            <a-radio-button value="yuan-jiao">{{ t('math.moneyFormats.yuanJiao') }}</a-radio-button>
+            <a-radio-button value="yuan-jiao-fen">{{ t('math.moneyFormats.yuanJiaoFen') }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
-        <a-form-item v-if="showLayoutSettings" label="排版格式">
-          <a-tag v-if="isFixedLayout" color="blue">固定 3列 × 5行 ({{ countLabel }})</a-tag>
-          <a-tag v-else-if="formState.type === 'clock-reading'" color="blue">A4 自适应 3列 × {{ rows }}行 ({{ countLabel }})</a-tag>
+        <a-form-item v-if="showLayoutSettings" :label="t('math.layout')">
+          <a-tag v-if="isFixedLayout" color="blue">{{ t('math.fixedLayout', { countLabel }) }}</a-tag>
+          <a-tag v-else-if="formState.type === 'clock-reading'" color="blue">{{ t('math.adaptiveLayout', { rows, countLabel }) }}</a-tag>
           <div v-else-if="isThreeColumnArithmetic" class="layout-controls arithmetic-layout-controls">
-            <a-input-number v-model:value="formState.rows" :min="1" :max="16" addon-before="行" />
-            <a-tag color="blue">固定 3列 × {{ rows }}行 ({{ countLabel }})</a-tag>
+            <a-input-number v-model:value="formState.rows" :min="1" :max="16" :addon-before="t('math.rowAddon')" />
+            <a-tag color="blue">{{ t('math.fixedThreeColumns', { rows, countLabel }) }}</a-tag>
           </div>
           <div v-else class="layout-controls">
-            <a-input-number v-model:value="formState.columns" :min="1" :max="5" addon-before="列" />
-            <a-input-number v-model:value="formState.rows" :min="1" :max="16" addon-before="行" />
+            <a-input-number v-model:value="formState.columns" :min="1" :max="5" :addon-before="t('math.columnAddon')" />
+            <a-input-number v-model:value="formState.rows" :min="1" :max="16" :addon-before="t('math.rowAddon')" />
             <a-tag color="blue">{{ countLabel }}</a-tag>
           </div>
         </a-form-item>
-        <a-form-item label="显示答案">
+        <a-form-item :label="t('math.showAnswer')">
           <a-switch v-model:checked="formState.showAnswer" />
         </a-form-item>
         <a-divider />
         <div class="action-buttons">
           <a-button type="default" block size="large" @click="handleRegenerate" style="margin-bottom: 16px; background-color: #f6c84c; color: #2c3b2b; border-color: #f6c84c;">
             <template #icon><RedoOutlined /></template>
-            重新生成题目
+            {{ t('common.regenerate') }}
           </a-button>
           <a-button type="primary" block size="large" @click="printPaper">
             <template #icon><PrinterOutlined /></template>
-            直接打印
+            {{ t('common.print') }}
           </a-button>
           <a-button block size="large" style="margin-top: 16px" @click="downloadPDF">
             <template #icon><DownloadOutlined /></template>
-            下载 PDF
+            {{ t('common.downloadPdf') }}
           </a-button>
         </div>
       </a-form>
@@ -269,10 +254,10 @@ const downloadPDF = () => {
         <div class="paper-header">
           <h2>{{ paperTitle }}</h2>
           <div class="paper-info">
-            <span>姓名：__________</span>
-            <span>班级：__________</span>
-            <span>日期：__________</span>
-            <span>得分：__________</span>
+            <span>{{ t('common.name') }}</span>
+            <span>{{ t('common.className') }}</span>
+            <span>{{ t('common.date') }}</span>
+            <span>{{ t('common.score') }}</span>
           </div>
         </div>
         <div :class="contentClass" :style="{ gridTemplateColumns: `repeat(${columns}, 1fr)` }">
@@ -299,7 +284,7 @@ const downloadPDF = () => {
             />
           </template>
         </div>
-        <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+        <div class="paper-footer">{{ t('common.footer') }}</div>
       </div>
     </div>
   </div>

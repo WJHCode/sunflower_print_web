@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue';
 import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
 import { printElement, savePdfFromElement } from '../utils/print';
+import { useI18n } from '@/i18n';
+
+const { t } = useI18n();
 
 type StickerSize = 'large' | 'medium' | 'small';
 type StickerShape = 'none' | 'rounded' | 'circle' | 'cloud';
@@ -24,10 +27,10 @@ const showCutLine = ref(true);
 const showDecorations = ref(true);
 const strokeWidth = ref(9);
 
-const sizeOptions: Record<StickerSize, { label: string; columns: number; rows: number; fontBase: number }> = {
-  large: { label: '大贴纸 2 x 4', columns: 2, rows: 4, fontBase: 48 },
-  medium: { label: '中贴纸 3 x 5', columns: 3, rows: 5, fontBase: 38 },
-  small: { label: '小贴纸 4 x 6', columns: 4, rows: 6, fontBase: 29 },
+const sizeOptions: Record<StickerSize, { labelKey: string; columns: number; rows: number; fontBase: number }> = {
+  large: { labelKey: 'options.largeSticker', columns: 2, rows: 4, fontBase: 48 },
+  medium: { labelKey: 'options.mediumSticker', columns: 3, rows: 5, fontBase: 38 },
+  small: { labelKey: 'options.smallSticker', columns: 4, rows: 6, fontBase: 29 },
 };
 
 const paletteColors: Record<StickerPalette, Array<{ color: string; accent: string; background: string }>> = {
@@ -63,7 +66,7 @@ const fontFamilies: Record<StickerFont, string> = {
   bold: 'Impact, "Arial Black", "Microsoft YaHei", sans-serif',
 };
 
-const paperTitle = '趣味文字贴纸';
+const paperTitle = computed(() => t('home.categories.sticker.title'));
 const activeSize = computed(() => sizeOptions[stickerSize.value]);
 const stickersPerPage = computed(() => activeSize.value.columns * activeSize.value.rows);
 
@@ -136,76 +139,76 @@ const textY = (lineCount: number, index: number) => {
 };
 
 const printPaper = () => {
-  printElement('sticker-printable-paper', paperTitle, { pagebreak: true });
+  printElement('sticker-printable-paper', paperTitle.value, { pagebreak: true });
 };
 
 const downloadPDF = () => {
   const element = document.getElementById('sticker-printable-paper');
   if (!element) return;
-  void savePdfFromElement(element, `${paperTitle}.pdf`, { pagebreak: true });
+  void savePdfFromElement(element, `${paperTitle.value}.pdf`, { pagebreak: true });
 };
 </script>
 
 <template>
   <div class="sticker-container">
-    <a-card class="settings-panel no-print" :bordered="false" title="生成设置">
+    <a-card class="settings-panel no-print" :bordered="false" :title="t('common.settings')">
       <a-form layout="vertical">
-        <a-form-item label="贴纸文字">
+        <a-form-item :label="t('generatorSettings.stickerText')">
           <a-textarea
             v-model:value="stickerText"
             :rows="8"
             :maxlength="720"
-            placeholder="每行一个贴纸，也可以用逗号分隔"
+            :placeholder="t('generatorSettings.stickerTextPlaceholder')"
             show-count
           />
-          <div class="form-hint">当前生成 {{ rawItems.length }} 个贴纸，最多 72 个</div>
+          <div class="form-hint">{{ t('generatorSettings.stickerCount', { count: rawItems.length }) }}</div>
         </a-form-item>
 
-        <a-form-item label="贴纸尺寸">
+        <a-form-item :label="t('generatorSettings.stickerSize')">
           <a-select v-model:value="stickerSize">
-            <a-select-option value="large">大贴纸 2 x 4</a-select-option>
-            <a-select-option value="medium">中贴纸 3 x 5</a-select-option>
-            <a-select-option value="small">小贴纸 4 x 6</a-select-option>
+            <a-select-option value="large">{{ t('options.largeSticker') }}</a-select-option>
+            <a-select-option value="medium">{{ t('options.mediumSticker') }}</a-select-option>
+            <a-select-option value="small">{{ t('options.smallSticker') }}</a-select-option>
           </a-select>
         </a-form-item>
 
-        <a-form-item label="底板形状">
+        <a-form-item :label="t('generatorSettings.stickerShape')">
           <a-radio-group v-model:value="stickerShape" button-style="solid">
-            <a-radio-button value="rounded">圆角</a-radio-button>
-            <a-radio-button value="circle">圆形</a-radio-button>
-            <a-radio-button value="cloud">云朵</a-radio-button>
-            <a-radio-button value="none">无</a-radio-button>
+            <a-radio-button value="rounded">{{ t('options.rounded') }}</a-radio-button>
+            <a-radio-button value="circle">{{ t('options.circle') }}</a-radio-button>
+            <a-radio-button value="cloud">{{ t('options.cloud') }}</a-radio-button>
+            <a-radio-button value="none">{{ t('options.none') }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
 
-        <a-form-item label="字体风格">
+        <a-form-item :label="t('generatorSettings.stickerFont')">
           <a-select v-model:value="stickerFont">
-            <a-select-option value="rounded">圆润卡通</a-select-option>
-            <a-select-option value="hand">手写可爱</a-select-option>
-            <a-select-option value="bold">粗体醒目</a-select-option>
+            <a-select-option value="rounded">{{ t('options.roundedFont') }}</a-select-option>
+            <a-select-option value="hand">{{ t('options.handFont') }}</a-select-option>
+            <a-select-option value="bold">{{ t('options.boldFont') }}</a-select-option>
           </a-select>
         </a-form-item>
 
-        <a-form-item label="配色">
+        <a-form-item :label="t('generatorSettings.palette')">
           <a-select v-model:value="stickerPalette">
-            <a-select-option value="candy">糖果彩色</a-select-option>
-            <a-select-option value="sunny">阳光暖色</a-select-option>
-            <a-select-option value="ocean">海洋蓝绿</a-select-option>
-            <a-select-option value="garden">花园绿色</a-select-option>
+            <a-select-option value="candy">{{ t('options.candy') }}</a-select-option>
+            <a-select-option value="sunny">{{ t('options.sunny') }}</a-select-option>
+            <a-select-option value="ocean">{{ t('options.ocean') }}</a-select-option>
+            <a-select-option value="garden">{{ t('options.garden') }}</a-select-option>
           </a-select>
         </a-form-item>
 
-        <a-form-item label="白色描边粗细">
+        <a-form-item :label="t('generatorSettings.strokeWidth')">
           <a-slider v-model:value="strokeWidth" :min="4" :max="16" />
         </a-form-item>
 
-        <a-form-item label="打印辅助">
+        <a-form-item :label="t('generatorSettings.printAssist')">
           <div class="switch-row">
-            <span>裁剪线</span>
+            <span>{{ t('generatorSettings.cutLine') }}</span>
             <a-switch v-model:checked="showCutLine" />
           </div>
           <div class="switch-row">
-            <span>小装饰</span>
+            <span>{{ t('generatorSettings.decorations') }}</span>
             <a-switch v-model:checked="showDecorations" />
           </div>
         </a-form-item>
@@ -214,11 +217,11 @@ const downloadPDF = () => {
         <div class="action-buttons">
           <a-button type="primary" block size="large" @click="printPaper">
             <template #icon><PrinterOutlined /></template>
-            直接打印
+            {{ t('common.print') }}
           </a-button>
           <a-button block size="large" style="margin-top: 16px" @click="downloadPDF">
             <template #icon><DownloadOutlined /></template>
-            下载 PDF
+            {{ t('common.downloadPdf') }}
           </a-button>
         </div>
       </a-form>
@@ -234,7 +237,7 @@ const downloadPDF = () => {
         >
           <div class="paper-heading">
             <h2>{{ paperTitle }}</h2>
-            <span>{{ sizeOptions[stickerSize].label }}</span>
+            <span>{{ t(sizeOptions[stickerSize].labelKey) }}</span>
           </div>
 
           <div class="sticker-grid" :style="gridStyle">

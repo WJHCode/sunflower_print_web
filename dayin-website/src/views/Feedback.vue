@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import CusdisComments from '@/components/CusdisComments.vue';
 import { MessageOutlined, BulbOutlined, BugOutlined } from '@ant-design/icons-vue';
+import { useI18n } from '@/i18n';
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -8,25 +11,25 @@ import { MessageOutlined, BulbOutlined, BugOutlined } from '@ant-design/icons-vu
     <div class="feedback-header-card">
       <div class="header-title-row">
         <span class="header-icon"><MessageOutlined /></span>
-        <h2>留言与建议</h2>
+        <h2>{{ t('feedback.title') }}</h2>
       </div>
       <p class="intro-text">
-        向日葵打印致力于为家长和老师提供纯净、简单、好打印的练习纸生成工具。如果您在使用过程中遇到任何问题，或者有想要增加的模板、好玩的想法，欢迎在下方给我们留言！
+        {{ t('feedback.intro') }}
       </p>
       
       <div class="features-grid">
         <div class="feature-item">
           <span class="item-icon bulb"><BulbOutlined /></span>
           <div class="item-text">
-            <h3>新模板提案</h3>
-            <p>告诉我们您需要的数学练习、拼音描红或创意笔记格式。</p>
+            <h3>{{ t('feedback.templateTitle') }}</h3>
+            <p>{{ t('feedback.templateText') }}</p>
           </div>
         </div>
         <div class="feature-item">
           <span class="item-icon bug"><BugOutlined /></span>
           <div class="item-text">
-            <h3>缺陷反馈</h3>
-            <p>遇到排版错乱、PDF 无法下载或计算题公式错误？请随时指出。</p>
+            <h3>{{ t('feedback.bugTitle') }}</h3>
+            <p>{{ t('feedback.bugText') }}</p>
           </div>
         </div>
       </div>
@@ -34,8 +37,8 @@ import { MessageOutlined, BulbOutlined, BugOutlined } from '@ant-design/icons-vu
 
     <!-- Cusdis 评论组件 -->
     <div class="comments-section-card">
-      <div class="write-comment-title">发表留言</div>
-      <CusdisComments page-id="feedback" page-title="意见与建议反馈" />
+      <div class="write-comment-title">{{ t('feedback.writeComment') }}</div>
+      <CusdisComments page-id="feedback" :page-title="t('feedback.pageTitle')" />
     </div>
   </div>
 </template>

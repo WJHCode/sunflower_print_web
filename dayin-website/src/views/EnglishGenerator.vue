@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue';
 import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
 import { printElement, savePdfFromElement } from '../utils/print';
+import { useI18n } from '@/i18n';
+
+const { t } = useI18n();
 
 type EnglishPaperType =
   | 'english-paper'
@@ -51,15 +54,15 @@ const phoneticHints: Record<string, string> = {
   school: '/skuːl/'
 };
 
-const paperTitles: Record<EnglishPaperType, string> = {
-  'english-paper': '英语作业纸',
-  'month-words': '英语单词练习-月份',
-  'word-tracing': '英文单词描红字帖（通用）',
-  'paragraph-tracing': '英文段落描红字帖（通用）',
-  'alphabet-tracing': '26个英文字母描红字帖'
+const paperTitleKeys: Record<EnglishPaperType, string> = {
+  'english-paper': 'options.englishPaper',
+  'month-words': 'options.monthWords',
+  'word-tracing': 'options.wordTracing',
+  'paragraph-tracing': 'options.paragraphTracing',
+  'alphabet-tracing': 'options.alphabetTracing'
 };
 
-const paperTitle = computed(() => paperTitles[paperType.value]);
+const paperTitle = computed(() => t(paperTitleKeys[paperType.value]));
 const isEnglishPaper = computed(() => paperType.value === 'english-paper');
 const isMonthWords = computed(() => paperType.value === 'month-words');
 const isWordTracing = computed(() => paperType.value === 'word-tracing');
@@ -116,61 +119,61 @@ const downloadPDF = () => {
 
 <template>
   <div class="english-container">
-    <a-card class="settings-panel no-print" :bordered="false" title="生成设置">
+    <a-card class="settings-panel no-print" :bordered="false" :title="t('common.settings')">
       <a-form layout="vertical">
-        <a-form-item label="题型">
+        <a-form-item :label="t('generatorSettings.type')">
           <a-select v-model:value="paperType">
-            <a-select-option value="english-paper">英语作业纸</a-select-option>
-            <a-select-option value="month-words">英语单词练习-月份</a-select-option>
-            <a-select-option value="word-tracing">英文单词描红字帖（通用）</a-select-option>
-            <a-select-option value="paragraph-tracing">英文段落描红字帖（通用）</a-select-option>
-            <a-select-option value="alphabet-tracing">26个英文字母描红字帖</a-select-option>
+            <a-select-option value="english-paper">{{ t('options.englishPaper') }}</a-select-option>
+            <a-select-option value="month-words">{{ t('options.monthWords') }}</a-select-option>
+            <a-select-option value="word-tracing">{{ t('options.wordTracing') }}</a-select-option>
+            <a-select-option value="paragraph-tracing">{{ t('options.paragraphTracing') }}</a-select-option>
+            <a-select-option value="alphabet-tracing">{{ t('options.alphabetTracing') }}</a-select-option>
           </a-select>
         </a-form-item>
 
-        <a-form-item v-if="isWordTracing" label="练习单词">
+        <a-form-item v-if="isWordTracing" :label="t('generatorSettings.practiceWords')">
           <a-textarea
             v-model:value="wordText"
             :rows="7"
             :maxlength="240"
-            placeholder="最多 10 个英文单词，可用换行、空格或逗号分隔"
+            :placeholder="t('generatorSettings.wordPlaceholder')"
           />
-          <div class="form-hint">当前生成 {{ customWords.length }} / 10 个单词</div>
+          <div class="form-hint">{{ t('generatorSettings.currentWords', { count: customWords.length }) }}</div>
         </a-form-item>
 
-        <a-form-item v-if="isParagraphTracing" label="练习段落">
+        <a-form-item v-if="isParagraphTracing" :label="t('generatorSettings.practiceParagraph')">
           <a-input
             v-model:value="paragraphTitle"
             :maxlength="80"
-            placeholder="标题"
+            :placeholder="t('generatorSettings.paragraphTitlePlaceholder')"
             style="margin-bottom: 8px"
           />
           <a-input
             v-model:value="paragraphSubtitle"
             :maxlength="100"
-            placeholder="副标题"
+            :placeholder="t('generatorSettings.paragraphSubtitlePlaceholder')"
             style="margin-bottom: 8px"
           />
           <a-textarea
             v-model:value="paragraphText"
             :rows="8"
             :maxlength="720"
-            placeholder="输入一段英文短文"
+            :placeholder="t('generatorSettings.paragraphPlaceholder')"
           />
         </a-form-item>
 
-        <a-form-item label="纸张">
-          <a-tag color="blue">A4 纵向</a-tag>
+        <a-form-item :label="t('common.paper')">
+          <a-tag color="blue">{{ t('common.a4Portrait') }}</a-tag>
         </a-form-item>
         <a-divider />
         <div class="action-buttons">
           <a-button type="primary" block size="large" @click="printPaper">
             <template #icon><PrinterOutlined /></template>
-            直接打印
+            {{ t('common.print') }}
           </a-button>
           <a-button block size="large" style="margin-top: 16px" @click="downloadPDF">
             <template #icon><DownloadOutlined /></template>
-            下载 PDF
+            {{ t('common.downloadPdf') }}
           </a-button>
         </div>
       </a-form>
@@ -182,9 +185,9 @@ const downloadPDF = () => {
           <div v-if="isEnglishPaper" class="paper-header">
             <h2>{{ paperTitle }}</h2>
             <div class="paper-info">
-              <span>姓名：__________</span>
-              <span>日期：__________</span>
-              <span>用时：__________</span>
+              <span>{{ t('common.name') }}</span>
+              <span>{{ t('common.date') }}</span>
+              <span>{{ t('common.time') }}</span>
             </div>
           </div>
 
@@ -285,7 +288,7 @@ const downloadPDF = () => {
               </div>
             </div>
           </div>
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          <div class="paper-footer">{{ t('common.footer') }}</div>
         </div>
       </div>
     </div>

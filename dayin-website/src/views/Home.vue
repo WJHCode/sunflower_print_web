@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   CalculatorOutlined,
@@ -14,75 +15,72 @@ import {
   HighlightOutlined
 } from '@ant-design/icons-vue';
 import BrandMark from '../components/BrandMark.vue';
+import LanguageSwitch from '../components/LanguageSwitch.vue';
 import MusicNoteIcon from '../components/MusicNoteIcon.vue';
 import heroImage from '../assets/home-study-desk.png';
+import { useI18n } from '@/i18n';
 
 const router = useRouter();
+const { t, tm } = useI18n();
 
-const categories = [
+const categoryMeta = [
   {
-    title: '数学练习题',
-    description: '口算、单位换算、人民币兑换和分解思路练习。',
+    key: 'math',
     path: '/generator/math',
     icon: CalculatorOutlined,
     tone: 'green'
   },
   {
-    title: '语文作业纸',
-    description: '田字格、拼音格、作文纸、笔顺、偏旁和笔画练习。',
+    key: 'chinese',
     path: '/generator/chinese',
     icon: ReadOutlined,
     tone: 'red'
   },
   {
-    title: '英语练习题',
-    description: '四线三格、月份单词和英文描红字帖。',
+    key: 'english',
     path: '/generator/english',
     icon: EditOutlined,
     tone: 'blue'
   },
   {
-    title: '笔记模板',
-    description: '周餐计划、待办清单、康奈尔笔记和周计划模板。',
+    key: 'note',
     path: '/generator/note',
     icon: FileTextOutlined,
     tone: 'yellow'
   },
   {
-    title: '儿童简笔画',
-    description: '描红临摹、填色大图、多图卡片等多功能简笔画模板。',
+    key: 'drawing',
     path: '/generator/drawing',
     icon: PictureOutlined,
     tone: 'purple'
   },
   {
-    title: '趣味文字贴纸',
-    description: '输入中文、拼音或字母，生成带白色描边的卡通贴纸。',
+    key: 'sticker',
     path: '/generator/sticker',
     icon: HighlightOutlined,
     tone: 'pink'
   },
   {
-    title: '空白与经典乐谱',
-    description: '支持五线谱、简谱、吉他/尤克里里谱自定义打印，包含经典曲目渲染。',
+    key: 'music',
     path: '/generator/music',
     icon: MusicNoteIcon,
     tone: 'orange'
   }
 ];
 
-const strengths = [
-  'A4 打印排版',
-  '可直接下载 PDF',
-  '适合日常巩固',
-  '题量和格式可调'
-];
+const categories = computed(() => categoryMeta.map((category) => ({
+  ...category,
+  title: t(`home.categories.${category.key}.title`),
+  description: t(`home.categories.${category.key}.description`),
+})));
 
-const steps = [
-  { title: '选择练习', text: '按学科进入生成器。', icon: FileDoneOutlined },
-  { title: '调整格式', text: '设置题型、题量、答案显示。', icon: ClockCircleOutlined },
-  { title: '打印使用', text: '下载 PDF 或直接打印。', icon: PrinterOutlined }
-];
+const strengths = computed(() => tm<string[]>('home.strengths'));
+
+const stepIcons = [FileDoneOutlined, ClockCircleOutlined, PrinterOutlined];
+const steps = computed(() => tm<Array<{ title: string; text: string }>>('home.steps').map((step, index) => ({
+  ...step,
+  icon: stepIcons[index],
+})));
 </script>
 
 <template>
@@ -92,25 +90,28 @@ const steps = [
       <header class="home-nav">
         <button class="brand" type="button" @click="router.push('/')">
           <span class="brand-mark"><BrandMark /></span>
-          <span>向日葵打印</span>
+          <span>{{ t('common.brand') }}</span>
         </button>
-        <nav class="nav-links" aria-label="主要导航">
-          <a-button type="text" @click="router.push('/generator/math')">数学</a-button>
-          <a-button type="text" @click="router.push('/generator/chinese')">语文</a-button>
-          <a-button type="text" @click="router.push('/generator/english')">英语</a-button>
-          <a-button type="text" @click="router.push('/generator/note')">笔记</a-button>
-          <a-button type="text" @click="router.push('/generator/drawing')">绘画</a-button>
-          <a-button type="text" @click="router.push('/generator/sticker')">贴纸</a-button>
-          <a-button type="text" @click="router.push('/generator/music')">乐谱</a-button>
-          <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">留言</a-button>
-        </nav>
+        <div class="nav-actions">
+          <nav class="nav-links" :aria-label="t('nav.main')">
+            <a-button type="text" @click="router.push('/generator/math')">{{ t('nav.mathShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/chinese')">{{ t('nav.chineseShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/english')">{{ t('nav.englishShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/note')">{{ t('nav.noteShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/drawing')">{{ t('nav.drawingShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/sticker')">{{ t('nav.stickerShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/music')">{{ t('nav.musicShort') }}</a-button>
+            <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">{{ t('nav.feedbackShort') }}</a-button>
+          </nav>
+          <LanguageSwitch />
+        </div>
       </header>
 
       <div class="hero-content">
-        <p class="eyebrow">Printable practice sheets</p>
-        <h1>向日葵打印</h1>
+        <p class="eyebrow">{{ t('home.eyebrow') }}</p>
+        <h1>{{ t('common.brand') }}</h1>
         <p class="hero-copy">
-          给每天的练习留一张安静、清楚、好打印的纸。快速生成小学阶段常用的数学、语文、英语练习模板。
+          {{ t('home.copy') }}
         </p>
         <div class="user-social-proof">
           <div class="avatar-stack">
@@ -119,18 +120,18 @@ const steps = [
             <span class="avatar avatar-3"></span>
           </div>
           <div class="proof-text">
-            <span>已服务 <strong class="accent-text">8,000+</strong> 位用户</span>
+            <span>{{ t('home.proofServed') }} <strong class="accent-text">8,000+</strong> {{ t('home.proofUsers') }}</span>
             <span class="divider">|</span>
             <span class="star-rating">★★★★★</span>
-            <span>深得用户好评！</span>
+            <span>{{ t('home.proofPraise') }}</span>
           </div>
         </div>
         <div class="hero-actions">
           <a-button type="primary" size="large" @click="router.push('/generator/math')">
-            开始生成
+            {{ t('home.start') }}
             <template #icon><RightOutlined /></template>
           </a-button>
-          <a-button size="large" ghost @click="router.push('/generator/chinese')">看看作业纸</a-button>
+          <a-button size="large" ghost @click="router.push('/generator/chinese')">{{ t('home.preview') }}</a-button>
         </div>
         <ul class="strength-list">
           <li v-for="item in strengths" :key="item">
@@ -143,8 +144,8 @@ const steps = [
 
     <section class="category-section" aria-label="练习入口">
       <div class="section-heading">
-        <p>常用入口</p>
-        <h2>把练习纸准备好，剩下的交给孩子慢慢写</h2>
+        <p>{{ t('home.sectionLabel') }}</p>
+        <h2>{{ t('home.sectionTitle') }}</h2>
       </div>
       <div class="category-grid">
         <button
@@ -173,7 +174,7 @@ const steps = [
       </div>
     </section>
 
-    <footer class="home-footer">© 2026 向日葵学习平台. 保留所有权利.</footer>
+    <footer class="home-footer">{{ t('home.footer') }}</footer>
   </main>
 </template>
 
@@ -236,6 +237,12 @@ const steps = [
 .nav-links {
   display: flex;
   gap: 4px;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .hero-content {
@@ -553,6 +560,10 @@ const steps = [
 
   .nav-links {
     display: none;
+  }
+
+  .nav-actions {
+    gap: 0;
   }
 
   .hero-section {

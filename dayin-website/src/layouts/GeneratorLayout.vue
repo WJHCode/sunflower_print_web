@@ -12,10 +12,13 @@ import {
   HighlightOutlined
 } from '@ant-design/icons-vue';
 import BrandMark from '../components/BrandMark.vue';
+import LanguageSwitch from '../components/LanguageSwitch.vue';
 import MusicNoteIcon from '../components/MusicNoteIcon.vue';
+import { useI18n } from '@/i18n';
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 
 const isScrollableLayout = computed(() => route.path.includes('/feedback'));
 
@@ -131,12 +134,13 @@ onUnmounted(() => {
     <a-layout-header class="header">
       <button class="logo" type="button" @click="router.push('/')">
         <span class="logo-mark"><BrandMark /></span>
-        <span>向日葵打印</span>
+        <span>{{ t('common.brand') }}</span>
       </button>
       <div class="actions">
+        <LanguageSwitch />
         <a-button class="home-button" shape="round" @click="router.push('/')">
           <template #icon><HomeOutlined /></template>
-          返回首页
+          {{ t('common.home') }}
         </a-button>
       </div>
     </a-layout-header>
@@ -152,35 +156,35 @@ onUnmounted(() => {
         >
           <a-menu-item key="math">
             <template #icon><CalculatorOutlined /></template>
-            数学练习题
+            {{ t('nav.math') }}
           </a-menu-item>
           <a-menu-item key="chinese">
             <template #icon><ReadOutlined /></template>
-            语文练习题
+            {{ t('nav.chinese') }}
           </a-menu-item>
           <a-menu-item key="english">
             <template #icon><FormatPainterOutlined /></template>
-            英语练习题
+            {{ t('nav.english') }}
           </a-menu-item>
           <a-menu-item key="note">
             <template #icon><FileTextOutlined /></template>
-            笔记模板
+            {{ t('nav.note') }}
           </a-menu-item>
           <a-menu-item key="drawing">
             <template #icon><PictureOutlined /></template>
-            儿童简笔画
+            {{ t('nav.drawing') }}
           </a-menu-item>
           <a-menu-item key="sticker">
             <template #icon><HighlightOutlined /></template>
-            趣味贴纸
+            {{ t('nav.sticker') }}
           </a-menu-item>
           <a-menu-item key="music">
             <template #icon><MusicNoteIcon /></template>
-            乐谱打印
+            {{ t('nav.music') }}
           </a-menu-item>
           <a-menu-item key="feedback" class="feedback-menu-item">
             <template #icon><MessageOutlined /></template>
-            提个意见
+            {{ t('nav.feedback') }}
           </a-menu-item>
         </a-menu>
         <div v-if="showIndicator" class="scroll-indicator-wrapper">
@@ -236,6 +240,7 @@ onUnmounted(() => {
 .actions {
   display: flex;
   align-items: center;
+  gap: 12px;
 }
 .home-button {
   color: #2f7d46;
@@ -303,11 +308,21 @@ onUnmounted(() => {
     min-height: 58px;
     padding: 10px 14px;
     line-height: 1.2;
+    gap: 10px;
   }
 
   .logo {
     min-width: 0;
     font-size: 16px;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .logo > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .logo-mark {
@@ -318,8 +333,18 @@ onUnmounted(() => {
 
   .home-button {
     height: 32px;
-    padding-inline: 11px;
+    width: 34px;
+    padding-inline: 0;
     font-size: 13px;
+  }
+
+  .home-button :deep(span:not(.anticon)) {
+    display: none;
+  }
+
+  .actions {
+    flex: 0 0 auto;
+    gap: 8px;
   }
 
   .generator-layout > :deep(.ant-layout) {

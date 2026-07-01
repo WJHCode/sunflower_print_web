@@ -6,6 +6,9 @@ import {
   CheckOutlined
 } from '@ant-design/icons-vue';
 import { printElement, savePdfFromElement } from '../utils/print';
+import { useI18n } from '@/i18n';
+
+const { t } = useI18n();
 
 interface DrawingPath {
   d: string;
@@ -726,37 +729,37 @@ const downloadPDF = () => {
 <template>
   <div class="generator-container">
     <!-- Settings Panel -->
-    <a-card class="settings-panel no-print" :bordered="false" title="生成设置">
+    <a-card class="settings-panel no-print" :bordered="false" :title="t('common.settings')">
       <a-form layout="vertical" :model="formState">
-        <a-form-item label="主标题">
-          <a-input v-model:value="formState.title" placeholder="儿童简笔画描红&填色" />
+        <a-form-item :label="t('common.mainTitle')">
+          <a-input v-model:value="formState.title" :placeholder="t('home.categories.drawing.title')" />
         </a-form-item>
 
-        <a-form-item label="页面排版">
+        <a-form-item :label="t('generatorSettings.layout')">
           <a-select v-model:value="formState.layout">
-            <a-select-option value="single">单图填色 (大图)</a-select-option>
-            <a-select-option value="combo">描红临摹 (对比卡)</a-select-option>
-            <a-select-option value="grid-4">四合一卡片 (2x2 网格)</a-select-option>
-            <a-select-option value="grid-6">六合一卡片 (2x3 网格)</a-select-option>
+            <a-select-option value="single">{{ t('options.single') }}</a-select-option>
+            <a-select-option value="combo">{{ t('options.combo') }}</a-select-option>
+            <a-select-option value="grid-4">{{ t('options.grid4') }}</a-select-option>
+            <a-select-option value="grid-6">{{ t('options.grid6') }}</a-select-option>
           </a-select>
         </a-form-item>
 
-        <a-form-item label="色彩模式">
+        <a-form-item :label="t('generatorSettings.colorMode')">
           <a-radio-group v-model:value="formState.colorMode" option-type="button" button-style="solid">
-            <a-radio-button :value="false">黑白线稿</a-radio-button>
-            <a-radio-button :value="true">彩色漫画</a-radio-button>
+            <a-radio-button :value="false">{{ t('options.blackWhite') }}</a-radio-button>
+            <a-radio-button :value="true">{{ t('options.colorComic') }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
 
-        <a-form-item label="描线类型">
+        <a-form-item :label="t('generatorSettings.outlineStyle')">
           <a-radio-group v-model:value="formState.outlineStyle" option-type="button" button-style="solid">
-            <a-radio-button value="solid">实线</a-radio-button>
-            <a-radio-button value="trace">虚线</a-radio-button>
-            <a-radio-button value="grey">灰线</a-radio-button>
+            <a-radio-button value="solid">{{ t('options.solid') }}</a-radio-button>
+            <a-radio-button value="trace">{{ t('options.trace') }}</a-radio-button>
+            <a-radio-button value="grey">{{ t('options.grey') }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
 
-        <a-form-item label="描线粗细">
+        <a-form-item :label="t('generatorSettings.outlineWidth')">
           <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
             <a-slider 
               v-model:value="formState.strokeWidth" 
@@ -775,39 +778,39 @@ const downloadPDF = () => {
           </div>
         </a-form-item>
 
-        <a-form-item label="辅助格线">
+        <a-form-item :label="t('generatorSettings.guideLines')">
           <a-radio-group v-model:value="formState.guideLines" option-type="button" button-style="solid">
-            <a-radio-button value="none">无</a-radio-button>
-            <a-radio-button value="cross">十字</a-radio-button>
-            <a-radio-button value="grid">九宫格</a-radio-button>
-            <a-radio-button value="dot">点阵</a-radio-button>
+            <a-radio-button value="none">{{ t('options.none') }}</a-radio-button>
+            <a-radio-button value="cross">{{ t('options.cross') }}</a-radio-button>
+            <a-radio-button value="grid">{{ t('options.grid') }}</a-radio-button>
+            <a-radio-button value="dot">{{ t('options.dots') }}</a-radio-button>
           </a-radio-group>
         </a-form-item>
 
-        <a-form-item label="其他选项">
+        <a-form-item :label="t('generatorSettings.otherOptions')">
           <div style="display: flex; flex-direction: column; gap: 8px;">
-            <a-checkbox v-model:checked="formState.showLabel">显示名称和拼音</a-checkbox>
-            <a-checkbox v-model:checked="formState.showGridBackground">显示背景纸张底纹</a-checkbox>
+            <a-checkbox v-model:checked="formState.showLabel">{{ t('generatorSettings.showNamePinyin') }}</a-checkbox>
+            <a-checkbox v-model:checked="formState.showGridBackground">{{ t('generatorSettings.showGridBackground') }}</a-checkbox>
           </div>
         </a-form-item>
 
         <!-- Presets for selection -->
         <a-divider style="margin: 12px 0;" />
         <div class="selection-header">
-          <span>选择画作 (已选 {{ formState.selectedIds.length }} 个)</span>
+          <span>{{ t('generatorSettings.selectedDrawings', { count: formState.selectedIds.length }) }}</span>
           <div class="preset-buttons" v-if="formState.layout === 'grid-4' || formState.layout === 'grid-6'">
-            <a-button size="small" type="text" @click="applyPreset('magic')">魔法</a-button>
-            <a-button size="small" type="text" @click="applyPreset('boy')">男孩</a-button>
-            <a-button size="small" type="text" @click="applyPreset('girl')">女孩</a-button>
-            <a-button size="small" type="text" @click="applyPreset('animal')">动物</a-button>
-            <a-button size="small" type="text" @click="applyPreset('clear')">清空</a-button>
+            <a-button size="small" type="text" @click="applyPreset('magic')">{{ t('options.magic') }}</a-button>
+            <a-button size="small" type="text" @click="applyPreset('boy')">{{ t('options.boy') }}</a-button>
+            <a-button size="small" type="text" @click="applyPreset('girl')">{{ t('options.girl') }}</a-button>
+            <a-button size="small" type="text" @click="applyPreset('animal')">{{ t('options.animal') }}</a-button>
+            <a-button size="small" type="text" @click="applyPreset('clear')">{{ t('options.clear') }}</a-button>
           </div>
         </div>
 
         <div class="drawings-selector-box">
           <!-- Magic Fairy Tales -->
           <div class="category-group">
-            <span class="group-title">魔法童话类 (小精灵、蘑菇屋、发光萌宠)</span>
+            <span class="group-title">{{ t('generatorSettings.magicGroup') }}</span>
             <div class="thumbnails-grid">
               <button 
                 v-for="item in magicDrawings" 
@@ -844,7 +847,7 @@ const downloadPDF = () => {
 
           <!-- Boys -->
           <div class="category-group">
-            <span class="group-title">男孩类 (男生、载具、机械)</span>
+            <span class="group-title">{{ t('generatorSettings.boyGroup') }}</span>
             <div class="thumbnails-grid">
               <button 
                 v-for="item in boyDrawings" 
@@ -881,7 +884,7 @@ const downloadPDF = () => {
 
           <!-- Girls -->
           <div class="category-group">
-            <span class="group-title">女孩类 (公主、可爱、自然)</span>
+            <span class="group-title">{{ t('generatorSettings.girlGroup') }}</span>
             <div class="thumbnails-grid">
               <button 
                 v-for="item in girlDrawings" 
@@ -918,7 +921,7 @@ const downloadPDF = () => {
 
           <!-- Animals -->
           <div class="category-group">
-            <span class="group-title">动物类 (可爱陆空萌宠)</span>
+            <span class="group-title">{{ t('generatorSettings.animalGroup') }}</span>
             <div class="thumbnails-grid">
               <button 
                 v-for="item in animalDrawings" 
@@ -958,11 +961,11 @@ const downloadPDF = () => {
         <div class="action-buttons">
           <a-button type="primary" block size="large" @click="printPaper">
             <template #icon><PrinterOutlined /></template>
-            直接打印
+            {{ t('common.print') }}
           </a-button>
           <a-button block size="large" style="margin-top: 12px" @click="downloadPDF">
             <template #icon><DownloadOutlined /></template>
-            下载 PDF
+            {{ t('common.downloadPdf') }}
           </a-button>
         </div>
       </a-form>

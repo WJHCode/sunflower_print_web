@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from '@/i18n';
 
 interface Props {
   pageId?: string;
@@ -13,6 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const route = useRoute();
+const { language, t } = useI18n();
 const containerRef = ref<HTMLDivElement | null>(null);
 
 // Environment variables with fallback to Cusdis documentation demo App ID
@@ -28,8 +30,40 @@ let bodyObserver: MutationObserver | null = null;
 
 const updatePageMeta = () => {
   resolvedPageId.value = props.pageId || route.path;
-  resolvedPageTitle.value = props.pageTitle || document.title || '向日葵打印';
+  resolvedPageTitle.value = props.pageTitle || document.title || t('common.brand');
   resolvedPageUrl.value = window.location.href;
+};
+
+const updateCusdisLocale = () => {
+  (window as any).CUSDIS_LOCALE = language.value === 'zh'
+    ? {
+      powered_by: '评论由 Cusdis 提供',
+      post_comment: '发送',
+      loading: '加载中',
+      email: '电子邮箱 (可选)',
+      nickname: '昵称 (必填)',
+      reply_placeholder: '回复内容…',
+      reply_btn: '回复',
+      sending: '发送中…',
+      mod_badge: '管理员',
+      content_is_required: '内容不能为空',
+      nickname_is_required: '昵称不能为空',
+      comment_has_been_sent: '评论已发送，管理员审核通过后会展示'
+    }
+    : {
+      powered_by: 'Comments by Cusdis',
+      post_comment: 'Send',
+      loading: 'Loading',
+      email: 'Email (optional)',
+      nickname: 'Nickname (required)',
+      reply_placeholder: 'Write a reply...',
+      reply_btn: 'Reply',
+      sending: 'Sending...',
+      mod_badge: 'Admin',
+      content_is_required: 'Content is required',
+      nickname_is_required: 'Nickname is required',
+      comment_has_been_sent: 'Comment sent. It will appear after moderation.'
+    };
 };
 
 // Directly sync iframe height by inspecting its DOM (bulletproof for same-origin srcdoc iframe)
@@ -96,21 +130,7 @@ const handleMessage = (e: MessageEvent) => {
 
 const loadCusdisScript = () => {
   return new Promise<void>((resolve) => {
-    // Define custom localized text with simplified descriptions directly
-    (window as any).CUSDIS_LOCALE = {
-      powered_by: '评论由 Cusdis 提供',
-      post_comment: '发送',
-      loading: '加载中',
-      email: '电子邮箱 (可选)',
-      nickname: '昵称 (必填)',
-      reply_placeholder: '回复内容…',
-      reply_btn: '回复',
-      sending: '发送中…',
-      mod_badge: '管理员',
-      content_is_required: '内容不能为空',
-      nickname_is_required: '昵称不能为空',
-      comment_has_been_sent: '评论已发送，管理员审核通过后会展示'
-    };
+    updateCusdisLocale();
 
     // Prevent initial automatic render to avoid race conditions and double-rendering the singleton iframe
     (window as any).CUSDIS_PREVENT_INITIAL_RENDER = true;
@@ -184,8 +204,9 @@ onUnmounted(() => {
 
 // Watch route or props to trigger re-rendering for SPA navigation
 watch(
-  () => [route.path, props.pageId],
+  () => [route.path, props.pageId, language.value],
   () => {
+    updateCusdisLocale();
     renderComments();
   }
 );

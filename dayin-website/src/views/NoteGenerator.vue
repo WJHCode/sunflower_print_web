@@ -5,6 +5,9 @@ import {
   PrinterOutlined
 } from '@ant-design/icons-vue';
 import { printElement, savePdfFromElement } from '../utils/print';
+import { useI18n } from '@/i18n';
+
+const { t } = useI18n();
 
 const formState = ref({
   templateType: 'meal-planner' as 'meal-planner' | 'cornell-notes' | 'todo-list' | 'weekly-planner' | 'dot-grid' | 'hex-grid' | 'college-ruled' | 'study-planner',
@@ -221,56 +224,56 @@ const downloadPDF = () => {
 <template>
   <div class="generator-container">
     <!-- Settings Panel -->
-    <a-card class="settings-panel no-print" :bordered="false" title="生成设置">
+    <a-card class="settings-panel no-print" :bordered="false" :title="t('common.settings')">
       <a-form layout="vertical" :model="formState">
-        <a-form-item label="模板类型">
+        <a-form-item :label="t('generatorSettings.templateType')">
           <a-select v-model:value="formState.templateType">
-            <a-select-option value="meal-planner">周餐计划 (Meal Planner)</a-select-option>
-            <a-select-option value="cornell-notes">康奈尔笔记 (Cornell Notes)</a-select-option>
-            <a-select-option value="todo-list">待办清单 (To-Do List)</a-select-option>
-            <a-select-option value="weekly-planner">周计划 (Weekly Planner)</a-select-option>
-            <a-select-option value="dot-grid">点阵笔记 (Dot Grid)</a-select-option>
-            <a-select-option value="hex-grid">六边形网格 (Hex Grid)</a-select-option>
-            <a-select-option value="college-ruled">学院规则 (College Ruled)</a-select-option>
-            <a-select-option value="study-planner">学习计划 (Study Planner)</a-select-option>
+            <a-select-option value="meal-planner">{{ t('options.mealPlanner') }}</a-select-option>
+            <a-select-option value="cornell-notes">{{ t('options.cornellNotes') }}</a-select-option>
+            <a-select-option value="todo-list">{{ t('options.todoList') }}</a-select-option>
+            <a-select-option value="weekly-planner">{{ t('options.weeklyPlanner') }}</a-select-option>
+            <a-select-option value="dot-grid">{{ t('options.dotGrid') }}</a-select-option>
+            <a-select-option value="hex-grid">{{ t('options.hexGrid') }}</a-select-option>
+            <a-select-option value="college-ruled">{{ t('options.collegeRuled') }}</a-select-option>
+            <a-select-option value="study-planner">{{ t('options.studyPlanner') }}</a-select-option>
           </a-select>
         </a-form-item>
 
-        <a-form-item label="配色主题">
+        <a-form-item :label="t('generatorSettings.theme')">
           <a-select v-model:value="formState.theme">
-            <a-select-option value="sage-green">鼠尾草绿 (Sage Green)</a-select-option>
-            <a-select-option value="nordic-blue">北欧深蓝 (Nordic Blue)</a-select-option>
-            <a-select-option value="warm-sand">温暖沙色 (Warm Sand)</a-select-option>
-            <a-select-option value="peach-cream">蜜桃粉乳 (Peach Cream)</a-select-option>
-            <a-select-option value="classic-white">简约黑白 (Classic White)</a-select-option>
+            <a-select-option value="sage-green">{{ t('options.sageGreen') }}</a-select-option>
+            <a-select-option value="nordic-blue">{{ t('options.nordicBlue') }}</a-select-option>
+            <a-select-option value="warm-sand">{{ t('options.warmSand') }}</a-select-option>
+            <a-select-option value="peach-cream">{{ t('options.peachCream') }}</a-select-option>
+            <a-select-option value="classic-white">{{ t('options.classicWhite') }}</a-select-option>
           </a-select>
         </a-form-item>
 
         <!-- Template specific settings: Meal Planner -->
         <template v-if="formState.templateType === 'meal-planner'">
           <a-divider style="margin: 12px 0" />
-          <a-form-item label="标题">
+          <a-form-item :label="t('common.title')">
             <a-input v-model:value="formState.mealTitle" placeholder="Meal Planner" />
           </a-form-item>
-          <a-form-item label="清单标题">
+          <a-form-item :label="t('generatorSettings.shoppingTitle')">
             <a-input v-model:value="formState.shoppingTitle" placeholder="Shopping List" />
           </a-form-item>
-          <a-form-item label="星期语言">
+          <a-form-item :label="t('generatorSettings.dayLanguage')">
             <a-radio-group v-model:value="formState.dayLanguage" option-type="button" button-style="solid">
-              <a-radio-button value="english">英文</a-radio-button>
-              <a-radio-button value="chinese">中文</a-radio-button>
+              <a-radio-button value="english">{{ t('options.english') }}</a-radio-button>
+              <a-radio-button value="chinese">{{ t('options.chinese') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="起始星期">
+          <a-form-item :label="t('generatorSettings.startDay')">
             <a-radio-group v-model:value="formState.startDay" option-type="button" button-style="solid">
-              <a-radio-button value="monday">周一</a-radio-button>
-              <a-radio-button value="sunday">周日</a-radio-button>
+              <a-radio-button value="monday">{{ t('options.monday') }}</a-radio-button>
+              <a-radio-button value="sunday">{{ t('options.sunday') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="餐次分类">
+          <a-form-item :label="t('generatorSettings.mealCategories')">
             <a-input v-model:value="formState.meals" placeholder="Breakfast, Lunch, Dinner" />
           </a-form-item>
-          <a-form-item label="显示周中虚线">
+          <a-form-item :label="t('generatorSettings.showDottedLine')">
             <a-switch v-model:checked="formState.showDottedLine" />
           </a-form-item>
         </template>
@@ -278,18 +281,18 @@ const downloadPDF = () => {
         <!-- Template specific settings: Cornell Notes -->
         <template v-if="formState.templateType === 'cornell-notes'">
           <a-divider style="margin: 12px 0" />
-          <a-form-item label="标题">
+          <a-form-item :label="t('common.title')">
             <a-input v-model:value="formState.cornellTitle" placeholder="NOTES" />
           </a-form-item>
-          <a-form-item label="背景纹理">
+          <a-form-item :label="t('generatorSettings.backgroundPattern')">
             <a-radio-group v-model:value="formState.cornellGrid" option-type="button" button-style="solid">
-              <a-radio-button value="none">空白</a-radio-button>
-              <a-radio-button value="rules">横线</a-radio-button>
-              <a-radio-button value="grid">网格</a-radio-button>
-              <a-radio-button value="dots">点阵</a-radio-button>
+              <a-radio-button value="none">{{ t('options.blank') }}</a-radio-button>
+              <a-radio-button value="rules">{{ t('options.rules') }}</a-radio-button>
+              <a-radio-button value="grid">{{ t('options.grid') }}</a-radio-button>
+              <a-radio-button value="dots">{{ t('options.dots') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="横线/网格间距 (mm)">
+          <a-form-item :label="t('generatorSettings.gridSpacing')">
             <a-input-number v-model:value="formState.cornellSpacing" :min="5" :max="12" style="width: 100%" />
           </a-form-item>
         </template>
@@ -297,16 +300,16 @@ const downloadPDF = () => {
         <!-- Template specific settings: To-Do List -->
         <template v-if="formState.templateType === 'todo-list'">
           <a-divider style="margin: 12px 0" />
-          <a-form-item label="标题">
+          <a-form-item :label="t('common.title')">
             <a-input v-model:value="formState.todoTitle" placeholder="TO-DO LIST" />
           </a-form-item>
-          <a-form-item label="显示核心任务">
+          <a-form-item :label="t('generatorSettings.showPriority')">
             <a-switch v-model:checked="formState.showPriority" />
           </a-form-item>
-          <a-form-item label="显示习惯打卡">
+          <a-form-item :label="t('generatorSettings.showHabits')">
             <a-switch v-model:checked="formState.showHabits" />
           </a-form-item>
-          <a-form-item label="显示随手记">
+          <a-form-item :label="t('generatorSettings.showNotes')">
             <a-switch v-model:checked="formState.showNotes" />
           </a-form-item>
         </template>
@@ -314,10 +317,10 @@ const downloadPDF = () => {
         <!-- Template specific settings: Weekly Planner -->
         <template v-if="formState.templateType === 'weekly-planner'">
           <a-divider style="margin: 12px 0" />
-          <a-form-item label="标题">
+          <a-form-item :label="t('common.title')">
             <a-input v-model:value="formState.weeklyTitle" placeholder="WEEKLY PLANNER" />
           </a-form-item>
-          <a-form-item label="显示本周目标">
+          <a-form-item :label="t('generatorSettings.showWeeklyGoals')">
             <a-switch v-model:checked="formState.weeklyGoals" />
           </a-form-item>
         </template>
@@ -325,30 +328,30 @@ const downloadPDF = () => {
         <!-- Template specific settings: Dot Grid -->
         <template v-if="formState.templateType === 'dot-grid'">
           <a-divider style="margin: 12px 0" />
-          <a-form-item label="纸张背景">
+          <a-form-item :label="t('generatorSettings.paperBackground')">
             <a-radio-group v-model:value="formState.dotPureWhite" option-type="button" button-style="solid">
-              <a-radio-button :value="true">纯白</a-radio-button>
-              <a-radio-button :value="false">主题色</a-radio-button>
+              <a-radio-button :value="true">{{ t('options.pureWhite') }}</a-radio-button>
+              <a-radio-button :value="false">{{ t('options.themeColor') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="圆点颜色">
+          <a-form-item :label="t('generatorSettings.dotColor')">
             <a-radio-group v-model:value="formState.dotColorType" option-type="button" button-style="solid">
-              <a-radio-button value="theme">主题色</a-radio-button>
-              <a-radio-button value="blue">浅蓝</a-radio-button>
-              <a-radio-button value="grey">浅灰</a-radio-button>
-              <a-radio-button value="dark">碳黑</a-radio-button>
+              <a-radio-button value="theme">{{ t('options.themeColor') }}</a-radio-button>
+              <a-radio-button value="blue">{{ t('options.lightBlue') }}</a-radio-button>
+              <a-radio-button value="grey">{{ t('options.lightGrey') }}</a-radio-button>
+              <a-radio-button value="dark">{{ t('options.charcoal') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="显示页眉">
+          <a-form-item :label="t('generatorSettings.showHeader')">
             <a-switch v-model:checked="formState.showDotHeader" />
           </a-form-item>
-          <a-form-item v-if="formState.showDotHeader" label="页眉标题">
+          <a-form-item v-if="formState.showDotHeader" :label="t('generatorSettings.headerTitle')">
             <a-input v-model:value="formState.dotTitle" placeholder="NOTES" />
           </a-form-item>
-          <a-form-item label="点阵间距 (mm)">
+          <a-form-item :label="t('generatorSettings.dotSpacing')">
             <a-input-number v-model:value="formState.dotSpacing" :min="3" :max="15" style="width: 100%" />
           </a-form-item>
-          <a-form-item label="圆点大小 (px)">
+          <a-form-item :label="t('generatorSettings.dotSize')">
             <a-input-number v-model:value="formState.dotSize" :min="0.5" :max="3" :step="0.1" style="width: 100%" />
           </a-form-item>
         </template>
@@ -356,30 +359,30 @@ const downloadPDF = () => {
         <!-- Template specific settings: Hex Grid -->
         <template v-if="formState.templateType === 'hex-grid'">
           <a-divider style="margin: 12px 0" />
-          <a-form-item label="纸张背景">
+          <a-form-item :label="t('generatorSettings.paperBackground')">
             <a-radio-group v-model:value="formState.hexPureWhite" option-type="button" button-style="solid">
-              <a-radio-button :value="true">纯白</a-radio-button>
-              <a-radio-button :value="false">主题色</a-radio-button>
+              <a-radio-button :value="true">{{ t('options.pureWhite') }}</a-radio-button>
+              <a-radio-button :value="false">{{ t('options.themeColor') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="网格颜色">
+          <a-form-item :label="t('generatorSettings.gridColor')">
             <a-radio-group v-model:value="formState.hexColorType" option-type="button" button-style="solid">
-              <a-radio-button value="theme">主题色</a-radio-button>
-              <a-radio-button value="blue">浅蓝</a-radio-button>
-              <a-radio-button value="grey">浅灰</a-radio-button>
-              <a-radio-button value="dark">碳黑</a-radio-button>
+              <a-radio-button value="theme">{{ t('options.themeColor') }}</a-radio-button>
+              <a-radio-button value="blue">{{ t('options.lightBlue') }}</a-radio-button>
+              <a-radio-button value="grey">{{ t('options.lightGrey') }}</a-radio-button>
+              <a-radio-button value="dark">{{ t('options.charcoal') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="显示页眉">
+          <a-form-item :label="t('generatorSettings.showHeader')">
             <a-switch v-model:checked="formState.showHexHeader" />
           </a-form-item>
-          <a-form-item v-if="formState.showHexHeader" label="页眉标题">
+          <a-form-item v-if="formState.showHexHeader" :label="t('generatorSettings.headerTitle')">
             <a-input v-model:value="formState.hexTitle" placeholder="NOTES" />
           </a-form-item>
-          <a-form-item label="网格边长 (mm)">
+          <a-form-item :label="t('generatorSettings.hexSpacing')">
             <a-input-number v-model:value="formState.hexSpacing" :min="3" :max="15" style="width: 100%" />
           </a-form-item>
-          <a-form-item label="线粗细 (px)">
+          <a-form-item :label="t('generatorSettings.lineSize')">
             <a-input-number v-model:value="formState.hexLineSize" :min="0.1" :max="3" :step="0.1" style="width: 100%" />
           </a-form-item>
         </template>
@@ -387,47 +390,47 @@ const downloadPDF = () => {
         <!-- Template specific settings: College Ruled -->
         <template v-if="formState.templateType === 'college-ruled'">
           <a-divider style="margin: 12px 0" />
-          <a-form-item label="纸张背景">
+          <a-form-item :label="t('generatorSettings.paperBackground')">
             <a-radio-group v-model:value="formState.ruledPureWhite" option-type="button" button-style="solid">
-              <a-radio-button :value="true">纯白</a-radio-button>
-              <a-radio-button :value="false">主题色</a-radio-button>
+              <a-radio-button :value="true">{{ t('options.pureWhite') }}</a-radio-button>
+              <a-radio-button :value="false">{{ t('options.themeColor') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="横线颜色">
+          <a-form-item :label="t('generatorSettings.ruledColor')">
             <a-radio-group v-model:value="formState.ruledColorType" option-type="button" button-style="solid">
-              <a-radio-button value="theme">主题色</a-radio-button>
-              <a-radio-button value="blue">浅蓝</a-radio-button>
-              <a-radio-button value="grey">浅灰</a-radio-button>
-              <a-radio-button value="dark">碳黑</a-radio-button>
+              <a-radio-button value="theme">{{ t('options.themeColor') }}</a-radio-button>
+              <a-radio-button value="blue">{{ t('options.lightBlue') }}</a-radio-button>
+              <a-radio-button value="grey">{{ t('options.lightGrey') }}</a-radio-button>
+              <a-radio-button value="dark">{{ t('options.charcoal') }}</a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="横线间距 (mm)">
+          <a-form-item :label="t('generatorSettings.ruledSpacing')">
             <a-input-number v-model:value="formState.ruledSpacing" :min="4" :max="15" :step="0.1" style="width: 100%" />
           </a-form-item>
-          <a-form-item label="横线粗细 (px)">
+          <a-form-item :label="t('generatorSettings.ruledLineSize')">
             <a-input-number v-model:value="formState.ruledLineSize" :min="0.1" :max="3" :step="0.1" style="width: 100%" />
           </a-form-item>
-          <a-form-item label="显示垂直边栏线">
+          <a-form-item :label="t('generatorSettings.showMarginLine')">
             <a-switch v-model:checked="formState.showRuledMarginLine" />
           </a-form-item>
           <template v-if="formState.showRuledMarginLine">
-            <a-form-item label="边栏线位置 (mm)">
+            <a-form-item :label="t('generatorSettings.marginPosition')">
               <a-input-number v-model:value="formState.ruledMarginLeft" :min="15" :max="60" :step="1" style="width: 100%" />
             </a-form-item>
-            <a-form-item label="边栏线颜色">
+            <a-form-item :label="t('generatorSettings.marginColor')">
               <a-radio-group v-model:value="formState.ruledMarginColorType" option-type="button" button-style="solid">
-                <a-radio-button value="red">红色</a-radio-button>
-                <a-radio-button value="theme">主题色</a-radio-button>
-                <a-radio-button value="blue">浅蓝</a-radio-button>
-                <a-radio-button value="grey">浅灰</a-radio-button>
-                <a-radio-button value="dark">碳黑</a-radio-button>
+                <a-radio-button value="red">{{ t('options.red') }}</a-radio-button>
+                <a-radio-button value="theme">{{ t('options.themeColor') }}</a-radio-button>
+                <a-radio-button value="blue">{{ t('options.lightBlue') }}</a-radio-button>
+                <a-radio-button value="grey">{{ t('options.lightGrey') }}</a-radio-button>
+                <a-radio-button value="dark">{{ t('options.charcoal') }}</a-radio-button>
               </a-radio-group>
             </a-form-item>
           </template>
-          <a-form-item label="显示页眉">
+          <a-form-item :label="t('generatorSettings.showHeader')">
             <a-switch v-model:checked="formState.showRuledHeader" />
           </a-form-item>
-          <a-form-item v-if="formState.showRuledHeader" label="页眉标题">
+          <a-form-item v-if="formState.showRuledHeader" :label="t('generatorSettings.headerTitle')">
             <a-input v-model:value="formState.ruledTitle" placeholder="NOTES" />
           </a-form-item>
         </template>
@@ -435,11 +438,11 @@ const downloadPDF = () => {
         <!-- Template specific settings: Study Planner -->
         <template v-if="formState.templateType === 'study-planner'">
           <a-divider style="margin: 12px 0" />
-          <a-form-item label="主标题">
+          <a-form-item :label="t('common.mainTitle')">
             <a-input v-model:value="formState.studyTitle" placeholder="Study Session Planner" />
           </a-form-item>
-          <a-form-item label="准备事项 (每行一条)">
-            <a-textarea v-model:value="formState.studyBeforeStarting" :rows="7" placeholder="例如: Gather study materials" />
+          <a-form-item :label="t('generatorSettings.beforeStarting')">
+            <a-textarea v-model:value="formState.studyBeforeStarting" :rows="7" :placeholder="t('generatorSettings.beforeStartingPlaceholder')" />
           </a-form-item>
         </template>
 
@@ -447,11 +450,11 @@ const downloadPDF = () => {
         <div class="action-buttons">
           <a-button type="primary" block size="large" @click="printPaper">
             <template #icon><PrinterOutlined /></template>
-            直接打印
+            {{ t('common.print') }}
           </a-button>
           <a-button block size="large" style="margin-top: 16px" @click="downloadPDF">
             <template #icon><DownloadOutlined /></template>
-            下载 PDF
+            {{ t('common.downloadPdf') }}
           </a-button>
         </div>
       </a-form>
