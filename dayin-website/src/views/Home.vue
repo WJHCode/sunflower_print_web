@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   CalculatorOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  DownloadOutlined,
   EditOutlined,
   FileDoneOutlined,
   PrinterOutlined,
@@ -22,6 +23,60 @@ import { useI18n } from '@/i18n';
 
 const router = useRouter();
 const { t, tm } = useI18n();
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+}
+
+const deferredInstallPrompt = ref<BeforeInstallPromptEvent | null>(null);
+const isStandalone = ref(false);
+const isMobileViewport = ref(false);
+
+const canShowInstallButton = computed(() => isMobileViewport.value && !isStandalone.value);
+
+const updateInstallDisplayState = () => {
+  if (typeof window === 'undefined') return;
+
+  isMobileViewport.value = window.matchMedia('(max-width: 860px)').matches;
+  isStandalone.value =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+};
+
+const handleBeforeInstallPrompt = (event: Event) => {
+  event.preventDefault();
+  deferredInstallPrompt.value = event as BeforeInstallPromptEvent;
+};
+
+const handleAppInstalled = () => {
+  deferredInstallPrompt.value = null;
+  isStandalone.value = true;
+};
+
+const handleInstallClick = async () => {
+  if (isStandalone.value) return;
+
+  if (deferredInstallPrompt.value) {
+    const installPrompt = deferredInstallPrompt.value;
+    deferredInstallPrompt.value = null;
+    await installPrompt.prompt();
+    await installPrompt.userChoice;
+    updateInstallDisplayState();
+    return;
+  }
+
+  const userAgent = window.navigator.userAgent;
+  const isIos = /iphone|ipad|ipod/i.test(userAgent);
+  const isAndroid = /android/i.test(userAgent);
+  const tip = isIos
+    ? t('home.install.iosTip')
+    : isAndroid
+      ? t('home.install.androidTip')
+      : t('home.install.browserTip');
+
+  window.alert(tip);
+};
 
 const categoryMeta = [
   {
@@ -81,6 +136,19 @@ const steps = computed(() => tm<Array<{ title: string; text: string }>>('home.st
   ...step,
   icon: stepIcons[index],
 })));
+
+onMounted(() => {
+  updateInstallDisplayState();
+  window.addEventListener('resize', updateInstallDisplayState);
+  window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  window.addEventListener('appinstalled', handleAppInstalled);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateInstallDisplayState);
+  window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  window.removeEventListener('appinstalled', handleAppInstalled);
+});
 </script>
 
 <template>
@@ -104,6 +172,17 @@ const steps = computed(() => tm<Array<{ title: string; text: string }>>('home.st
             <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">{{ t('nav.feedbackShort') }}</a-button>
           </nav>
           <LanguageSwitch />
+          <a-button
+            v-if="canShowInstallButton"
+            class="mobile-install-btn"
+            type="primary"
+            size="small"
+            :aria-label="t('home.install.label')"
+            @click="handleInstallClick"
+          >
+            <template #icon><DownloadOutlined /></template>
+            {{ t('home.install.label') }}
+          </a-button>
         </div>
       </header>
 
@@ -553,8 +632,13 @@ const steps = computed(() => tm<Array<{ title: string; text: string }>>('home.st
   background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
+.mobile-install-btn {
+  display: none;
+}
+
 @media (max-width: 860px) {
   .home-nav {
+    height: 64px;
     padding: 0 20px;
   }
 
@@ -563,7 +647,26 @@ const steps = computed(() => tm<Array<{ title: string; text: string }>>('home.st
   }
 
   .nav-actions {
-    gap: 0;
+    gap: 10px;
+  }
+
+  .mobile-install-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 8px;
+    background: #2f7d46;
+    border-color: #2f7d46;
+    box-shadow: 0 8px 18px rgba(47, 125, 70, 0.18);
+    font-weight: 700;
+  }
+
+  .mobile-install-btn:hover,
+  .mobile-install-btn:focus {
+    background: #235d34 !important;
+    border-color: #235d34 !important;
   }
 
   .hero-section {
