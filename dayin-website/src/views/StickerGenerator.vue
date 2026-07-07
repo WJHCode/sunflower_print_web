@@ -62,7 +62,7 @@ const paletteColors: Record<StickerPalette, Array<{ color: string; accent: strin
 
 const fontFamilies: Record<StickerFont, string> = {
   rounded: '"Arial Rounded MT Bold", "Trebuchet MS", "Microsoft YaHei", sans-serif',
-  hand: '"Comic Sans MS", "Edu NSW ACT Foundation", "Kaiti", "STKaiti", cursive',
+  hand: '"Comic Sans MS", "Andika", "Kaiti", "STKaiti", cursive',
   bold: 'Impact, "Arial Black", "Microsoft YaHei", sans-serif',
 };
 

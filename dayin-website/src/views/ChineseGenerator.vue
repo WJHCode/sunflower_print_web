@@ -1048,7 +1048,7 @@ const downloadPDF = () => {
   position: relative;
   z-index: 1;
   text-align: center;
-  font-family: "Edu NSW ACT Foundation", "Kaiti", "STKaiti", serif;
+  font-family: "Andika", "Kaiti", "STKaiti", serif;
   font-size: 28px;
   line-height: 1;
   color: #333;
@@ -1179,7 +1179,7 @@ const downloadPDF = () => {
   position: relative;
   z-index: 1;
   text-align: center;
-  font-family: "Edu NSW ACT Foundation", "Kaiti", "STKaiti", serif;
+  font-family: "Andika", "Kaiti", "STKaiti", serif;
   font-size: 16px;
   line-height: 1;
   color: #333;
