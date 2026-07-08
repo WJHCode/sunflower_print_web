@@ -4,7 +4,7 @@ import {
   DownloadOutlined, 
   PrinterOutlined
 } from '@ant-design/icons-vue';
-import { printElement, savePdfFromElement } from '../utils/print';
+import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { useI18n } from '@/i18n';
 
 const { t } = useI18n();
@@ -218,6 +218,12 @@ const downloadPDF = () => {
   const element = document.getElementById('printable-paper');
   if (!element) return;
   void savePdfFromElement(element, `${paperTitle.value}.pdf`);
+};
+
+const downloadImage = () => {
+  const element = document.getElementById('printable-paper');
+  if (!element) return;
+  void saveImageFromElement(element, `${paperTitle.value}.png`);
 };
 </script>
 
@@ -452,10 +458,16 @@ const downloadPDF = () => {
             <template #icon><PrinterOutlined /></template>
             {{ t('common.print') }}
           </a-button>
-          <a-button block size="large" style="margin-top: 16px" @click="downloadPDF">
-            <template #icon><DownloadOutlined /></template>
-            {{ t('common.downloadPdf') }}
-          </a-button>
+          <div class="export-buttons">
+            <a-button block size="large" @click="downloadPDF">
+              <template #icon><DownloadOutlined /></template>
+              {{ t('common.downloadPdf') }}
+            </a-button>
+            <a-button block size="large" @click="downloadImage">
+              <template #icon><DownloadOutlined /></template>
+              {{ t('common.downloadImage') }}
+            </a-button>
+          </div>
         </div>
       </a-form>
     </a-card>

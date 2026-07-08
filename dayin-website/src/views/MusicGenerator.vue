@@ -4,7 +4,7 @@ import {
   DownloadOutlined, 
   PrinterOutlined
 } from '@ant-design/icons-vue';
-import { printElement, savePdfFromElement } from '../utils/print';
+import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { useI18n } from '@/i18n';
 
 const { t } = useI18n();
@@ -1447,6 +1447,13 @@ const handleDownloadPdf = () => {
   savePdfFromElement(element, `${sheetTitle.value || '乐谱'}.pdf`, { paperHeightMm: 296.6 });
 };
 
+const handleDownloadImage = () => {
+  const element = document.getElementById('music-print-container');
+  if (!element) return;
+
+  saveImageFromElement(element, `${sheetTitle.value || '乐谱'}.png`, { paperHeightMm: 296.6 });
+};
+
 const handlePrint = () => {
   printElement('music-print-container', sheetTitle.value, { paperHeightMm: 297 });
 };
@@ -1588,10 +1595,16 @@ const handlePrint = () => {
             <template #icon><PrinterOutlined /></template>
             {{ t('common.print') }}
           </a-button>
-          <a-button block size="large" style="margin-top: 12px" @click="handleDownloadPdf">
-            <template #icon><DownloadOutlined /></template>
-            {{ t('common.downloadPdf') }}
-          </a-button>
+          <div class="export-buttons">
+            <a-button block size="large" @click="handleDownloadPdf">
+              <template #icon><DownloadOutlined /></template>
+              {{ t('common.downloadPdf') }}
+            </a-button>
+            <a-button block size="large" @click="handleDownloadImage">
+              <template #icon><DownloadOutlined /></template>
+              {{ t('common.downloadImage') }}
+            </a-button>
+          </div>
         </div>
       </a-form>
     </a-card>

@@ -75,6 +75,42 @@ body {
   .chinese-container,
   .sticker-container,
   .music-generator-view
+) .export-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
+) .export-buttons .ant-btn {
+  min-width: 0;
+  padding-inline: 8px;
+}
+
+@media (max-width: 420px) {
+  :where(
+    .generator-container,
+    .english-container,
+    .chinese-container,
+    .sticker-container,
+    .music-generator-view
+  ) .export-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+:where(
+  .generator-container,
+  .english-container,
+  .chinese-container,
+  .sticker-container,
+  .music-generator-view
 ) .settings-panel .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
   background: var(--print-theme-color) !important;
   border-color: var(--print-theme-color) !important;

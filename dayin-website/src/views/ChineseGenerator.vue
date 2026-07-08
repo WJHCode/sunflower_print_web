@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
-import { printElement, savePdfFromElement } from '../utils/print';
+import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { pinyin } from 'pinyin-pro';
 import { GRADE_1_2_WORDS } from '../utils/wordBank';
 import { message } from 'ant-design-vue';
@@ -402,6 +402,12 @@ const downloadPDF = () => {
   if (!element) return;
   void savePdfFromElement(element, `${paperTitle.value}.pdf`, { pagebreak: true });
 };
+
+const downloadImage = () => {
+  const element = document.getElementById('chinese-printable-paper');
+  if (!element) return;
+  void saveImageFromElement(element, `${paperTitle.value}.png`, { pagebreak: true });
+};
 </script>
 
 <template>
@@ -490,10 +496,16 @@ const downloadPDF = () => {
             <template #icon><PrinterOutlined /></template>
             {{ t('common.print') }}
           </a-button>
-          <a-button block size="large" style="margin-top: 16px" @click="downloadPDF">
-            <template #icon><DownloadOutlined /></template>
-            {{ t('common.downloadPdf') }}
-          </a-button>
+          <div class="export-buttons">
+            <a-button block size="large" @click="downloadPDF">
+              <template #icon><DownloadOutlined /></template>
+              {{ t('common.downloadPdf') }}
+            </a-button>
+            <a-button block size="large" @click="downloadImage">
+              <template #icon><DownloadOutlined /></template>
+              {{ t('common.downloadImage') }}
+            </a-button>
+          </div>
         </div>
       </a-form>
     </a-card>

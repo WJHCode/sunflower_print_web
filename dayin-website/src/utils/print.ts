@@ -3,10 +3,208 @@ const loadHtml2pdf = async () => {
   return module.default;
 };
 
+const loadHtml2canvas = async () => {
+  const module = await import('html2canvas');
+  return module.default;
+};
+
 type PdfExportOptions = {
   paperHeightMm?: number;
   pagebreak?: boolean;
 };
+
+const isMobileDevice = () => (
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+  window.innerWidth <= 768 ||
+  'ontouchstart' in window
+);
+
+const normalizePngFilename = (filename: string) => (filename.endsWith('.png') ? filename : `${filename}.png`);
+
+const downloadBlob = (blob: Blob, filename: string) => {
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+};
+
+const canvasToPngBlob = (canvas: HTMLCanvasElement) => new Promise<Blob>((resolve, reject) => {
+  canvas.toBlob((blob) => {
+    if (blob) {
+      resolve(blob);
+      return;
+    }
+    reject(new Error('Failed to create PNG image.'));
+  }, 'image/png');
+});
+
+type FileShareData = ShareData & {
+  files: File[];
+};
+
+type FileShareNavigator = Navigator & {
+  canShare?: (data: FileShareData) => boolean;
+  share?: (data: FileShareData) => Promise<void>;
+};
+
+type ShareImageResult = {
+  shared: boolean;
+  message?: string;
+};
+
+const shareImageFile = async (blob: Blob, filename: string) => {
+  if (!isMobileDevice()) {
+    return { shared: false, message: '当前设备不是移动端。' };
+  }
+
+  if (!window.isSecureContext) {
+    return { shared: false, message: '当前页面不是 HTTPS 安全环境，iOS 不允许网页调用系统分享。' };
+  }
+
+  const shareNavigator = navigator as FileShareNavigator;
+  if (!shareNavigator.share) {
+    return { shared: false, message: '当前浏览器不支持系统分享，请用 Safari 打开后再试。' };
+  }
+
+  const imageFile = new File([blob], filename, { type: 'image/png' });
+  const shareData: FileShareData = {
+    files: [imageFile],
+    title: filename,
+  };
+
+  if (shareNavigator.canShare) {
+    const canShareFiles = shareNavigator.canShare({ files: [imageFile] });
+    if (!canShareFiles) {
+      return { shared: false, message: '当前浏览器支持分享，但不支持分享图片文件。请长按图片保存，或用 Safari 打开。' };
+    }
+  }
+
+  try {
+    await shareNavigator.share(shareData);
+    return { shared: true };
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      return { shared: false, message: '已取消系统分享。' };
+    }
+    console.warn('Failed to share PNG image.', error);
+    return { shared: false, message: '系统分享面板打开失败，请长按图片保存，或换 Safari/系统浏览器打开后再试。' };
+  }
+};
+
+const showMobileImageSaveDialog = (blob: Blob, filename: string) => new Promise<void>((resolve) => {
+  const previewUrl = URL.createObjectURL(blob);
+  const overlay = document.createElement('div');
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.zIndex = '9999';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.padding = '18px';
+  overlay.style.background = 'rgba(20, 27, 24, 0.58)';
+
+  const panel = document.createElement('div');
+  panel.style.width = 'min(420px, 100%)';
+  panel.style.maxHeight = '92vh';
+  panel.style.overflow = 'auto';
+  panel.style.background = '#fff';
+  panel.style.borderRadius = '16px';
+  panel.style.padding = '16px';
+  panel.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.24)';
+  panel.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+  const title = document.createElement('h3');
+  title.textContent = '图片已生成';
+  title.style.margin = '0 0 8px';
+  title.style.fontSize = '18px';
+  title.style.color = '#1f2a24';
+
+  const tip = document.createElement('p');
+  tip.textContent = '点击“保存到相册”后，在系统分享面板里选择“存储图像”或“保存图片”。';
+  tip.style.margin = '0 0 12px';
+  tip.style.fontSize = '14px';
+  tip.style.lineHeight = '1.5';
+  tip.style.color = '#52635a';
+
+  const preview = document.createElement('img');
+  preview.src = previewUrl;
+  preview.alt = filename;
+  preview.style.display = 'block';
+  preview.style.width = '100%';
+  preview.style.maxHeight = '48vh';
+  preview.style.objectFit = 'contain';
+  preview.style.background = '#f6f4ef';
+  preview.style.border = '1px solid #e7e1d4';
+  preview.style.borderRadius = '10px';
+
+  const status = document.createElement('p');
+  status.style.minHeight = '20px';
+  status.style.margin = '10px 0 0';
+  status.style.fontSize = '13px';
+  status.style.lineHeight = '1.45';
+  status.style.color = '#6b7a70';
+
+  const actions = document.createElement('div');
+  actions.style.display = 'grid';
+  actions.style.gridTemplateColumns = '1fr 1fr';
+  actions.style.gap = '10px';
+  actions.style.marginTop = '14px';
+
+  const saveButton = document.createElement('button');
+  saveButton.type = 'button';
+  saveButton.textContent = '保存到相册';
+  saveButton.style.height = '42px';
+  saveButton.style.border = '0';
+  saveButton.style.borderRadius = '8px';
+  saveButton.style.background = '#2f7d46';
+  saveButton.style.color = '#fff';
+  saveButton.style.fontSize = '15px';
+  saveButton.style.fontWeight = '600';
+
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.textContent = '关闭';
+  closeButton.style.height = '42px';
+  closeButton.style.border = '1px solid #d8ddd8';
+  closeButton.style.borderRadius = '8px';
+  closeButton.style.background = '#fff';
+  closeButton.style.color = '#2b3b31';
+  closeButton.style.fontSize = '15px';
+
+  const cleanup = () => {
+    overlay.remove();
+    URL.revokeObjectURL(previewUrl);
+    resolve();
+  };
+
+  saveButton.addEventListener('click', async () => {
+    saveButton.disabled = true;
+    status.textContent = '正在打开系统分享面板...';
+    const result: ShareImageResult = await shareImageFile(blob, filename);
+    if (result.shared) {
+      cleanup();
+      return;
+    }
+    saveButton.disabled = false;
+    status.textContent = result.message ?? '如果没有弹出分享面板，请长按上方图片保存，或换 Safari/系统浏览器打开后再试。';
+  });
+
+  closeButton.addEventListener('click', cleanup);
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) cleanup();
+  });
+
+  actions.append(saveButton, closeButton);
+  panel.append(title, tip, preview, status, actions);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+});
 
 export const printElement = (elementId: string, title = '向日葵打印', options: PdfExportOptions = {}) => {
   const element = document.getElementById(elementId);
@@ -14,11 +212,7 @@ export const printElement = (elementId: string, title = '向日葵打印', optio
 
   const paperHeightMm = options.paperHeightMm ?? 296;
 
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                   (window.innerWidth <= 768) ||
-                   ('ontouchstart' in window);
-
-  if (isMobile) {
+  if (isMobileDevice()) {
     printPdfPreview(element, title, {
       ...options,
       paperHeightMm: Math.min(options.paperHeightMm ?? 296.6, 296.6),
@@ -218,6 +412,39 @@ export const savePdfFromElement = async (
       .set(getPdfOptions(filename, options.pagebreak))
       .from(sourceElement)
       .save();
+  } finally {
+    cleanup();
+  }
+};
+
+export const saveImageFromElement = async (
+  element: HTMLElement,
+  filename: string,
+  options: PdfExportOptions = {},
+) => {
+  const { sourceElement, cleanup } = createPdfSource(element, options.paperHeightMm);
+  const pngFilename = normalizePngFilename(filename);
+
+  try {
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+    const html2canvas = await loadHtml2canvas();
+    const canvas = await html2canvas(sourceElement, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#fff',
+      windowWidth: 1200,
+      windowHeight: Math.max(sourceElement.scrollHeight, 1600),
+      scrollX: 0,
+      scrollY: 0,
+    });
+    const imageBlob = await canvasToPngBlob(canvas);
+    if (isMobileDevice()) {
+      await showMobileImageSaveDialog(imageBlob, pngFilename);
+    } else {
+      downloadBlob(imageBlob, pngFilename);
+    }
   } finally {
     cleanup();
   }
