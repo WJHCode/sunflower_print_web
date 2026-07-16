@@ -42,5 +42,17 @@ jobs:
       # 5. 执行上传命令（将 dist 目录下的文件复制到 OSS 根目录）
       - name: Copy files to OSS
         working-directory: dayin-website
+        env:
+          OSS_BUCKET: ${{ secrets.ALIYUN_OSS_BUCKET }}
         run: |
-          ossutil cp -r dist/ oss://${{ secrets.ALIYUN_OSS_BUCKET }}/ --force
+          # 清理 Secret 中可能误填的 oss://、路径和空白字符
+          BUCKET="$(printf '%s' "$OSS_BUCKET" | tr -d '[:space:]')"
+          BUCKET="${BUCKET#oss://}"
+          BUCKET="${BUCKET%%/*}"
+
+          if [[ ! "$BUCKET" =~ ^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$ ]]; then
+            echo "ALIYUN_OSS_BUCKET 格式无效：必须是 3-63 位小写字母、数字或连字符，且不能以连字符开头或结尾。"
+            exit 1
+          fi
+
+          ossutil cp -r dist/ "oss://${BUCKET}/" --force
