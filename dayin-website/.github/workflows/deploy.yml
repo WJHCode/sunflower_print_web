@@ -1,0 +1,42 @@
+name: Deploy Vue to Aliyun OSS
+
+# 触发条件：当 main 分支收到 push（或 PR 合并）时触发
+on:
+  push:
+    branches:
+      - master # 如果你的主分支叫 master，记得改成 master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 拉取仓库代码
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. 设置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # 根据你项目的 Node 版本调整，建议用 LTS 版本
+          cache: 'npm'       # 开启 npm 缓存，加快后续构建速度
+
+      # 3. 安装依赖并打包
+      - name: Install Dependencies & Build
+        run: |
+          npm install
+          npm run build
+
+      # 4. 部署到阿里云 OSS
+      - name: Upload to Aliyun OSS
+        uses: manyuanrong/setup-ossutil@v2.0.0 # 使用 ossutil 工具的 Action
+        with:
+          endpoint: ${{ secrets.ALIYUN_OSS_ENDPOINT }}
+          access-key-id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+
+      # 5. 执行上传命令（将 dist 目录下的文件复制到 OSS 根目录）
+      - name: Copy files to OSS
+        run: |
+          ossutil cp -r dist/ oss://${{ secrets.ALIYUN_OSS_BUCKET }}/ --force
