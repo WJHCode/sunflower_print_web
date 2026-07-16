@@ -32,7 +32,7 @@ jobs:
 
       # 4. 部署到阿里云 OSS
       - name: Upload to Aliyun OSS
-        uses: manyuanrong/setup-ossutil@v2.0.0
+        uses: manyuanrong/setup-ossutil@v2.0
         with:
           endpoint: ${{ secrets.ALIYUN_OSS_ENDPOINT }}
           access-key-id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
@@ -43,4 +43,3 @@ jobs:
         working-directory: dayin-website
         run: |
           ossutil cp -r dist/ oss://${{ secrets.ALIYUN_OSS_BUCKET }}/ --force
-
