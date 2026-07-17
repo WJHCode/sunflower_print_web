@@ -92,6 +92,12 @@ const categoryMeta = [
     tone: 'red'
   },
   {
+    key: 'pinyinReading',
+    path: '/generator/pinyin-reading',
+    icon: ReadOutlined,
+    tone: 'orange'
+  },
+  {
     key: 'english',
     path: '/generator/english',
     icon: EditOutlined,
@@ -164,6 +170,7 @@ onBeforeUnmount(() => {
           <nav class="nav-links" :aria-label="t('nav.main')">
             <a-button type="text" @click="router.push('/generator/math')">{{ t('nav.mathShort') }}</a-button>
             <a-button type="text" @click="router.push('/generator/chinese')">{{ t('nav.chineseShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/pinyin-reading')">{{ t('nav.pinyinShort') }}</a-button>
             <a-button type="text" @click="router.push('/generator/english')">{{ t('nav.englishShort') }}</a-button>
             <a-button type="text" @click="router.push('/generator/note')">{{ t('nav.noteShort') }}</a-button>
             <a-button type="text" @click="router.push('/generator/drawing')">{{ t('nav.drawingShort') }}</a-button>

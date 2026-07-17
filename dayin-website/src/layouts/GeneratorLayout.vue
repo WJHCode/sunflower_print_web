@@ -166,7 +166,7 @@ onUnmounted(() => {
           </a-menu-item>
           <a-menu-item key="pinyin-reading">
             <template #icon><ReadOutlined /></template>
-            拼音拼读
+            {{ t('nav.pinyinReading') }}
           </a-menu-item>
           <a-menu-item key="english">
             <template #icon><FormatPainterOutlined /></template>

@@ -40,6 +40,7 @@ export const messages = {
       main: '主要导航',
       mathShort: '数学',
       chineseShort: '语文',
+      pinyinShort: '拼音',
       englishShort: '英语',
       noteShort: '笔记',
       drawingShort: '绘画',
@@ -48,6 +49,7 @@ export const messages = {
       feedbackShort: '留言',
       math: '数学练习题',
       chinese: '语文练习题',
+      pinyinReading: '拼音练习题',
       english: '英语练习题',
       note: '笔记模板',
       drawing: '儿童简笔画',
@@ -81,6 +83,10 @@ export const messages = {
         chinese: {
           title: '语文作业纸',
           description: '田字格、拼音格、作文纸、笔顺、偏旁和笔画练习。',
+        },
+        pinyinReading: {
+          title: '拼音练习题',
+          description: '声母、韵母和介母拼读练习，按声调整理词组。',
         },
         english: {
           title: '英语练习题',
@@ -407,6 +413,7 @@ export const messages = {
       main: 'Main navigation',
       mathShort: 'Math',
       chineseShort: 'Chinese',
+      pinyinShort: 'Pinyin',
       englishShort: 'English',
       noteShort: 'Notes',
       drawingShort: 'Drawing',
@@ -415,6 +422,7 @@ export const messages = {
       feedbackShort: 'Feedback',
       math: 'Math Practice',
       chinese: 'Chinese Practice',
+      pinyinReading: 'Pinyin Practice',
       english: 'English Practice',
       note: 'Note Templates',
       drawing: 'Kids Drawing',
@@ -448,6 +456,10 @@ export const messages = {
         chinese: {
           title: 'Chinese Worksheets',
           description: 'Character grids, pinyin grids, essay paper, stroke order, radicals, and strokes.',
+        },
+        pinyinReading: {
+          title: 'Pinyin Practice',
+          description: 'Practice initials, finals, medials, and tone-sorted word groups.',
         },
         english: {
           title: 'English Practice',

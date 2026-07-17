@@ -144,7 +144,7 @@ const downloadImage = () => { const el = document.getElementById('pinyin-reading
 
 <template>
   <div class="pinyin-reading-container">
-    <a-card class="settings-panel no-print" :bordered="false" title="拼音拼读设置">
+    <a-card class="settings-panel no-print" :bordered="false" title="拼音练习题设置">
       <a-form layout="vertical">
         <a-form-item label="练习标题"><a-input v-model:value="formState.title" /></a-form-item>
           <a-form-item label="拼音组成">
