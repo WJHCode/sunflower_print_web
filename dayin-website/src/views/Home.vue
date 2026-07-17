@@ -287,9 +287,13 @@ onBeforeUnmount(() => {
   inset: 0;
   background: linear-gradient(90deg, rgba(250, 247, 235, 0.95) 0%, rgba(250, 247, 235, 0.78) 39%, rgba(250, 247, 235, 0.08) 72%);
   z-index: -1;
+  /* Decorative only: never intercept clicks/touches in Safari's hit testing. */
+  pointer-events: none;
 }
 
 .home-nav {
+  position: relative;
+  z-index: 1;
   height: 72px;
   display: flex;
   align-items: center;
@@ -332,6 +336,8 @@ onBeforeUnmount(() => {
 }
 
 .hero-content {
+  position: relative;
+  z-index: 1;
   width: min(620px, calc(100% - 48px));
   margin: auto 0;
   padding: 24px clamp(24px, 5vw, 72px) 10vh;
