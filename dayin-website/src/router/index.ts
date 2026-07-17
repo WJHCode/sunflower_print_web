@@ -5,6 +5,7 @@ const HomeView = () => import('@/views/Home.vue')
 const GeneratorLayout = () => import('@/layouts/GeneratorLayout.vue')
 const GeneratorView = () => import('@/views/Generator.vue')
 const ChineseGeneratorView = () => import('@/views/ChineseGenerator.vue')
+const PinyinReadingGeneratorView = () => import('@/views/PinyinReadingGenerator.vue')
 const EnglishGeneratorView = () => import('@/views/EnglishGenerator.vue')
 const NoteGeneratorView = () => import('@/views/NoteGenerator.vue')
 const DrawingGeneratorView = () => import('@/views/DrawingGenerator.vue')
@@ -37,6 +38,11 @@ const routes: Array<RouteRecordRaw> = [
         path: 'chinese',
         name: 'ChineseGenerator',
         component: ChineseGeneratorView
+      },
+      {
+        path: 'pinyin-reading',
+        name: 'PinyinReadingGenerator',
+        component: PinyinReadingGeneratorView
       },
       {
         path: 'english',

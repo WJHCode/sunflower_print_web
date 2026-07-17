@@ -25,6 +25,7 @@ const isScrollableLayout = computed(() => route.path.includes('/feedback'));
 const selectedKeys = computed({
   get: () => {
     if (route.path.includes('/chinese')) return ['chinese'];
+    if (route.path.includes('/pinyin-reading')) return ['pinyin-reading'];
     if (route.path.includes('/english')) return ['english'];
     if (route.path.includes('/note')) return ['note'];
     if (route.path.includes('/drawing')) return ['drawing'];
@@ -37,6 +38,7 @@ const selectedKeys = computed({
     const key = keys[0];
     if (key === 'math') router.push('/generator/math');
     if (key === 'chinese') router.push('/generator/chinese');
+    if (key === 'pinyin-reading') router.push('/generator/pinyin-reading');
     if (key === 'english') router.push('/generator/english');
     if (key === 'note') router.push('/generator/note');
     if (key === 'drawing') router.push('/generator/drawing');
@@ -161,6 +163,10 @@ onUnmounted(() => {
           <a-menu-item key="chinese">
             <template #icon><ReadOutlined /></template>
             {{ t('nav.chinese') }}
+          </a-menu-item>
+          <a-menu-item key="pinyin-reading">
+            <template #icon><ReadOutlined /></template>
+            拼音拼读
           </a-menu-item>
           <a-menu-item key="english">
             <template #icon><FormatPainterOutlined /></template>
