@@ -3,14 +3,31 @@ import { computed } from 'vue';
 import enUS from 'ant-design-vue/es/locale/en_US';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
 import { useI18n } from '@/i18n';
+import { isRouteLoading } from '@/router';
 
-const { language } = useI18n();
+const { language, t } = useI18n();
 const antLocale = computed(() => language.value === 'zh' ? zhCN : enUS);
 </script>
 
 <template>
   <a-config-provider :locale="antLocale">
-    <router-view />
+    <div class="app-shell">
+      <div v-if="isRouteLoading" class="route-loading" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        {{ t('common.loading') }}
+      </div>
+      <router-view v-slot="{ Component }">
+        <Suspense>
+          <component :is="Component" />
+          <template #fallback>
+            <div class="route-loading route-loading-fallback" role="status" aria-live="polite">
+              <span class="loading-spinner" aria-hidden="true"></span>
+              {{ t('common.loading') }}
+            </div>
+          </template>
+        </Suspense>
+      </router-view>
+    </div>
   </a-config-provider>
 </template>
 
@@ -22,6 +39,43 @@ body {
   background-color: #f7f5ef;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.app-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.route-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(247, 245, 239, 0.72);
+  color: #2f7d46;
+  font-weight: 700;
+  backdrop-filter: blur(2px);
+}
+
+.route-loading-fallback {
+  position: absolute;
+}
+
+.loading-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(47, 125, 70, 0.24);
+  border-top-color: #2f7d46;
+  border-radius: 50%;
+  animation: loading-spin 0.75s linear infinite;
+}
+
+@keyframes loading-spin {
+  to { transform: rotate(360deg); }
 }
 
 * {

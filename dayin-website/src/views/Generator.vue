@@ -114,11 +114,10 @@ watch(
   }
 );
 
-// Generate problems using the new engines
-const problemList = computed<MathProblem[]>(() => {
-  // Establish dependency on regenerateKey
-  void regenerateKey.value;
-  
+const isGenerating = ref(true);
+let generationTimer: ReturnType<typeof setTimeout> | undefined;
+
+const generateProblemList = (): MathProblem[] => {
   const config = {
     maxNumber: formState.value.maxNumber,
     count: problemCount.value,
@@ -157,7 +156,31 @@ const problemList = computed<MathProblem[]>(() => {
     return generateClockReading(config);
   }
   return [];
-});
+};
+
+const problemList = ref<MathProblem[]>([]);
+const scheduleGeneration = () => {
+  isGenerating.value = true;
+  if (generationTimer) clearTimeout(generationTimer);
+  generationTimer = setTimeout(() => {
+    problemList.value = generateProblemList();
+    isGenerating.value = false;
+  }, 0);
+};
+
+watch(
+  [
+    () => formState.value.type,
+    () => formState.value.maxNumber,
+    () => formState.value.columns,
+    () => formState.value.rows,
+    () => formState.value.moneyExchangeUnitMode,
+    regenerateKey,
+  ],
+  scheduleGeneration,
+  { immediate: true },
+);
+
 const generatedCount = computed(() => problemList.value.length);
 const countLabel = computed(() => {
   if (generatedCount.value === problemCount.value) {
@@ -262,6 +285,10 @@ const downloadImage = () => {
     </a-card>
 
     <div class="preview-panel print-full-width">
+      <div v-if="isGenerating" class="generation-loading" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        {{ t('common.generating') }}
+      </div>
       <div class="paper-container" id="printable-paper">
         <div class="paper-header">
           <h2>{{ paperTitle }}</h2>
@@ -317,6 +344,7 @@ const downloadImage = () => {
   background: #fffdf7;
 }
 .preview-panel {
+  position: relative;
   flex-grow: 1;
   background: #eee8dc;
   border-radius: 8px;
@@ -324,6 +352,20 @@ const downloadImage = () => {
   display: flex;
   justify-content: center;
   padding: 24px;
+}
+
+.generation-loading {
+  position: absolute;
+  inset: 24px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(238, 232, 220, 0.82);
+  color: #2f7d46;
+  font-weight: 700;
+  pointer-events: none;
 }
 .paper-container {
   width: 210mm;

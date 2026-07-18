@@ -60,6 +60,16 @@ const formState = ref({
   radicalChars: '亻冫氵辶艹宀口土木扌忄讠纟钅疒竹雨礻衤女子犭饣月日山石田禾白目足',
   strokeTypeChars: '一,丨,丿,丶,乀,乛,亅,乚,\uD840\uDC0B,\uD840\uDCD1,\uD840\uDD0E,乙,フ',
 });
+const isGenerating = ref(true);
+let previewTimer: ReturnType<typeof setTimeout> | undefined;
+
+const schedulePreviewGeneration = () => {
+  isGenerating.value = true;
+  if (previewTimer) clearTimeout(previewTimer);
+  previewTimer = setTimeout(() => {
+    isGenerating.value = false;
+  }, 0);
+};
 
 const paperTitleKeys: Record<ChinesePaperType, string> = {
   tianzi: 'options.tianzi',
@@ -301,12 +311,17 @@ const getCharStyle = (text?: string) => {
 };
 
 const strokeDataByChar = reactive<Record<string, HanziStrokeData>>({});
+const strokeStepsByChar = new Map<string, string[][]>();
 const strokeSvgViewBox = '0 0 1024 1024';
 const strokeSvgTransform = 'scale(1, -1) translate(0, -900)';
 const getStrokeData = (char: string) => strokeDataByChar[char];
 const getStrokeSteps = (char: string) => {
+  const cachedSteps = strokeStepsByChar.get(char);
+  if (cachedSteps) return cachedSteps;
   const strokes = getStrokeData(char)?.strokes ?? [];
-  return strokes.map((_, index) => strokes.slice(0, index + 1));
+  const steps = strokes.map((_, index) => strokes.slice(0, index + 1));
+  strokeStepsByChar.set(char, steps);
+  return steps;
 };
 const getStrokeCount = (char: string) => getStrokeData(char)?.strokes.length ?? 0;
 const loadStrokeData = async (char: string) => {
@@ -324,8 +339,10 @@ const loadStrokeData = async (char: string) => {
       loading: false,
       error: false,
     };
+    strokeStepsByChar.delete(char);
   } catch {
     strokeDataByChar[char] = { strokes: [], loading: false, error: true };
+    strokeStepsByChar.delete(char);
   }
 };
 
@@ -350,6 +367,8 @@ watch(() => formState.value.type, (newType) => {
     formState.value.pinyinStrokeChars = shuffled.slice(0, 8).join('');
   }
 });
+
+watch(() => formState.value.type, schedulePreviewGeneration, { immediate: true });
 
 const currentWordBankIndex = ref(0);
 const importPages = ref(1);
@@ -511,7 +530,11 @@ const downloadImage = () => {
     </a-card>
 
     <div class="preview-panel print-full-width">
-      <div class="paper-stack" id="chinese-printable-paper">
+      <div v-if="isGenerating" class="generation-loading" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        {{ t('common.generating') }}
+      </div>
+      <div v-else class="paper-stack" id="chinese-printable-paper">
         <div v-if="isTianzi" class="paper-container">
           <div class="paper-header">
             <h2>{{ paperTitle }}</h2>
@@ -883,6 +906,7 @@ const downloadImage = () => {
   overflow-y: auto;
 }
 .preview-panel {
+  position: relative;
   flex-grow: 1;
   background: #f0f2f5;
   border-radius: 8px;
@@ -890,6 +914,19 @@ const downloadImage = () => {
   display: flex;
   justify-content: center;
   padding: 24px;
+}
+.generation-loading {
+  position: absolute;
+  inset: 24px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(240, 242, 245, 0.82);
+  color: #2f7d46;
+  font-weight: 700;
+  pointer-events: none;
 }
 .paper-stack {
   display: grid;

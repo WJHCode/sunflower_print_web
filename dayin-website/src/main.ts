@@ -1,32 +1,26 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import {
-  Button,
-  Card,
-  Checkbox,
-  ConfigProvider,
-  Divider,
-  Form,
-  FormItem,
-  Input,
-  InputNumber,
-  Layout,
+import Button from 'ant-design-vue/es/button'
+import Card from 'ant-design-vue/es/card'
+import Checkbox from 'ant-design-vue/es/checkbox'
+import ConfigProvider from 'ant-design-vue/es/config-provider'
+import Divider from 'ant-design-vue/es/divider'
+import Form, { FormItem } from 'ant-design-vue/es/form'
+import Input from 'ant-design-vue/es/input'
+import InputNumber from 'ant-design-vue/es/input-number'
+import Layout, {
   LayoutContent,
   LayoutHeader,
   LayoutSider,
-  Menu,
-  MenuItem,
-  Radio,
-  RadioButton,
-  RadioGroup,
-  Select,
-  SelectOption,
-  Slider,
-  Switch,
-  Tag,
-  Textarea,
-} from 'ant-design-vue'
+} from 'ant-design-vue/es/layout'
+import Menu, { MenuItem } from 'ant-design-vue/es/menu'
+import Radio, { RadioButton, RadioGroup } from 'ant-design-vue/es/radio'
+import Select, { SelectOption } from 'ant-design-vue/es/select'
+import Slider from 'ant-design-vue/es/slider'
+import Switch from 'ant-design-vue/es/switch'
+import Tag from 'ant-design-vue/es/tag'
+import Textarea from 'ant-design-vue/es/input/TextArea'
 import 'ant-design-vue/dist/reset.css'
 import router from './router'
 import { createPinia } from 'pinia'

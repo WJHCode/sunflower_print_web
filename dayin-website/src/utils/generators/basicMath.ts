@@ -13,6 +13,8 @@ const problemKey = (problem: Pick<MathProblem, 'a' | 'b' | 'c' | 'operator' | 'o
   `${problem.a}-${problem.operator}-${problem.b}-${problem.operator2 ?? ''}-${problem.c ?? ''}`
 );
 
+const randomInt = (max: number) => Math.floor(Math.random() * (max + 1));
+
 export const generateBasicAddition = (config: GeneratorConfig): MathProblem[] => {
   const candidates: Array<{ a: number; b: number }> = [];
   for (let a = 0; a <= config.maxNumber; a++) {
@@ -56,49 +58,43 @@ export const generateBasicSubtraction = (config: GeneratorConfig): MathProblem[]
 };
 
 export const generateTripleAddition = (config: GeneratorConfig): MathProblem[] => {
-  const candidates: Array<{ a: number; b: number; c: number }> = [];
-  for (let a = 0; a <= config.maxNumber; a++) {
-    for (let b = 0; b <= config.maxNumber - a; b++) {
-      for (let c = 0; c <= config.maxNumber - a - b; c++) {
-        candidates.push({ a, b, c });
-      }
-    }
+  const result: MathProblem[] = [];
+  const seen = new Set<string>();
+  while (result.length < config.count) {
+    const a = randomInt(config.maxNumber);
+    const b = randomInt(config.maxNumber - a);
+    const c = randomInt(config.maxNumber - a - b);
+    const key = `${a}-${b}-${c}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push({
+      id: `triple-add-${Date.now()}-${result.length}`,
+      type: 'basic', a, b, c, operator: '+', operator2: '+',
+      answer: a + b + c,
+      expression: `${a} + ${b} + ${c} = ${a + b + c}`
+    });
   }
-
-  return shuffle(candidates).slice(0, config.count).map(({ a, b, c }, index) => ({
-    id: `triple-add-${Date.now()}-${index}`,
-    type: 'basic',
-    a,
-    b,
-    c,
-    operator: '+',
-    operator2: '+',
-    answer: a + b + c,
-    expression: `${a} + ${b} + ${c} = ${a + b + c}`
-  }));
+  return result;
 };
 
 export const generateTripleSubtraction = (config: GeneratorConfig): MathProblem[] => {
-  const candidates: Array<{ a: number; b: number; c: number }> = [];
-  for (let a = 0; a <= config.maxNumber; a++) {
-    for (let b = 0; b <= a; b++) {
-      for (let c = 0; c <= a - b; c++) {
-        candidates.push({ a, b, c });
-      }
-    }
+  const result: MathProblem[] = [];
+  const seen = new Set<string>();
+  while (result.length < config.count) {
+    const a = randomInt(config.maxNumber);
+    const b = randomInt(a);
+    const c = randomInt(a - b);
+    const key = `${a}-${b}-${c}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push({
+      id: `triple-sub-${Date.now()}-${result.length}`,
+      type: 'basic', a, b, c, operator: '-', operator2: '-',
+      answer: a - b - c,
+      expression: `${a} - ${b} - ${c} = ${a - b - c}`
+    });
   }
-
-  return shuffle(candidates).slice(0, config.count).map(({ a, b, c }, index) => ({
-    id: `triple-sub-${Date.now()}-${index}`,
-    type: 'basic',
-    a,
-    b,
-    c,
-    operator: '-',
-    operator2: '-',
-    answer: a - b - c,
-    expression: `${a} - ${b} - ${c} = ${a - b - c}`
-  }));
+  return result;
 };
 
 export const generateTableMultiplication = (config: GeneratorConfig): MathProblem[] => {

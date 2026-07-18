@@ -20,6 +20,7 @@ import LanguageSwitch from '../components/LanguageSwitch.vue';
 import MusicNoteIcon from '../components/MusicNoteIcon.vue';
 import heroImage from '../assets/home-study-desk.png';
 import { useI18n } from '@/i18n';
+import { preloadCommonRoutes } from '@/router';
 
 const router = useRouter();
 const { t, tm } = useI18n();
@@ -148,6 +149,13 @@ onMounted(() => {
   window.addEventListener('resize', updateInstallDisplayState);
   window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   window.addEventListener('appinstalled', handleAppInstalled);
+
+  const preload = () => { void preloadCommonRoutes(); };
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(preload, { timeout: 2000 });
+  } else {
+    globalThis.setTimeout(preload, 1200);
+  }
 });
 
 onBeforeUnmount(() => {

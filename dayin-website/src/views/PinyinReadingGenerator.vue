@@ -70,6 +70,8 @@ const colorSettings = ref<ColorSetting[]>([
 ]);
 const exercises = ref<EditableExercise[]>([]);
 const regenerateKey = ref(0);
+const isGenerating = ref(true);
+let regenerateTimer: ReturnType<typeof setTimeout> | undefined;
 
 const activeColorSettings = computed(() => formState.value.partCount === 2
   ? [colorSettings.value[0], colorSettings.value[2]]
@@ -89,11 +91,16 @@ const shuffle = <T,>(items: T[]) => {
   return result;
 };
 const regenerateExercises = () => {
-  const candidates = practiceLibrary.filter((item) => item.partCount === formState.value.partCount);
-  exercises.value = shuffle(candidates)
-    .slice(0, pageExerciseCount.value)
-    .map((item) => ({ id: `${item.id}-${regenerateKey.value + 1}`, wordsText: item.words.join('\n') }));
-  regenerateKey.value++;
+  isGenerating.value = true;
+  if (regenerateTimer) clearTimeout(regenerateTimer);
+  regenerateTimer = setTimeout(() => {
+    const candidates = practiceLibrary.filter((item) => item.partCount === formState.value.partCount);
+    exercises.value = shuffle(candidates)
+      .slice(0, pageExerciseCount.value)
+      .map((item) => ({ id: `${item.id}-${regenerateKey.value + 1}`, wordsText: item.words.join('\n') }));
+    regenerateKey.value++;
+    isGenerating.value = false;
+  }, 0);
 };
 
 const pinyinParts = (word: string): ReadingRow | null => {
@@ -173,6 +180,10 @@ const downloadImage = () => { const el = document.getElementById('pinyin-reading
     </a-card>
 
     <div class="preview-panel print-full-width">
+      <div v-if="isGenerating" class="generation-loading" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        题目生成中…
+      </div>
       <div id="pinyin-reading-paper" class="pinyin-reading-paper">
         <header class="pinyin-paper-header"><h1>{{ formState.title }}</h1><div class="paper-info"><span>姓名：__________</span><span>班级：__________</span><span>日期：__________</span></div></header>
         <div class="reading-grid" :class="formState.partCount === 2 ? 'two-part-grid' : 'three-part-grid'">
@@ -196,7 +207,8 @@ const downloadImage = () => { const el = document.getElementById('pinyin-reading
 <style scoped>
 .pinyin-reading-container { display: flex; gap: 24px; height: 100%; }
 .settings-panel { width: 320px; flex-shrink: 0; border-radius: 8px; box-shadow: 0 12px 30px rgba(60,54,38,.08); overflow-y: auto; background: #fffdf7; }
-.preview-panel { flex-grow: 1; background: #eee8dc; border-radius: 8px; overflow-y: auto; display: flex; justify-content: center; padding: 24px; }
+.preview-panel { position: relative; flex-grow: 1; background: #eee8dc; border-radius: 8px; overflow-y: auto; display: flex; justify-content: center; padding: 24px; }
+.generation-loading { position: absolute; inset: 24px; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(238,232,220,.82); color: #2f7d46; font-weight: 700; pointer-events: none; }
 .pinyin-reading-paper { position: relative; width: 210mm; height: 296mm; flex: 0 0 auto; padding: 11mm 13mm; background: #fff; box-shadow: 0 18px 44px rgba(60,54,38,.16); font-family: "Andika", "Noto Sans SC", sans-serif; overflow: hidden; }
 .pinyin-paper-header { text-align: center; margin-bottom: 12mm; }
 .pinyin-paper-header h1 { margin: 0 0 5mm; color: #252a30; font: 400 25px/1.2 "Kaiti", "STKaiti", serif; letter-spacing: .08em; }

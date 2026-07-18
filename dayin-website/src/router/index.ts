@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { ref } from 'vue'
+
+export const isRouteLoading = ref(false)
 
 const HomeView = () => import('@/views/Home.vue')
 const GeneratorLayout = () => import('@/layouts/GeneratorLayout.vue')
@@ -82,5 +85,24 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+router.beforeEach(() => {
+  isRouteLoading.value = true
+})
+
+router.afterEach(() => {
+  isRouteLoading.value = false
+})
+
+router.onError(() => {
+  isRouteLoading.value = false
+})
+
+export const preloadCommonRoutes = () => Promise.all([
+  import('@/layouts/GeneratorLayout.vue'),
+  import('@/views/Generator.vue'),
+  import('@/views/ChineseGenerator.vue'),
+  import('@/views/PinyinReadingGenerator.vue'),
+])
 
 export default router
