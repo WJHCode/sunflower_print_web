@@ -144,9 +144,10 @@ const chooseColor = (setting: ColorSetting, color: string) => { setting.color = 
 watch(() => formState.value.partCount, regenerateExercises);
 regenerateExercises();
 
-const printPaper = () => printElement('pinyin-reading-paper', formState.value.title);
-const downloadPDF = () => { const el = document.getElementById('pinyin-reading-paper'); if (el) void savePdfFromElement(el, `${formState.value.title}.pdf`); };
-const downloadImage = () => { const el = document.getElementById('pinyin-reading-paper'); if (el) void saveImageFromElement(el, `${formState.value.title}.png`); };
+const paperExportOptions = { paperHeightMm: 296.6 };
+const printPaper = () => printElement('pinyin-reading-paper', formState.value.title, paperExportOptions);
+const downloadPDF = () => { const el = document.getElementById('pinyin-reading-paper'); if (el) void savePdfFromElement(el, `${formState.value.title}.pdf`, paperExportOptions); };
+const downloadImage = () => { const el = document.getElementById('pinyin-reading-paper'); if (el) void saveImageFromElement(el, `${formState.value.title}.png`, paperExportOptions); };
 </script>
 
 <template>
@@ -184,7 +185,7 @@ const downloadImage = () => { const el = document.getElementById('pinyin-reading
         <span class="loading-spinner" aria-hidden="true"></span>
         题目生成中…
       </div>
-      <div id="pinyin-reading-paper" class="pinyin-reading-paper">
+      <div id="pinyin-reading-paper" class="pinyin-reading-paper paper-container">
         <header class="pinyin-paper-header"><h1>{{ formState.title }}</h1><div class="paper-info"><span>姓名：__________</span><span>班级：__________</span><span>日期：__________</span></div></header>
         <div class="reading-grid" :class="formState.partCount === 2 ? 'two-part-grid' : 'three-part-grid'">
           <section v-for="pair in pairs" :key="`${pair.id}-${regenerateKey}`" class="reading-card">
@@ -209,14 +210,14 @@ const downloadImage = () => { const el = document.getElementById('pinyin-reading
 .settings-panel { width: 320px; flex-shrink: 0; border-radius: 8px; box-shadow: 0 12px 30px rgba(60,54,38,.08); overflow-y: auto; background: #fffdf7; }
 .preview-panel { position: relative; flex-grow: 1; background: #eee8dc; border-radius: 8px; overflow-y: auto; display: flex; justify-content: center; padding: 24px; }
 .generation-loading { position: absolute; inset: 24px; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(238,232,220,.82); color: #2f7d46; font-weight: 700; pointer-events: none; }
-.pinyin-reading-paper { position: relative; width: 210mm; height: 296mm; flex: 0 0 auto; padding: 11mm 13mm; background: #fff; box-shadow: 0 18px 44px rgba(60,54,38,.16); font-family: "Andika", "Noto Sans SC", sans-serif; overflow: hidden; }
-.pinyin-paper-header { text-align: center; margin-bottom: 12mm; }
+.pinyin-reading-paper { position: relative; box-sizing: border-box; display: flex; flex: 0 0 auto; flex-direction: column; width: 210mm; height: 296.6mm; padding: 10mm 9mm 8mm; background: #fff; box-shadow: 0 18px 44px rgba(60,54,38,.16); font-family: "Andika", "Noto Sans SC", sans-serif; overflow: hidden; }
+.pinyin-paper-header { flex: 0 0 auto; text-align: center; margin-bottom: 8mm; }
 .pinyin-paper-header h1 { margin: 0 0 5mm; color: #252a30; font: 400 25px/1.2 "Kaiti", "STKaiti", serif; letter-spacing: .08em; }
 .paper-info { display: flex; justify-content: space-between; color: #555; font: 12px/1.3 sans-serif; }
-.reading-grid { display: grid; gap: 5mm 5mm; }
-.two-part-grid { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); min-height: 210mm; row-gap: 12mm; }
-.three-part-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); min-height: 210mm; row-gap: 12mm; }
-.reading-card { display: flex; flex-direction: column; border: 1.5px solid #dca7a2; border-radius: 15px; padding: 0 4mm 3mm; }
+.reading-grid { display: grid; flex: 1 1 auto; min-height: 0; align-content: space-evenly; column-gap: 5mm; row-gap: 0; }
+.two-part-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, 99mm); }
+.three-part-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, 99mm); }
+.reading-card { display: flex; min-width: 0; flex-direction: column; border: 1.5px solid #dca7a2; border-radius: 15px; padding: 0 4mm 3mm; }
 .reading-card-title { width: 70%; min-width: 38mm; margin: -5mm auto 3mm; padding: 1.5mm 2mm; border: 1.5px solid #dca7a2; border-radius: 18px; background: #fff; text-align: center; font-size: 23px; line-height: 1.2; white-space: nowrap; }
 .segment-divider, .arrow { color: #555; }
 .reading-row { display: flex; align-items: center; justify-content: center; gap: 8mm; min-height: 12mm; font-size: 18px; }
@@ -234,6 +235,7 @@ const downloadImage = () => { const el = document.getElementById('pinyin-reading
 .example-pinyin, .example-word { display: block; overflow: hidden; text-overflow: ellipsis; }
 .example-pinyin { font-size: 9px; line-height: 1.05; }
 .example-word { font-size: 11px; line-height: 1.1; }
+.paper-footer { flex: 0 0 auto; margin-top: 2mm; }
 .syllable-config { padding: 8px 10px 10px; margin-bottom: 10px; border-radius: 8px; background: #f8f7f1; }
 .config-label { margin-bottom: 6px; color: #555; font-size: 13px; }
 .palette-row { display: flex; gap: 8px; margin-top: 8px; }
@@ -246,7 +248,7 @@ const downloadImage = () => { const el = document.getElementById('pinyin-reading
 .action-buttons :deep(.ant-btn-primary) { background: #2f7d46; border-color: #2f7d46; }
 .action-buttons :deep(.ant-btn-primary:hover), .action-buttons :deep(.ant-btn-primary:focus) { background: #235d34; border-color: #235d34; }
 .export-buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
-@media (max-width: 768px) { .pinyin-reading-container { height: auto; flex-direction: column; gap: 12px; } .settings-panel { width: 100%; overflow: visible; } .preview-panel { min-height: 430px; padding: 12px; overflow: hidden; justify-content: center; align-items: flex-start; } .pinyin-reading-paper { --zoom-factor: .43; transform: scale(var(--zoom-factor)); transform-origin: top left; margin-right: calc(-210mm * (1 - var(--zoom-factor))); margin-bottom: calc(-296mm * (1 - var(--zoom-factor))); } }
+@media (max-width: 768px) { .pinyin-reading-container { height: auto; flex-direction: column; gap: 12px; } .settings-panel { width: 100%; overflow: visible; } .preview-panel { min-height: 430px; padding: 12px; overflow: hidden; justify-content: center; align-items: flex-start; } .pinyin-reading-paper { --zoom-factor: .43; transform: scale(var(--zoom-factor)); transform-origin: top left; margin-right: calc(-210mm * (1 - var(--zoom-factor))); margin-bottom: calc(-296.6mm * (1 - var(--zoom-factor))); } }
 @media (min-width: 430px) and (max-width: 768px) { .pinyin-reading-paper { --zoom-factor: .5; } }
 @media print { @page { size: A4 portrait; margin: 0; } .no-print { display: none !important; } .pinyin-reading-container { display: block; } .print-full-width { padding: 0 !important; background: transparent !important; display: block; overflow: visible !important; } .pinyin-reading-paper { transform: none !important; box-shadow: none !important; margin: 0 auto !important; } }
 </style>
