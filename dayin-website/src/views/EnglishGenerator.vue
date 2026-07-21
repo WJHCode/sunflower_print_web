@@ -3,8 +3,10 @@ import { computed, ref } from 'vue';
 import { DownloadOutlined, PrinterOutlined } from '@ant-design/icons-vue';
 import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { useI18n } from '@/i18n';
+import { useExportLoading } from '../composables/useExportLoading';
 
 const { t } = useI18n();
+const { isPdfLoading, isImageLoading, runExport } = useExportLoading();
 
 type EnglishPaperType =
   | 'english-paper'
@@ -110,16 +112,16 @@ const printPaper = () => {
   printElement('english-printable-paper', paperTitle.value, { pagebreak: true });
 };
 
-const downloadPDF = () => {
+const downloadPDF = async () => {
   const element = document.getElementById('english-printable-paper');
   if (!element) return;
-  void savePdfFromElement(element, `${paperTitle.value}.pdf`, { pagebreak: true });
+  await runExport('pdf', () => savePdfFromElement(element, `${paperTitle.value}.pdf`, { pagebreak: true }));
 };
 
-const downloadImage = () => {
+const downloadImage = async () => {
   const element = document.getElementById('english-printable-paper');
   if (!element) return;
-  void saveImageFromElement(element, `${paperTitle.value}.png`, { pagebreak: true });
+  await runExport('image', () => saveImageFromElement(element, `${paperTitle.value}.png`, { pagebreak: true }));
 };
 </script>
 
@@ -178,13 +180,13 @@ const downloadImage = () => {
             {{ t('common.print') }}
           </a-button>
           <div class="export-buttons">
-            <a-button block size="large" @click="downloadPDF">
+            <a-button block size="large" :loading="isPdfLoading" :disabled="isImageLoading" @click="downloadPDF">
               <template #icon><DownloadOutlined /></template>
-              {{ t('common.downloadPdf') }}
+              {{ isPdfLoading ? t('common.processing') : t('common.downloadPdf') }}
             </a-button>
-            <a-button block size="large" @click="downloadImage">
+            <a-button block size="large" :loading="isImageLoading" :disabled="isPdfLoading" @click="downloadImage">
               <template #icon><DownloadOutlined /></template>
-              {{ t('common.downloadImage') }}
+              {{ isImageLoading ? t('common.processing') : t('common.downloadImage') }}
             </a-button>
           </div>
         </div>

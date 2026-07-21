@@ -24,8 +24,10 @@ import SplitTreeEquation from '../components/math/SplitTreeEquation.vue';
 import type { MathProblem } from '../types/math';
 import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { useI18n } from '@/i18n';
+import { useExportLoading } from '../composables/useExportLoading';
 
 const { t } = useI18n();
+const { isPdfLoading, isImageLoading, runExport } = useExportLoading();
 
 const formState = ref({
   type: 'addition',
@@ -193,16 +195,16 @@ const printPaper = () => {
   printElement('printable-paper', paperTitle.value);
 };
 
-const downloadPDF = () => {
+const downloadPDF = async () => {
   const element = document.getElementById('printable-paper');
   if (!element) return;
-  void savePdfFromElement(element, `${paperTitle.value}.pdf`);
+  await runExport('pdf', () => savePdfFromElement(element, `${paperTitle.value}.pdf`));
 };
 
-const downloadImage = () => {
+const downloadImage = async () => {
   const element = document.getElementById('printable-paper');
   if (!element) return;
-  void saveImageFromElement(element, `${paperTitle.value}.png`);
+  await runExport('image', () => saveImageFromElement(element, `${paperTitle.value}.png`));
 };
 </script>
 
@@ -271,13 +273,13 @@ const downloadImage = () => {
             {{ t('common.print') }}
           </a-button>
           <div class="export-buttons">
-            <a-button block size="large" @click="downloadPDF">
+            <a-button block size="large" :loading="isPdfLoading" :disabled="isImageLoading" @click="downloadPDF">
               <template #icon><DownloadOutlined /></template>
-              {{ t('common.downloadPdf') }}
+              {{ isPdfLoading ? t('common.processing') : t('common.downloadPdf') }}
             </a-button>
-            <a-button block size="large" @click="downloadImage">
+            <a-button block size="large" :loading="isImageLoading" :disabled="isPdfLoading" @click="downloadImage">
               <template #icon><DownloadOutlined /></template>
-              {{ t('common.downloadImage') }}
+              {{ isImageLoading ? t('common.processing') : t('common.downloadImage') }}
             </a-button>
           </div>
         </div>

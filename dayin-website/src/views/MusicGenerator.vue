@@ -6,8 +6,10 @@ import {
 } from '@ant-design/icons-vue';
 import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { useI18n } from '@/i18n';
+import { useExportLoading } from '../composables/useExportLoading';
 
 const { t } = useI18n();
+const { isPdfLoading, isImageLoading, runExport } = useExportLoading();
 
 // Define sheet music settings state
 const formState = ref({
@@ -1440,18 +1442,18 @@ const getNotePosition = (
 const trebleClefPath = "M12.1,38.2 C11.5,35.7 10.8,33.4 10.2,31.2 C14.2,27.4 17.4,22.4 17.5,14.3 C17.5,10.1 17.0,5.0 13.0,-0.5 C11.8,-2.1 9.6,-2.5 7.9,-1.4 C4.0,1.2 0.0,7.5 0.0,15.5 C0.0,19.3 0.7,23.7 1.8,28.4 C1.0,29.0 0.1,29.6 -0.8,30.3 C-7.1,34.7 -15.0,40.2 -15.0,53.0 C-15.0,67.1 -3.6,75.5 7.5,75.5 C9.7,75.5 11.7,75.3 13.7,74.8 C13.7,75.1 13.7,75.3 13.7,75.5 C13.7,78.3 11.4,80.5 8.7,80.5 C7.4,80.5 6.1,80.0 5.2,79.0 L-0.2,84.3 C2.2,86.7 5.3,88.0 8.7,88.0 C15.6,88.0 21.2,82.4 21.2,75.5 C21.2,74.4 21.1,73.2 21.0,72.0 C26.5,68.6 30.0,63.2 30.0,56.8 C30.0,46.7 22.1,38.5 12.1,38.2 Z M9.2,8.3 C9.9,10.2 10.0,12.1 10.0,14.2 C10.0,17.4 9.3,19.9 8.1,21.9 C7.7,19.6 7.5,17.4 7.5,15.5 C7.5,12.6 8.3,10.2 9.2,8.3 Z M7.5,68.0 C0.2,68.0 -7.5,62.7 -7.5,53.0 C-7.5,44.1 -2.7,40.7 3.5,36.4 C3.6,36.3 3.7,36.3 3.8,36.2 C4.1,37.3 4.4,38.5 4.8,39.7 C-0.1,42.3 -3.8,47.5 -3.8,53.0 C-3.8,56.3 -2.5,59.5 -0.2,61.8 L5.2,56.5 C4.2,55.6 3.7,54.3 3.7,53.0 C3.7,50.9 5.1,48.6 7.0,47.2 C7.1,47.2 7.2,47.4 7.2,47.6 C9.3,54.6 11.4,61.6 12.6,67.4 C11.1,67.8 9.3,68.0 7.5,68.0 Z M19.5,63.7 C18.2,58.2 16.4,52.2 14.5,46.0 C19.1,47.4 22.5,51.7 22.5,56.8 C22.5,60.7 21.3,64.2 19.5,63.7 Z";
 
 // Trigger PDF Generation
-const handleDownloadPdf = () => {
+const handleDownloadPdf = async () => {
   const element = document.getElementById('music-print-container');
   if (!element) return;
 
-  savePdfFromElement(element, `${sheetTitle.value || '乐谱'}.pdf`, { paperHeightMm: 296.6 });
+  await runExport('pdf', () => savePdfFromElement(element, `${sheetTitle.value || '乐谱'}.pdf`, { paperHeightMm: 296.6 }));
 };
 
-const handleDownloadImage = () => {
+const handleDownloadImage = async () => {
   const element = document.getElementById('music-print-container');
   if (!element) return;
 
-  saveImageFromElement(element, `${sheetTitle.value || '乐谱'}.png`, { paperHeightMm: 296.6 });
+  await runExport('image', () => saveImageFromElement(element, `${sheetTitle.value || '乐谱'}.png`, { paperHeightMm: 296.6 }));
 };
 
 const handlePrint = () => {
@@ -1596,13 +1598,13 @@ const handlePrint = () => {
             {{ t('common.print') }}
           </a-button>
           <div class="export-buttons">
-            <a-button block size="large" @click="handleDownloadPdf">
+            <a-button block size="large" :loading="isPdfLoading" :disabled="isImageLoading" @click="handleDownloadPdf">
               <template #icon><DownloadOutlined /></template>
-              {{ t('common.downloadPdf') }}
+              {{ isPdfLoading ? t('common.processing') : t('common.downloadPdf') }}
             </a-button>
-            <a-button block size="large" @click="handleDownloadImage">
+            <a-button block size="large" :loading="isImageLoading" :disabled="isPdfLoading" @click="handleDownloadImage">
               <template #icon><DownloadOutlined /></template>
-              {{ t('common.downloadImage') }}
+              {{ isImageLoading ? t('common.processing') : t('common.downloadImage') }}
             </a-button>
           </div>
         </div>

@@ -3,6 +3,9 @@ import { computed, ref, watch } from 'vue';
 import { convert, pinyin } from 'pinyin-pro';
 import { DownloadOutlined, PrinterOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
+import { useExportLoading } from '../composables/useExportLoading';
+
+const { isPdfLoading, isImageLoading, runExport } = useExportLoading();
 
 type PartCount = 2 | 3;
 type ColorSetting = { role: 'initial' | 'medial' | 'final'; label: string; color: string };
@@ -146,8 +149,14 @@ regenerateExercises();
 
 const paperExportOptions = { paperHeightMm: 296.6 };
 const printPaper = () => printElement('pinyin-reading-paper', formState.value.title, paperExportOptions);
-const downloadPDF = () => { const el = document.getElementById('pinyin-reading-paper'); if (el) void savePdfFromElement(el, `${formState.value.title}.pdf`, paperExportOptions); };
-const downloadImage = () => { const el = document.getElementById('pinyin-reading-paper'); if (el) void saveImageFromElement(el, `${formState.value.title}.png`, paperExportOptions); };
+const downloadPDF = async () => {
+  const el = document.getElementById('pinyin-reading-paper');
+  if (el) await runExport('pdf', () => savePdfFromElement(el, `${formState.value.title}.pdf`, paperExportOptions));
+};
+const downloadImage = async () => {
+  const el = document.getElementById('pinyin-reading-paper');
+  if (el) await runExport('image', () => saveImageFromElement(el, `${formState.value.title}.png`, paperExportOptions));
+};
 </script>
 
 <template>
@@ -175,7 +184,7 @@ const downloadImage = () => { const el = document.getElementById('pinyin-reading
         <div class="action-buttons">
           <a-button block size="large" @click="regenerateExercises" style="margin-bottom: 16px; background: #f6c84c; color: #2c3b2b; border-color: #f6c84c"><template #icon><RedoOutlined /></template>重新生成题目</a-button>
           <a-button type="primary" block size="large" @click="printPaper"><template #icon><PrinterOutlined /></template>直接打印</a-button>
-          <div class="export-buttons"><a-button block size="large" @click="downloadPDF"><template #icon><DownloadOutlined /></template>下载 PDF</a-button><a-button block size="large" @click="downloadImage"><template #icon><DownloadOutlined /></template>下载图片</a-button></div>
+          <div class="export-buttons"><a-button block size="large" :loading="isPdfLoading" :disabled="isImageLoading" @click="downloadPDF"><template #icon><DownloadOutlined /></template>{{ isPdfLoading ? '处理中…' : '下载 PDF' }}</a-button><a-button block size="large" :loading="isImageLoading" :disabled="isPdfLoading" @click="downloadImage"><template #icon><DownloadOutlined /></template>{{ isImageLoading ? '处理中…' : '下载图片' }}</a-button></div>
         </div>
       </a-form>
     </a-card>
