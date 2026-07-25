@@ -1,6 +1,6 @@
 {
-  "name": "向日葵打印",
-  "short_name": "向日葵打印",
+  "name": "向日葵",
+  "short_name": "向日葵",
   "description": "快速生成小学阶段常用的数学、语文、英语练习模板。",
   "start_url": "/",
   "scope": "/",

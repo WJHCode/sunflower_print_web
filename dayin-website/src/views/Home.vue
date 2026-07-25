@@ -268,7 +268,12 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
-    <footer class="home-footer">{{ t('home.footer') }}</footer>
+    <footer class="home-footer">
+      <span>{{ t('home.footer') }}</span>
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+        {{ t('home.icp') }}
+      </a>
+    </footer>
   </main>
 </template>
 
@@ -639,6 +644,21 @@ onBeforeUnmount(() => {
   color: #7a837c;
   font-size: 14px;
   text-align: center;
+}
+
+.home-footer span,
+.home-footer a {
+  display: block;
+}
+
+.home-footer a {
+  width: fit-content;
+  margin: 6px auto 0;
+  color: inherit;
+}
+
+.home-footer a:hover {
+  color: #2f7d46;
 }
 
 .nav-links :deep(.ant-btn) {

@@ -14,7 +14,7 @@ const language = ref<Language>(readInitialLanguage());
 export const messages = {
   zh: {
     common: {
-      brand: '向日葵打印',
+      brand: '向日葵',
       home: '返回首页',
       language: '语言',
       chinese: '中文',
@@ -78,6 +78,7 @@ export const messages = {
       sectionLabel: '常用入口',
       sectionTitle: '把练习纸准备好，剩下的交给孩子慢慢写',
       footer: '© 2026 向日葵学习平台. 保留所有权利.',
+      icp: '津ICP备2022002800号-4',
       categories: {
         math: {
           title: '数学练习题',
@@ -390,7 +391,7 @@ export const messages = {
   },
   en: {
     common: {
-      brand: 'Sunflower Print',
+      brand: 'Sunflower',
       home: 'Home',
       language: 'Language',
       chinese: '中文',
@@ -454,6 +455,7 @@ export const messages = {
       sectionLabel: 'Popular tools',
       sectionTitle: 'Prepare the worksheet, then let practice take its time',
       footer: '© 2026 Sunflower Learning. All rights reserved.',
+      icp: '津ICP备2022002800号-4',
       categories: {
         math: {
           title: 'Math Practice',
