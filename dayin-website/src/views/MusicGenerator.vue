@@ -7,6 +7,7 @@ import {
 import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { useI18n } from '@/i18n';
 import { useExportLoading } from '../composables/useExportLoading';
+import { PAPER_FOOTER_ZH } from '@/constants/site';
 
 const { t } = useI18n();
 const { isPdfLoading, isImageLoading, runExport } = useExportLoading();
@@ -2376,7 +2377,7 @@ const handlePrint = () => {
               fill="#8a8a8a"
               font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
             >
-              向日葵打印　https://sunflower.ccwu.cc
+              {{ PAPER_FOOTER_ZH }}
             </text>
           </svg>
         </div>

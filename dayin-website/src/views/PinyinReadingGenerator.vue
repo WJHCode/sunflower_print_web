@@ -4,6 +4,7 @@ import { convert, pinyin } from 'pinyin-pro';
 import { DownloadOutlined, PrinterOutlined, RedoOutlined } from '@ant-design/icons-vue';
 import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { useExportLoading } from '../composables/useExportLoading';
+import { PAPER_FOOTER_ZH } from '@/constants/site';
 
 const { isPdfLoading, isImageLoading, runExport } = useExportLoading();
 
@@ -208,7 +209,7 @@ const downloadImage = async () => {
             </div>
           </section>
         </div>
-        <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+        <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
       </div>
     </div>
   </div>

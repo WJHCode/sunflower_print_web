@@ -1,4 +1,5 @@
 import { computed, ref, watchEffect } from 'vue';
+import { PAPER_FOOTER_EN, PAPER_FOOTER_ZH } from '@/constants/site';
 
 export type Language = 'zh' | 'en';
 
@@ -31,7 +32,7 @@ export const messages = {
       className: '班级：__________',
       date: '日期：__________',
       score: '得分：__________',
-      footer: '向日葵打印　https://sunflower.ccwu.cc',
+      footer: PAPER_FOOTER_ZH,
       paper: '纸张',
       a4Portrait: 'A4 纵向',
       title: '标题',
@@ -408,7 +409,7 @@ export const messages = {
       className: 'Class: __________',
       date: 'Date: __________',
       score: 'Score: __________',
-      footer: 'Sunflower Print  https://sunflower.ccwu.cc',
+      footer: PAPER_FOOTER_EN,
       paper: 'Paper',
       a4Portrait: 'A4 portrait',
       title: 'Title',

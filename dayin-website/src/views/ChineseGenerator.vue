@@ -7,6 +7,7 @@ import { GRADE_1_2_WORDS } from '../utils/wordBank';
 import { message } from 'ant-design-vue';
 import { useI18n } from '@/i18n';
 import { useExportLoading } from '../composables/useExportLoading';
+import { PAPER_FOOTER_ZH } from '@/constants/site';
 
 const { t } = useI18n();
 const { isPdfLoading, isImageLoading, runExport } = useExportLoading();
@@ -552,7 +553,7 @@ const downloadImage = async () => {
               <span v-for="cell in 15" :key="cell" class="tianzi-cell"></span>
             </div>
           </div>
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
         </div>
 
         <template v-else-if="isRadical || isStrokeType">
@@ -584,7 +585,7 @@ const downloadImage = async () => {
                 </div>
               </div>
             </div>
-            <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+            <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
           </div>
         </template>
 
@@ -668,7 +669,7 @@ const downloadImage = async () => {
                 </div>
               </div>
             </div>
-            <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+            <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
           </div>
         </template>
 
@@ -762,7 +763,7 @@ const downloadImage = async () => {
                 </div>
               </div>
             </div>
-            <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+            <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
           </div>
         </template>
 
@@ -785,7 +786,7 @@ const downloadImage = async () => {
               </div>
             </div>
           </div>
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
         </div>
 
         <div v-else-if="isPinyinPaper" class="paper-container">
@@ -802,7 +803,7 @@ const downloadImage = async () => {
             <div v-for="row in 19" :key="row" class="practice-line pinyin-paper-line">
             </div>
           </div>
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
         </div>
 
         <div v-else-if="isComposition" class="paper-container composition-paper">
@@ -819,7 +820,7 @@ const downloadImage = async () => {
           <div class="composition-grid">
             <span v-for="cell in 500" :key="cell" class="composition-cell"></span>
           </div>
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
         </div>
 
         <div v-else-if="isCornellNote" class="paper-container cornell-paper">
@@ -848,7 +849,7 @@ const downloadImage = async () => {
               <span v-for="line in 5" :key="line" class="cornell-line"></span>
             </div>
           </div>
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
         </div>
 
         <div
@@ -887,7 +888,7 @@ const downloadImage = async () => {
               </div>
             </div>
           </div>
-          <div class="paper-footer">向日葵打印　https://sunflower.ccwu.cc</div>
+          <div class="paper-footer">{{ PAPER_FOOTER_ZH }}</div>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
 import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
 import { useI18n } from '@/i18n';
 import { useExportLoading } from '../composables/useExportLoading';
+import { SITE_URL } from '@/constants/site';
 
 const { t } = useI18n();
 const { isPdfLoading, isImageLoading, runExport } = useExportLoading();
@@ -1177,7 +1178,7 @@ const downloadImage = async () => {
           </div>
 
           <!-- A4 Footer -->
-          <div class="paper-footer">向日葵简笔画打印网　https://sunflower.ccwu.cc</div>
+          <div class="paper-footer">向日葵简笔画打印网　{{ SITE_URL }}</div>
         </div>
       </div>
     </div>
