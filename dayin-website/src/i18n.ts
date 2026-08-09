@@ -80,6 +80,7 @@ export const messages = {
       sectionTitle: '把练习纸准备好，剩下的交给孩子慢慢写',
       footer: '© 2026 向日葵学习平台. 保留所有权利.',
       icp: '京ICP备2026048983号-1',
+      policeRecord: '京公网安备11011302008267号',
       categories: {
         math: {
           title: '数学练习题',
@@ -457,6 +458,7 @@ export const messages = {
       sectionTitle: 'Prepare the worksheet, then let practice take its time',
       footer: '© 2026 Sunflower Learning. All rights reserved.',
       icp: '京ICP备2026048983号-1',
+      policeRecord: '京公网安备11011302008267号',
       categories: {
         math: {
           title: 'Math Practice',

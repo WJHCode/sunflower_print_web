@@ -273,6 +273,13 @@ onBeforeUnmount(() => {
       <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
         {{ t('home.icp') }}
       </a>
+      <a
+        href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011302008267"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ t('home.policeRecord') }}
+      </a>
     </footer>
   </main>
 </template>
