@@ -270,9 +270,18 @@ onBeforeUnmount(() => {
 
     <footer class="home-footer">
       <span>{{ t('home.footer') }}</span>
-      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
-        {{ t('home.icp') }}
-      </a>
+      <div class="footer-records">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+          {{ t('home.icp') }}
+        </a>
+        <a
+          href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011302008267"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ t('home.policeRecord') }}
+        </a>
+      </div>
     </footer>
   </main>
 </template>
@@ -646,18 +655,25 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.home-footer span,
-.home-footer a {
+.home-footer > span {
   display: block;
 }
 
-.home-footer a {
-  width: fit-content;
+.footer-records {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   margin: 6px auto 0;
+  white-space: nowrap;
+  font-size: clamp(11px, 3vw, 14px);
+}
+
+.footer-records a {
   color: inherit;
 }
 
-.home-footer a:hover {
+.footer-records a:hover {
   color: #2f7d46;
 }
 
