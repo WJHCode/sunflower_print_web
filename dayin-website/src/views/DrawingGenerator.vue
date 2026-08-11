@@ -1178,7 +1178,7 @@ const downloadImage = async () => {
           </div>
 
           <!-- A4 Footer -->
-          <div class="paper-footer">向日葵简笔画打印网　{{ SITE_URL }}</div>
+          <div class="paper-footer">向日葵打印　{{ SITE_URL }}</div>
         </div>
       </div>
     </div>

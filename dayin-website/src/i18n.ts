@@ -15,7 +15,7 @@ const language = ref<Language>(readInitialLanguage());
 export const messages = {
   zh: {
     common: {
-      brand: '向日葵',
+      brand: '向日葵打印',
       home: '返回首页',
       language: '语言',
       chinese: '中文',
@@ -78,7 +78,7 @@ export const messages = {
       strengths: ['A4 打印排版', '可直接下载 PDF', '适合日常巩固', '题量和格式可调'],
       sectionLabel: '常用入口',
       sectionTitle: '把练习纸准备好，剩下的交给孩子慢慢写',
-      footer: '© 2026 向日葵学习平台. 保留所有权利.',
+      footer: '© 2026 向日葵打印. 保留所有权利.',
       icp: '津ICP备2022002800号-4',
       categories: {
         math: {
@@ -392,7 +392,7 @@ export const messages = {
   },
   en: {
     common: {
-      brand: 'Sunflower',
+      brand: 'Sunflower Print',
       home: 'Home',
       language: 'Language',
       chinese: '中文',
@@ -455,7 +455,7 @@ export const messages = {
       strengths: ['A4 print layout', 'PDF download', 'Daily practice ready', 'Adjustable format'],
       sectionLabel: 'Popular tools',
       sectionTitle: 'Prepare the worksheet, then let practice take its time',
-      footer: '© 2026 Sunflower Learning. All rights reserved.',
+      footer: '© 2026 Sunflower Print. All rights reserved.',
       icp: '津ICP备2022002800号-4',
       categories: {
         math: {

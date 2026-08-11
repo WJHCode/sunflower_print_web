@@ -1,5 +1,5 @@
 <template>
-  <svg class="brand-mark-icon" viewBox="0 0 48 48" role="img" aria-label="向日葵">
+  <svg class="brand-mark-icon" viewBox="0 0 48 48" role="img" aria-label="向日葵打印">
     <defs>
       <linearGradient id="c4-grad-bg" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#FFFDF0" />
