@@ -29,7 +29,8 @@ onMounted(() => {
     serverURL: WALINE_SERVER_URL,
     path: pagePath(),
     lang: walineLanguage(),
-    imageUploader: false
+    imageUploader: false,
+    noRss: true
   });
 });
 
