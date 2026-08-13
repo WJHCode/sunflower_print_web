@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CusdisComments from '@/components/CusdisComments.vue';
+import WalineComments from '@/components/WalineComments.vue';
 import { MessageOutlined, BulbOutlined, BugOutlined } from '@ant-design/icons-vue';
 import { useI18n } from '@/i18n';
 
@@ -35,10 +35,10 @@ const { t } = useI18n();
       </div>
     </div>
 
-    <!-- Cusdis 评论组件 -->
+    <!-- Waline 评论组件 -->
     <div class="comments-section-card">
       <div class="write-comment-title">{{ t('feedback.writeComment') }}</div>
-      <CusdisComments page-id="feedback" :page-title="t('feedback.pageTitle')" />
+      <WalineComments page-id="/generator/feedback" />
     </div>
   </div>
 </template>
