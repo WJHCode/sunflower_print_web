@@ -1,4 +1,4 @@
-const DEFAULT_SITE_DOMAIN = 'sunflower.ccwu.cc';
+const DEFAULT_SITE_DOMAIN = 'sunflower.uucc.me';
 
 const SITE_DOMAIN_BY_HOSTNAME: Readonly<Record<string, string>> = {
   [DEFAULT_SITE_DOMAIN]: DEFAULT_SITE_DOMAIN,

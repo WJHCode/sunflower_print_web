@@ -15,12 +15,18 @@ const DrawingGeneratorView = () => import('@/views/DrawingGenerator.vue')
 const StickerGeneratorView = () => import('@/views/StickerGenerator.vue')
 const MusicGeneratorView = () => import('@/views/MusicGenerator.vue')
 const FeedbackView = () => import('@/views/Feedback.vue')
+const AboutView = () => import('@/views/About.vue')
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
     component: HomeView
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: AboutView
   },
   {
     path: '/generator',

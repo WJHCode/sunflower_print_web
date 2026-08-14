@@ -13,7 +13,8 @@ import {
   RightOutlined,
   FileTextOutlined,
   PictureOutlined,
-  HighlightOutlined
+  HighlightOutlined,
+  InfoCircleOutlined
 } from '@ant-design/icons-vue';
 import BrandMark from '../components/BrandMark.vue';
 import LanguageSwitch from '../components/LanguageSwitch.vue';
@@ -186,6 +187,10 @@ onBeforeUnmount(() => {
             <a-button type="text" @click="router.push('/generator/music')">{{ t('nav.musicShort') }}</a-button>
             <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">{{ t('nav.feedbackShort') }}</a-button>
           </nav>
+          <a-button class="about-nav-btn" type="text" @click="router.push('/about')">
+            <template #icon><InfoCircleOutlined /></template>
+            <span class="about-nav-label">{{ t('nav.about') }}</span>
+          </a-button>
           <LanguageSwitch />
           <a-button
             v-if="canShowInstallButton"
@@ -281,6 +286,7 @@ onBeforeUnmount(() => {
         >
           {{ t('home.policeRecord') }}
         </a>
+        <RouterLink to="/about">{{ t('nav.about') }}</RouterLink>
       </div>
     </footer>
   </main>
@@ -689,6 +695,16 @@ onBeforeUnmount(() => {
   background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
+.about-nav-btn {
+  color: #233126 !important;
+  font-weight: 700;
+}
+
+.about-nav-btn:hover {
+  color: #2f7d46 !important;
+  background: rgba(47, 125, 70, 0.08) !important;
+}
+
 .mobile-install-btn {
   display: none;
 }
@@ -700,6 +716,15 @@ onBeforeUnmount(() => {
   }
 
   .nav-links {
+    display: none;
+  }
+
+  .about-nav-btn {
+    min-width: 34px;
+    padding: 0 6px !important;
+  }
+
+  .about-nav-label {
     display: none;
   }
 
