@@ -26,6 +26,8 @@ const rightSplit = computed(() => props.problem.splitNodes?.right ?? props.probl
     <rect x="66" y="70" width="24" height="24" class="box" />
     <text v-if="showAnswer" x="78" y="84" class="t ans">{{ leftSplit }}</text>
 
+    <text x="101.5" y="84" class="t glyph split-operator">+</text>
+
     <rect x="113" y="70" width="24" height="24" class="box" />
     <text v-if="showAnswer" x="125" y="84" class="t ans">{{ rightSplit }}</text>
 

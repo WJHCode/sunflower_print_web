@@ -44,6 +44,8 @@ const intermediate = computed(() => Number(rightSplit.value) - Number(remainder.
     <rect x="9" y="72" width="24" height="24" class="box" />
     <text v-if="showAnswer" x="21" y="86" class="t ans">{{ leftSplit }}</text>
 
+    <text x="46" y="86" class="t glyph split-operator">+</text>
+
     <rect x="59" y="72" width="24" height="24" class="box" />
     <text v-if="showAnswer" x="71" y="86" class="t ans">{{ rightSplit }}</text>
 
