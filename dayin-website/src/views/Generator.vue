@@ -16,7 +16,7 @@ import {
   generateTripleSubtraction,
   generateWeightUnitConversion
 } from '../utils/generators/basicMath';
-import { generateBreakTen, generateMakeTen } from '../utils/generators/splitMath';
+import { generateBorrowTen, generateBreakTen, generateFlatTen, generateMakeTen } from '../utils/generators/splitMath';
 import BasicEquation from '../components/math/BasicEquation.vue';
 import ClockEquation from '../components/math/ClockEquation.vue';
 import MakeTenEquation from '../components/math/MakeTenEquation.vue';
@@ -45,7 +45,7 @@ const handleRegenerate = () => {
 
 const paperTitle = computed(() => t(`math.paperTitles.${formState.value.type}`) || t('math.fallbackTitle'));
 
-const fixedLayoutTypes = new Set(['break-ten', 'make-ten']);
+const fixedLayoutTypes = new Set(['break-ten', 'make-ten', 'flat-ten', 'borrow-ten']);
 const clockColumns = 3;
 const clockRows = Math.floor((214 + 7) / (48 + 7));
 const numberRangeTypes = new Set(['addition', 'subtraction', 'mixed', 'triple-addition', 'triple-subtraction']);
@@ -91,8 +91,8 @@ const numberRangeMax = computed(() => {
 const problemCount = computed(() => columns.value * rows.value);
 const contentClass = computed(() => ({
   'paper-content': true,
-  'make-ten-content': formState.value.type === 'make-ten',
-  'split-tree-content': formState.value.type === 'break-ten',
+  'make-ten-content': formState.value.type === 'make-ten' || formState.value.type === 'borrow-ten',
+  'split-tree-content': formState.value.type === 'break-ten' || formState.value.type === 'flat-ten',
   'basic-content': !isFixedLayout.value,
   'unit-conversion-content': unitConversionTypes.has(formState.value.type),
   'money-exchange-content': formState.value.type === 'money-exchange',
@@ -134,6 +134,10 @@ const generateProblemList = (): MathProblem[] => {
     return generateBreakTen(config);
   } else if (formState.value.type === 'make-ten') {
     return generateMakeTen(config);
+  } else if (formState.value.type === 'flat-ten') {
+    return generateFlatTen(config);
+  } else if (formState.value.type === 'borrow-ten') {
+    return generateBorrowTen(config);
   } else if (formState.value.type === 'mixed') {
     return generateMixedArithmetic(config);
   } else if (formState.value.type === 'triple-addition') {
@@ -218,6 +222,8 @@ const downloadImage = async () => {
             <a-select-option value="subtraction">{{ t('math.problemTypes.subtraction') }}</a-select-option>
             <a-select-option value="break-ten">{{ t('math.problemTypes.break-ten') }}</a-select-option>
             <a-select-option value="make-ten">{{ t('math.problemTypes.make-ten') }}</a-select-option>
+            <a-select-option value="flat-ten">{{ t('math.problemTypes.flat-ten') }}</a-select-option>
+            <a-select-option value="borrow-ten">{{ t('math.problemTypes.borrow-ten') }}</a-select-option>
             <a-select-option value="mixed">{{ t('math.problemTypes.mixed') }}</a-select-option>
             <a-select-option value="triple-addition">{{ t('math.problemTypes.triple-addition') }}</a-select-option>
             <a-select-option value="triple-subtraction">{{ t('math.problemTypes.triple-subtraction') }}</a-select-option>

@@ -34,6 +34,7 @@ const rightSplit = computed(() => props.problem.splitNodes?.right ?? props.probl
     <line x1="42" y1="38" x2="42" y2="104" class="line" />
     <line x1="42" y1="104" x2="78" y2="104" class="line" />
     <line x1="78" y1="94" x2="78" y2="104" class="line" />
+    <text x="54" y="84" class="t glyph split-operator">{{ problem.operator }}</text>
     <text x="60" y="116" class="t glyph ten">10</text>
   </svg>
 </template>

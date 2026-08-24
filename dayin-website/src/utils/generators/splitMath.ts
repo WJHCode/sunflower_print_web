@@ -72,3 +72,57 @@ export const generateMakeTen = (config: GeneratorConfig): MathProblem[] => {
       }
     }));
 };
+
+export const generateFlatTen = (config: GeneratorConfig): MathProblem[] => {
+  const candidates = Array.from({ length: 9 }, (_, index) => {
+    const b = index + 1;
+    return { a: 10 + b, b };
+  });
+
+  return shuffle(candidates)
+    .slice(0, config.count)
+    .map(({ a, b }, index) => ({
+      id: `flat-ten-${Date.now()}-${index}`,
+      type: 'split-tree',
+      a,
+      b,
+      operator: '-',
+      answer: 10,
+      expression: `${a} - ${b} = 10`,
+      splitNodes: {
+        main: a,
+        left: b,
+        right: 10,
+        isLeftBreak: false
+      }
+    }));
+};
+
+export const generateBorrowTen = (config: GeneratorConfig): MathProblem[] => {
+  const candidates: Array<{ a: number; b: number; left: number; right: number }> = [];
+
+  for (let a = 11; a <= 19; a++) {
+    const left = a % 10;
+    for (let b = left + 1; b <= 9; b++) {
+      candidates.push({ a, b, left, right: b - left });
+    }
+  }
+
+  return shuffle(candidates)
+    .slice(0, config.count)
+    .map(({ a, b, left, right }, index) => ({
+      id: `borrow-ten-${Date.now()}-${index}`,
+      type: 'make-ten',
+      a,
+      b,
+      operator: '-',
+      answer: a - b,
+      expression: `${a} - ${b} = ${a - b}`,
+      splitNodes: {
+        main: b,
+        left,
+        right,
+        isLeftBreak: true
+      }
+    }));
+};
