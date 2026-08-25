@@ -50,6 +50,7 @@ export const messages = {
       drawingShort: '绘画',
       stickerShort: '贴纸',
       musicShort: '乐谱',
+      timetableShort: '课表',
       feedbackShort: '留言',
       about: '关于我们',
       math: '数学练习题',
@@ -60,6 +61,7 @@ export const messages = {
       drawing: '儿童简笔画',
       sticker: '趣味贴纸',
       music: '乐谱打印',
+      timetable: '课程表',
       feedback: '提个意见',
     },
     home: {
@@ -68,6 +70,17 @@ export const messages = {
       proofServed: '已服务',
       proofUsers: '位用户',
       proofPraise: '深得用户好评！',
+      featureNotice: {
+        label: '新功能提醒',
+        badge: '新功能',
+      },
+      featureAnnouncements: {
+        timetable: {
+          title: '课程表模板上线了',
+          description: '小学、初中、高中、大学四款课表，支持编辑、换主题和打印。',
+          action: '立即使用',
+        },
+      },
       start: '开始生成',
       preview: '看看作业纸',
       install: {
@@ -114,6 +127,10 @@ export const messages = {
         music: {
           title: '空白与经典乐谱',
           description: '支持五线谱、简谱、吉他/尤克里里谱自定义打印，包含经典曲目渲染。',
+        },
+        timetable: {
+          title: '课程表模板',
+          description: '小学、初中、高中、大学四款课程表，可编辑后打印。',
         },
       },
       steps: [
@@ -210,6 +227,27 @@ export const messages = {
       bugText: '遇到排版错乱、PDF 无法下载或计算题公式错误？请随时指出。',
       writeComment: '发表留言',
       pageTitle: '意见与建议反馈',
+    },
+    timetable: {
+      settingsTitle: '课程表设置',
+      stage: '适用学段',
+      owner: '姓名标签',
+      group: '班级 / 专业标签',
+      term: '学期标签',
+      showWeekend: '显示周末',
+      showNotes: '显示本周提醒',
+      reset: '恢复此学段示例',
+      period: '时间',
+      coursePlaceholder: '课程',
+      detail: '课程详情',
+      detailPlaceholder: '教室 / 作业',
+      periodLabel: '课时名称',
+      periodTime: '起止时间',
+      note: '本周提醒',
+      themes: { school: '学段原生主题' },
+      kickers: { primary: 'SUNFLOWER STUDY · PRIMARY', middle: 'WEEKLY LEARNING PLAN · MIDDLE SCHOOL', high: 'WEEKLY FOCUS · HIGH SCHOOL', university: 'COURSE MAP · UNIVERSITY' },
+      stages: { primary: '小学课程表', middle: '初中课程表', high: '高中课程表', university: '大学课程表' },
+      stageHints: { primary: '明快配色和清晰时段，适合孩子贴在书桌前。', middle: '学科信息一目了然，兼顾日常课程和延时服务。', high: '克制、高效的学习版式，便于安排复习节奏。', university: '紧凑的课块设计，适合记录课程、教室或项目安排。' },
     },
     generatorSettings: {
       type: '题型',
@@ -454,6 +492,7 @@ export const messages = {
       drawingShort: 'Drawing',
       stickerShort: 'Stickers',
       musicShort: 'Music',
+      timetableShort: 'Schedule',
       feedbackShort: 'Feedback',
       about: 'About',
       math: 'Math Practice',
@@ -464,6 +503,7 @@ export const messages = {
       drawing: 'Kids Drawing',
       sticker: 'Fun Stickers',
       music: 'Music Sheets',
+      timetable: 'Timetable',
       feedback: 'Feedback',
     },
     home: {
@@ -472,6 +512,17 @@ export const messages = {
       proofServed: 'Helping',
       proofUsers: 'users',
       proofPraise: 'Loved by families and teachers.',
+      featureNotice: {
+        label: 'New feature updates',
+        badge: 'NEW',
+      },
+      featureAnnouncements: {
+        timetable: {
+          title: 'Timetable templates are here',
+          description: 'Four editable, printable schedules for primary, middle school, high school, and university.',
+          action: 'Try it now',
+        },
+      },
       start: 'Start creating',
       preview: 'View worksheets',
       install: {
@@ -518,6 +569,10 @@ export const messages = {
         music: {
           title: 'Blank and Classic Music Sheets',
           description: 'Custom staff, numbered notation, guitar, and ukulele sheets with classic songs.',
+        },
+        timetable: {
+          title: 'Timetable Templates',
+          description: 'Four editable schedules for primary, middle, high school, and university.',
         },
       },
       steps: [
@@ -614,6 +669,27 @@ export const messages = {
       bugText: 'Layout issues, PDF download problems, or wrong formulas? Please let us know.',
       writeComment: 'Leave a Message',
       pageTitle: 'Feedback and Suggestions',
+    },
+    timetable: {
+      settingsTitle: 'Timetable Settings',
+      stage: 'School stage',
+      owner: 'Name label',
+      group: 'Class / major label',
+      term: 'Term label',
+      showWeekend: 'Show weekend',
+      showNotes: 'Show weekly note',
+      reset: 'Reset this stage',
+      period: 'Time',
+      coursePlaceholder: 'Course',
+      detail: 'Course detail',
+      detailPlaceholder: 'Room / task',
+      periodLabel: 'Period label',
+      periodTime: 'Time range',
+      note: 'Weekly note',
+      themes: { school: 'Stage original' },
+      kickers: { primary: 'SUNFLOWER STUDY · PRIMARY', middle: 'WEEKLY LEARNING PLAN · MIDDLE SCHOOL', high: 'WEEKLY FOCUS · HIGH SCHOOL', university: 'COURSE MAP · UNIVERSITY' },
+      stages: { primary: 'Primary School', middle: 'Middle School', high: 'High School', university: 'University' },
+      stageHints: { primary: 'Bright colors and clear periods for a child’s desk.', middle: 'A clear academic overview with room for after-school time.', high: 'A focused, efficient layout for study and review routines.', university: 'Compact course blocks for courses, rooms, and project time.' },
     },
     generatorSettings: {
       type: 'Type',

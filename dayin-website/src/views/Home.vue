@@ -14,6 +14,8 @@ import {
   FileTextOutlined,
   PictureOutlined,
   HighlightOutlined,
+  CalendarOutlined,
+  BellOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons-vue';
 import BrandMark from '../components/BrandMark.vue';
@@ -22,6 +24,7 @@ import MusicNoteIcon from '../components/MusicNoteIcon.vue';
 import heroImage from '../assets/home-study-desk.png';
 import { useI18n } from '@/i18n';
 import { preloadCommonRoutes } from '@/router';
+import { featureAnnouncements, isFeatureAnnouncementActive } from '@/constants/featureAnnouncements';
 
 const router = useRouter();
 const { t, tm } = useI18n();
@@ -128,6 +131,12 @@ const categoryMeta = [
     path: '/generator/music',
     icon: MusicNoteIcon,
     tone: 'orange'
+  },
+  {
+    key: 'timetable',
+    path: '/generator/timetable',
+    icon: CalendarOutlined,
+    tone: 'blue'
   }
 ];
 
@@ -138,6 +147,7 @@ const categories = computed(() => categoryMeta.map((category) => ({
 })));
 
 const strengths = computed(() => tm<string[]>('home.strengths'));
+const activeFeatureAnnouncements = computed(() => featureAnnouncements.filter((announcement) => isFeatureAnnouncementActive(announcement)));
 
 const stepIcons = [FileDoneOutlined, ClockCircleOutlined, PrinterOutlined];
 const steps = computed(() => tm<Array<{ title: string; text: string }>>('home.steps').map((step, index) => ({
@@ -185,6 +195,7 @@ onBeforeUnmount(() => {
             <a-button type="text" @click="router.push('/generator/drawing')">{{ t('nav.drawingShort') }}</a-button>
             <a-button type="text" @click="router.push('/generator/sticker')">{{ t('nav.stickerShort') }}</a-button>
             <a-button type="text" @click="router.push('/generator/music')">{{ t('nav.musicShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/timetable')">{{ t('nav.timetableShort') }}</a-button>
             <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">{{ t('nav.feedbackShort') }}</a-button>
           </nav>
           <a-button class="about-nav-btn" type="text" @click="router.push('/about')">
@@ -205,6 +216,21 @@ onBeforeUnmount(() => {
           </a-button>
         </div>
       </header>
+
+      <section v-if="activeFeatureAnnouncements.length" class="feature-notice" :aria-label="t('home.featureNotice.label')">
+        <a-carousel class="feature-notice-carousel" :autoplay="activeFeatureAnnouncements.length > 1" :dots="activeFeatureAnnouncements.length > 1">
+          <div v-for="announcement in activeFeatureAnnouncements" :key="announcement.id" class="feature-notice-slide">
+            <button class="feature-notice-card" type="button" @click="router.push(announcement.path)">
+              <span class="feature-notice-badge"><BellOutlined />{{ t('home.featureNotice.badge') }}</span>
+              <span class="feature-notice-copy">
+                <strong>{{ t(`home.featureAnnouncements.${announcement.id}.title`) }}</strong>
+                <span>{{ t(`home.featureAnnouncements.${announcement.id}.description`) }}</span>
+              </span>
+              <span class="feature-notice-action">{{ t(`home.featureAnnouncements.${announcement.id}.action`) }} <RightOutlined /></span>
+            </button>
+          </div>
+        </a-carousel>
+      </section>
 
       <div class="hero-content">
         <p class="eyebrow">{{ t('home.eyebrow') }}</p>
@@ -369,6 +395,91 @@ onBeforeUnmount(() => {
   width: min(620px, calc(100% - 48px));
   margin: auto 0;
   padding: 24px clamp(24px, 5vw, 72px) 10vh;
+}
+
+.feature-notice {
+  position: relative;
+  z-index: 1;
+  width: min(740px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.feature-notice-carousel :deep(.slick-list) {
+  border-radius: 12px;
+}
+
+.feature-notice-carousel :deep(.slick-dots) {
+  bottom: -15px;
+}
+
+.feature-notice-carousel :deep(.slick-dots li button) {
+  background: #5f9767;
+}
+
+.feature-notice-card {
+  width: 100%;
+  min-height: 64px;
+  padding: 11px 14px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  color: #29472f;
+  text-align: left;
+  cursor: pointer;
+  background: rgba(255, 253, 247, 0.92);
+  border: 1px solid rgba(47, 125, 70, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(51, 79, 56, 0.1);
+  backdrop-filter: blur(8px);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.feature-notice-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(51, 79, 56, 0.14);
+}
+
+.feature-notice-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  background: #2f7d46;
+  border-radius: 7px;
+}
+
+.feature-notice-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.feature-notice-copy strong {
+  font-size: 15px;
+}
+
+.feature-notice-copy span {
+  overflow: hidden;
+  color: #607165;
+  font-size: 13px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feature-notice-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #2f7d46;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .user-social-proof {
@@ -754,6 +865,18 @@ onBeforeUnmount(() => {
   .hero-section {
     min-height: 82vh;
     background-position: 62% center;
+  }
+
+  .feature-notice {
+    width: min(620px, calc(100% - 40px));
+  }
+
+  .feature-notice-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .feature-notice-action {
+    display: none;
   }
 
   .hero-shade {

@@ -7,6 +7,7 @@ import {
   ReadOutlined,
   HomeOutlined,
   FileTextOutlined,
+  CalendarOutlined,
   PictureOutlined,
   MessageOutlined,
   HighlightOutlined
@@ -31,6 +32,7 @@ const selectedKeys = computed({
     if (route.path.includes('/drawing')) return ['drawing'];
     if (route.path.includes('/sticker')) return ['sticker'];
     if (route.path.includes('/music')) return ['music'];
+    if (route.path.includes('/timetable')) return ['timetable'];
     if (route.path.includes('/feedback')) return ['feedback'];
     return ['math'];
   },
@@ -44,6 +46,7 @@ const selectedKeys = computed({
     if (key === 'drawing') router.push('/generator/drawing');
     if (key === 'sticker') router.push('/generator/sticker');
     if (key === 'music') router.push('/generator/music');
+    if (key === 'timetable') router.push('/generator/timetable');
     if (key === 'feedback') router.push('/generator/feedback');
   }
 });
@@ -187,6 +190,10 @@ onUnmounted(() => {
           <a-menu-item key="music">
             <template #icon><MusicNoteIcon /></template>
             {{ t('nav.music') }}
+          </a-menu-item>
+          <a-menu-item key="timetable">
+            <template #icon><CalendarOutlined /></template>
+            {{ t('nav.timetable') }}
           </a-menu-item>
           <a-menu-item key="feedback" class="feedback-menu-item">
             <template #icon><MessageOutlined /></template>
