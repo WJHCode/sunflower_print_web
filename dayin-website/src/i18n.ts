@@ -51,6 +51,7 @@ export const messages = {
       stickerShort: '贴纸',
       musicShort: '乐谱',
       timetableShort: '课表',
+      nameCardShort: '桌牌',
       feedbackShort: '留言',
       about: '关于我们',
       math: '数学练习题',
@@ -62,6 +63,7 @@ export const messages = {
       sticker: '趣味贴纸',
       music: '乐谱打印',
       timetable: '课程表',
+      nameCard: '姓名桌牌',
       feedback: '提个意见',
     },
     home: {
@@ -131,6 +133,10 @@ export const messages = {
         timetable: {
           title: '课程表模板',
           description: '小学、初中、高中、大学四款课程表，可编辑后打印。',
+        },
+        nameCard: {
+          title: '姓名桌牌',
+          description: 'A4 对折姓名桌牌，支持图案、配色和姓名样式调整。',
         },
       },
       steps: [
@@ -248,6 +254,11 @@ export const messages = {
       kickers: { primary: 'SUNFLOWER STUDY · PRIMARY', middle: 'WEEKLY LEARNING PLAN · MIDDLE SCHOOL', high: 'WEEKLY FOCUS · HIGH SCHOOL', university: 'COURSE MAP · UNIVERSITY' },
       stages: { primary: '小学课程表', middle: '初中课程表', high: '高中课程表', university: '大学课程表' },
       stageHints: { primary: '明快配色和清晰时段，适合孩子贴在书桌前。', middle: '学科信息一目了然，兼顾日常课程和延时服务。', high: '克制、高效的学习版式，便于安排复习节奏。', university: '紧凑的课块设计，适合记录课程、教室或项目安排。' },
+    },
+    nameCard: {
+      settingsTitle: '姓名桌牌设置', name: '姓名', namePlaceholder: '请输入姓名', backgroundType: '底板背景', backgroundColor: '底板颜色', patternColor: '图案配色', textColor: '姓名颜色', font: '字体风格', fontSize: '字体大小', foldLine: '沿此线对折', fileSuffix: '姓名桌牌', foldingHint: '请按 A4 原尺寸打印，沿中间虚线向内对折；上、下两面已自动反向排版。',
+      backgroundTypes: { solid: '纯色背景', flowers: '花朵图案', dots: '圆点图案', grid: '方格图案', waves: '波纹图案' },
+      fonts: { rounded: '圆润黑体', bold: '粗体', serif: '宋体', handwritten: '楷体' },
     },
     generatorSettings: {
       type: '题型',
@@ -493,6 +504,7 @@ export const messages = {
       stickerShort: 'Stickers',
       musicShort: 'Music',
       timetableShort: 'Schedule',
+      nameCardShort: 'Name card',
       feedbackShort: 'Feedback',
       about: 'About',
       math: 'Math Practice',
@@ -504,6 +516,7 @@ export const messages = {
       sticker: 'Fun Stickers',
       music: 'Music Sheets',
       timetable: 'Timetable',
+      nameCard: 'Name Cards',
       feedback: 'Feedback',
     },
     home: {
@@ -573,6 +586,10 @@ export const messages = {
         timetable: {
           title: 'Timetable Templates',
           description: 'Four editable schedules for primary, middle, high school, and university.',
+        },
+        nameCard: {
+          title: 'Name Cards',
+          description: 'A4 foldable name cards with adjustable patterns, colors, and type.',
         },
       },
       steps: [
@@ -690,6 +707,11 @@ export const messages = {
       kickers: { primary: 'SUNFLOWER STUDY · PRIMARY', middle: 'WEEKLY LEARNING PLAN · MIDDLE SCHOOL', high: 'WEEKLY FOCUS · HIGH SCHOOL', university: 'COURSE MAP · UNIVERSITY' },
       stages: { primary: 'Primary School', middle: 'Middle School', high: 'High School', university: 'University' },
       stageHints: { primary: 'Bright colors and clear periods for a child’s desk.', middle: 'A clear academic overview with room for after-school time.', high: 'A focused, efficient layout for study and review routines.', university: 'Compact course blocks for courses, rooms, and project time.' },
+    },
+    nameCard: {
+      settingsTitle: 'Name Card Settings', name: 'Name', namePlaceholder: 'Enter a name', backgroundType: 'Card background', backgroundColor: 'Base color', patternColor: 'Pattern color', textColor: 'Name color', font: 'Font style', fontSize: 'Font size', foldLine: 'FOLD HERE', fileSuffix: ' Name Card', foldingHint: 'Print at A4 size and fold inward on the center dotted line. The two faces are already mirrored for a tent card.',
+      backgroundTypes: { solid: 'Solid color', flowers: 'Flower pattern', dots: 'Dot pattern', grid: 'Grid pattern', waves: 'Wave pattern' },
+      fonts: { rounded: 'Rounded sans', bold: 'Heavy sans', serif: 'Serif', handwritten: 'Handwritten' },
     },
     generatorSettings: {
       type: 'Type',

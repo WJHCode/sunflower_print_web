@@ -10,7 +10,8 @@ import {
   CalendarOutlined,
   PictureOutlined,
   MessageOutlined,
-  HighlightOutlined
+  HighlightOutlined,
+  IdcardOutlined
 } from '@ant-design/icons-vue';
 import BrandMark from '../components/BrandMark.vue';
 import LanguageSwitch from '../components/LanguageSwitch.vue';
@@ -33,6 +34,7 @@ const selectedKeys = computed({
     if (route.path.includes('/sticker')) return ['sticker'];
     if (route.path.includes('/music')) return ['music'];
     if (route.path.includes('/timetable')) return ['timetable'];
+    if (route.path.includes('/name-card')) return ['name-card'];
     if (route.path.includes('/feedback')) return ['feedback'];
     return ['math'];
   },
@@ -47,6 +49,7 @@ const selectedKeys = computed({
     if (key === 'sticker') router.push('/generator/sticker');
     if (key === 'music') router.push('/generator/music');
     if (key === 'timetable') router.push('/generator/timetable');
+    if (key === 'name-card') router.push('/generator/name-card');
     if (key === 'feedback') router.push('/generator/feedback');
   }
 });
@@ -194,6 +197,10 @@ onUnmounted(() => {
           <a-menu-item key="timetable">
             <template #icon><CalendarOutlined /></template>
             {{ t('nav.timetable') }}
+          </a-menu-item>
+          <a-menu-item key="name-card">
+            <template #icon><IdcardOutlined /></template>
+            {{ t('nav.nameCard') }}
           </a-menu-item>
           <a-menu-item key="feedback" class="feedback-menu-item">
             <template #icon><MessageOutlined /></template>

@@ -15,6 +15,7 @@ import {
   PictureOutlined,
   HighlightOutlined,
   CalendarOutlined,
+  IdcardOutlined,
   BellOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons-vue';
@@ -137,6 +138,12 @@ const categoryMeta = [
     path: '/generator/timetable',
     icon: CalendarOutlined,
     tone: 'blue'
+  },
+  {
+    key: 'nameCard',
+    path: '/generator/name-card',
+    icon: IdcardOutlined,
+    tone: 'green'
   }
 ];
 
@@ -196,6 +203,7 @@ onBeforeUnmount(() => {
             <a-button type="text" @click="router.push('/generator/sticker')">{{ t('nav.stickerShort') }}</a-button>
             <a-button type="text" @click="router.push('/generator/music')">{{ t('nav.musicShort') }}</a-button>
             <a-button type="text" @click="router.push('/generator/timetable')">{{ t('nav.timetableShort') }}</a-button>
+            <a-button type="text" @click="router.push('/generator/name-card')">{{ t('nav.nameCardShort') }}</a-button>
             <a-button type="text" class="suggest-nav-btn" @click="router.push('/generator/feedback')">{{ t('nav.feedbackShort') }}</a-button>
           </nav>
           <a-button class="about-nav-btn" type="text" @click="router.push('/about')">

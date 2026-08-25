@@ -15,6 +15,7 @@ const DrawingGeneratorView = () => import('@/views/DrawingGenerator.vue')
 const StickerGeneratorView = () => import('@/views/StickerGenerator.vue')
 const MusicGeneratorView = () => import('@/views/MusicGenerator.vue')
 const TimetableGeneratorView = () => import('@/views/TimetableGenerator.vue')
+const NameCardGeneratorView = () => import('@/views/NameCardGenerator.vue')
 const FeedbackView = () => import('@/views/Feedback.vue')
 const AboutView = () => import('@/views/About.vue')
 
@@ -85,6 +86,11 @@ const routes: Array<RouteRecordRaw> = [
         component: TimetableGeneratorView
       },
       {
+        path: 'name-card',
+        name: 'NameCardGenerator',
+        component: NameCardGeneratorView
+      },
+      {
         path: 'feedback',
         name: 'Feedback',
         component: FeedbackView
@@ -116,6 +122,7 @@ export const preloadCommonRoutes = () => Promise.all([
   import('@/views/ChineseGenerator.vue'),
   import('@/views/PinyinReadingGenerator.vue'),
   import('@/views/TimetableGenerator.vue'),
+  import('@/views/NameCardGenerator.vue'),
 ])
 
 export default router
