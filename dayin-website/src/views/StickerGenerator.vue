@@ -26,6 +26,7 @@ const stickerSize = ref<StickerSize>('medium');
 const stickerShape = ref<StickerShape>('rounded');
 const stickerPalette = ref<StickerPalette>('candy');
 const stickerFont = ref<StickerFont>('rounded');
+const stickerTextScale = ref(100);
 const showCutLine = ref(true);
 const showDecorations = ref(true);
 const strokeWidth = ref(9);
@@ -129,10 +130,11 @@ const fontSizeFor = (text: string) => {
   const lines = splitStickerLines(text);
   const longest = Math.max(...lines.map((line) => line.length), 1);
   const base = activeSize.value.fontBase;
-  if (longest <= 2) return base * 1.28;
-  if (longest <= 4) return base * 1.08;
-  if (longest <= 7) return base * 0.9;
-  return base * 0.72;
+  let size = base * 0.72;
+  if (longest <= 2) size = base * 1.28;
+  else if (longest <= 4) size = base * 1.08;
+  else if (longest <= 7) size = base * 0.9;
+  return size * (stickerTextScale.value / 100);
 };
 
 const textY = (lineCount: number, index: number) => {
@@ -196,6 +198,13 @@ const downloadImage = async () => {
             <a-select-option value="hand">{{ t('options.handFont') }}</a-select-option>
             <a-select-option value="bold">{{ t('options.boldFont') }}</a-select-option>
           </a-select>
+        </a-form-item>
+
+        <a-form-item :label="t('generatorSettings.stickerTextSize')">
+          <div class="slider-value-row">
+            <a-slider v-model:value="stickerTextScale" :min="60" :max="140" :step="5" />
+            <span>{{ stickerTextScale }}%</span>
+          </div>
         </a-form-item>
 
         <a-form-item :label="t('generatorSettings.palette')">
@@ -362,6 +371,24 @@ const downloadImage = async () => {
   margin-top: 6px;
   color: #8c8c8c;
   font-size: 12px;
+}
+
+.slider-value-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider-value-row :deep(.ant-slider) {
+  flex: 1;
+  margin: 10px 0;
+}
+
+.slider-value-row > span {
+  width: 42px;
+  color: #4b5b4d;
+  font-size: 13px;
+  text-align: right;
 }
 
 .switch-row {
