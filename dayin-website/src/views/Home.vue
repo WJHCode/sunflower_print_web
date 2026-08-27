@@ -381,12 +381,35 @@ onBeforeUnmount(() => {
 .nav-links {
   display: flex;
   gap: 4px;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-actions {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 6px 14px;
+}
+
+.nav-actions::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+  border-radius: 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 253, 247, 0) 0%,
+    rgba(255, 253, 247, 0.18) 22%,
+    rgba(255, 253, 247, 0.65) 55%,
+    rgba(255, 253, 247, 0.94) 100%
+  );
+  box-shadow: 0 8px 28px rgba(56, 53, 39, 0.08);
+  backdrop-filter: blur(5px);
 }
 
 .hero-content {
@@ -795,20 +818,24 @@ onBeforeUnmount(() => {
 }
 
 .nav-links :deep(.ant-btn) {
+  color: #263129;
   font-weight: 700 !important;
+  text-shadow: 0 1px 0 rgba(255, 253, 247, 0.28);
 }
 
 .suggest-nav-btn {
-  color: #000000 !important;
+  color: #263129 !important;
 }
 .suggest-nav-btn:hover {
-  color: #222222 !important;
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  color: #1f5d34 !important;
+  background-color: rgba(47, 125, 70, 0.08) !important;
 }
 
 .about-nav-btn {
   color: #233126 !important;
   font-weight: 700;
+  position: relative;
+  z-index: 1;
 }
 
 .about-nav-btn:hover {
@@ -841,6 +868,7 @@ onBeforeUnmount(() => {
 
   .nav-actions {
     gap: 10px;
+    padding: 4px 8px;
   }
 
   .mobile-install-btn {
