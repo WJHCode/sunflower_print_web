@@ -21,6 +21,7 @@ import {
 import BrandMark from '../components/BrandMark.vue';
 import LanguageSwitch from '../components/LanguageSwitch.vue';
 import MusicNoteIcon from '../components/MusicNoteIcon.vue';
+import RecentFeedback from '../components/RecentFeedback.vue';
 import heroImage from '../assets/home-study-desk.png';
 import { useI18n } from '@/i18n';
 import { preloadCommonRoutes } from '@/router';
@@ -28,6 +29,19 @@ import { featureAnnouncements, isFeatureAnnouncementActive } from '@/constants/f
 
 const router = useRouter();
 const { t, tm } = useI18n();
+
+const FEATURE_NOTICE_DISMISSED_STORAGE_KEY = 'dayin-dismissed-feature-announcement-ids';
+
+const readDismissedFeatureAnnouncementIds = () => {
+  if (typeof window === 'undefined') return new Set<string>();
+
+  try {
+    const savedIds = JSON.parse(window.localStorage.getItem(FEATURE_NOTICE_DISMISSED_STORAGE_KEY) ?? '[]');
+    return new Set(Array.isArray(savedIds) ? savedIds.filter((id): id is string => typeof id === 'string') : []);
+  } catch {
+    return new Set<string>();
+  }
+};
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -37,6 +51,7 @@ interface BeforeInstallPromptEvent extends Event {
 const deferredInstallPrompt = ref<BeforeInstallPromptEvent | null>(null);
 const isStandalone = ref(false);
 const isMobileViewport = ref(false);
+const dismissedFeatureAnnouncementIds = ref(readDismissedFeatureAnnouncementIds());
 
 const canShowInstallButton = computed(() => isMobileViewport.value && !isStandalone.value);
 
@@ -147,7 +162,26 @@ const categories = computed(() => categoryMeta.map((category) => ({
 })));
 
 const strengths = computed(() => tm<string[]>('home.strengths'));
-const activeFeatureAnnouncements = computed(() => featureAnnouncements.filter((announcement) => isFeatureAnnouncementActive(announcement)));
+const activeFeatureAnnouncements = computed(() => featureAnnouncements.filter((announcement) => (
+  isFeatureAnnouncementActive(announcement) && !dismissedFeatureAnnouncementIds.value.has(announcement.id)
+)));
+
+const dismissFeatureAnnouncement = (announcementId: string) => {
+  const nextDismissedIds = new Set(dismissedFeatureAnnouncementIds.value);
+  nextDismissedIds.add(announcementId);
+  dismissedFeatureAnnouncementIds.value = nextDismissedIds;
+
+  try {
+    window.localStorage.setItem(FEATURE_NOTICE_DISMISSED_STORAGE_KEY, JSON.stringify([...nextDismissedIds]));
+  } catch {
+    // The notice is still hidden for this visit when browser storage is unavailable.
+  }
+};
+
+const openFeatureAnnouncement = (announcement: { id: string; path: string }) => {
+  dismissFeatureAnnouncement(announcement.id);
+  void router.push(announcement.path);
+};
 
 const stepIcons = [FileDoneOutlined, ClockCircleOutlined, PrinterOutlined];
 const steps = computed(() => tm<Array<{ title: string; text: string }>>('home.steps').map((step, index) => ({
@@ -220,7 +254,7 @@ onBeforeUnmount(() => {
       <section v-if="activeFeatureAnnouncements.length" class="feature-notice" :aria-label="t('home.featureNotice.label')">
         <a-carousel class="feature-notice-carousel" :autoplay="activeFeatureAnnouncements.length > 1" :dots="activeFeatureAnnouncements.length > 1">
           <div v-for="announcement in activeFeatureAnnouncements" :key="announcement.id" class="feature-notice-slide">
-            <button class="feature-notice-card" type="button" @click="router.push(announcement.path)">
+            <button class="feature-notice-card" type="button" @click="openFeatureAnnouncement(announcement)">
               <span class="feature-notice-badge"><BellOutlined />{{ t('home.featureNotice.badge') }}</span>
               <span class="feature-notice-copy">
                 <strong>{{ t(`home.featureAnnouncements.${announcement.id}.title`) }}</strong>
@@ -290,6 +324,8 @@ onBeforeUnmount(() => {
         </button>
       </div>
     </section>
+
+    <RecentFeedback />
 
     <section class="workflow-section" aria-label="使用流程">
       <div v-for="step in steps" :key="step.title" class="workflow-item">

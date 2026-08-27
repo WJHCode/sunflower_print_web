@@ -81,6 +81,13 @@ export const messages = {
           action: '立即使用',
         },
       },
+      recentFeedback: {
+        label: '近期留言',
+        title: '大家怎么说',
+        description: '来自最近的真实留言，点击任意留言即可参与交流。',
+        action: '去留言',
+        user: '留言用户',
+      },
       start: '开始生成',
       preview: '看看作业纸',
       install: {
@@ -523,6 +530,13 @@ export const messages = {
           description: 'Four editable, printable schedules for primary, middle school, high school, and university.',
           action: 'Try it now',
         },
+      },
+      recentFeedback: {
+        label: 'Recent feedback',
+        title: 'What people are saying',
+        description: 'From the latest real comments. Select any comment to join the conversation.',
+        action: 'Leave feedback',
+        user: 'Site user',
       },
       start: 'Start creating',
       preview: 'View worksheets',
