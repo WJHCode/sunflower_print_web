@@ -19,6 +19,15 @@ const isMobileDevice = () => (
   'ontouchstart' in window
 );
 
+// The Web Share API with image files is the reliable way for iOS browsers to
+// hand an image to Photos. Android browsers generally save a downloadable blob
+// themselves; attempting to open an iOS-style share sheet there produces a
+// misleading Safari-only error in browsers that do not implement Web Share.
+const isIOSDevice = () => (
+  /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+);
+
 const normalizePngFilename = (filename: string) => (filename.endsWith('.png') ? filename : `${filename}.png`);
 
 const downloadBlob = (blob: Blob, filename: string) => {
@@ -57,8 +66,8 @@ type ShareImageResult = {
 };
 
 const shareImageFile = async (blob: Blob, filename: string) => {
-  if (!isMobileDevice()) {
-    return { shared: false, message: '当前设备不是移动端。' };
+  if (!isIOSDevice()) {
+    return { shared: false, message: '仅 iOS 设备使用系统分享保存图片。' };
   }
 
   if (!window.isSecureContext) {
@@ -440,7 +449,7 @@ export const saveImageFromElement = async (
       scrollY: 0,
     });
     const imageBlob = await canvasToPngBlob(canvas);
-    if (isMobileDevice()) {
+    if (isIOSDevice()) {
       await showMobileImageSaveDialog(imageBlob, pngFilename);
     } else {
       downloadBlob(imageBlob, pngFilename);
