@@ -204,6 +204,7 @@ export const messages = {
         'length-unit': '长度单位换算',
         'time-unit': '时间单位换算',
         'clock-reading': '认识钟表',
+        'number-tracing': '数字描红（0-10）',
       },
       paperTitles: {
         addition: '基础加法练习题',
@@ -223,6 +224,7 @@ export const messages = {
         'length-unit': '长度单位换算练习题',
         'time-unit': '时间单位换算练习题',
         'clock-reading': '认识钟表练习题',
+        'number-tracing': '数字描红练习题（0-10）',
       },
     },
     feedback: {
@@ -654,6 +656,7 @@ export const messages = {
         'length-unit': 'Length unit conversion',
         'time-unit': 'Time unit conversion',
         'clock-reading': 'Clock reading',
+        'number-tracing': 'Number tracing (0-10)',
       },
       paperTitles: {
         addition: 'Basic Addition Practice',
@@ -673,6 +676,7 @@ export const messages = {
         'length-unit': 'Length Unit Conversion Practice',
         'time-unit': 'Time Unit Conversion Practice',
         'clock-reading': 'Clock Reading Practice',
+        'number-tracing': 'Number Tracing Practice (0-10)',
       },
     },
     feedback: {

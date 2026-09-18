@@ -20,6 +20,7 @@ import { generateBorrowTen, generateBreakTen, generateFlatTen, generateMakeTen }
 import BasicEquation from '../components/math/BasicEquation.vue';
 import ClockEquation from '../components/math/ClockEquation.vue';
 import MakeTenEquation from '../components/math/MakeTenEquation.vue';
+import NumberTracingSheet from '../components/math/NumberTracingSheet.vue';
 import SplitTreeEquation from '../components/math/SplitTreeEquation.vue';
 import type { MathProblem } from '../types/math';
 import { printElement, saveImageFromElement, savePdfFromElement } from '../utils/print';
@@ -51,6 +52,7 @@ const clockRows = Math.floor((214 + 7) / (48 + 7));
 const numberRangeTypes = new Set(['addition', 'subtraction', 'mixed', 'triple-addition', 'triple-subtraction']);
 const unitConversionTypes = new Set(['currency-unit', 'weight-unit', 'length-unit', 'time-unit']);
 const hiddenLayoutTypes = new Set(['money-exchange']);
+const numberTracingTypes = new Set(['number-tracing']);
 const singleColumnTypes = new Set(['money-exchange']);
 const clockLayoutTypes = new Set(['clock-reading']);
 const threeColumnArithmeticTypes = new Set([
@@ -70,7 +72,7 @@ const threeColumnArithmeticTypes = new Set([
 const isFixedLayout = computed(() => fixedLayoutTypes.has(formState.value.type));
 const isThreeColumnArithmetic = computed(() => threeColumnArithmeticTypes.has(formState.value.type));
 const showNumberRange = computed(() => numberRangeTypes.has(formState.value.type));
-const showLayoutSettings = computed(() => !hiddenLayoutTypes.has(formState.value.type));
+const showLayoutSettings = computed(() => !hiddenLayoutTypes.has(formState.value.type) && !numberTracingTypes.has(formState.value.type));
 const columns = computed(() => {
   if (singleColumnTypes.has(formState.value.type)) return 1;
   if (clockLayoutTypes.has(formState.value.type)) return clockColumns;
@@ -235,6 +237,7 @@ const downloadImage = async () => {
             <a-select-option value="length-unit">{{ t('math.problemTypes.length-unit') }}</a-select-option>
             <a-select-option value="time-unit">{{ t('math.problemTypes.time-unit') }}</a-select-option>
             <a-select-option value="clock-reading">{{ t('math.problemTypes.clock-reading') }}</a-select-option>
+            <a-select-option value="number-tracing">{{ t('math.problemTypes.number-tracing') }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item v-if="showNumberRange" :label="t('math.numberRange')">
@@ -265,12 +268,12 @@ const downloadImage = async () => {
             <a-tag color="blue">{{ countLabel }}</a-tag>
           </div>
         </a-form-item>
-        <a-form-item :label="t('math.showAnswer')">
+        <a-form-item v-if="!numberTracingTypes.has(formState.type)" :label="t('math.showAnswer')">
           <a-switch v-model:checked="formState.showAnswer" />
         </a-form-item>
         <a-divider />
         <div class="action-buttons">
-          <a-button type="default" block size="large" @click="handleRegenerate" style="margin-bottom: 16px; background-color: #f6c84c; color: #2c3b2b; border-color: #f6c84c;">
+          <a-button v-if="!numberTracingTypes.has(formState.type)" type="default" block size="large" @click="handleRegenerate" style="margin-bottom: 16px; background-color: #f6c84c; color: #2c3b2b; border-color: #f6c84c;">
             <template #icon><RedoOutlined /></template>
             {{ t('common.regenerate') }}
           </a-button>
@@ -307,7 +310,8 @@ const downloadImage = async () => {
             <span>{{ t('common.score') }}</span>
           </div>
         </div>
-        <div :class="contentClass" :style="{ gridTemplateColumns: `repeat(${columns}, 1fr)` }">
+        <NumberTracingSheet v-if="numberTracingTypes.has(formState.type)" />
+        <div v-else :class="contentClass" :style="{ gridTemplateColumns: `repeat(${columns}, 1fr)` }">
           <template v-for="item in problemList" :key="item.id">
             <BasicEquation 
               v-if="item.type === 'basic'" 
