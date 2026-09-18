@@ -1,15 +1,29 @@
 <script setup lang="ts">
 const numbers = Array.from({ length: 11 }, (_, value) => String(value));
 const practiceCells = 14;
-const getDigitTransform = (number: string) => number === '10'
-  ? undefined
-  : 'translate(-8 0) scale(0.72 1)';
+// Each standalone numeral is mapped from its own outline bounds to x=4–49,
+// which is the full left half of the 100-unit Tianzi grid (with a tiny writing
+// margin). This avoids system-font metrics making narrow digits look shrunken.
+const digitTransforms: Record<string, string> = {
+  '0': 'translate(-15.2 -6) scale(0.833 1.1)',
+  '1': 'translate(-17.2 -6) scale(0.849 1.1)',
+  '2': 'translate(-15.4 -6) scale(0.776 1.1)',
+  '3': 'translate(-16.8 -6) scale(0.833 1.1)',
+  '4': 'translate(-13.2 -6) scale(0.818 1.1)',
+  '5': 'translate(-13.6 -6) scale(0.763 1.1)',
+  '6': 'translate(-7.1 -6) scale(0.692 1.1)',
+  '7': 'translate(-14 -6) scale(0.818 1.1)',
+  '8': 'translate(-13.7 -6) scale(0.804 1.1)',
+  '9': 'translate(-14.3 -6) scale(0.833 1.1)',
+};
+
+const getDigitTransform = (number: string) => digitTransforms[number];
 
 // Use single-stroke teaching paths instead of font outlines, so the sample and
 // tracing guides follow the same writing shape at every size.
 const digitPaths: Record<string, string[]> = {
   '0': ['M50 12 C31 12 23 33 23 60 C23 88 32 108 50 108 C68 108 77 88 77 60 C77 33 69 12 50 12'],
-  '1': ['M50 12 L50 108'],
+  '1': ['M78 12 L25 108'],
   '2': ['M26 29 C30 10 65 9 74 27 C83 46 66 62 48 78 L25 105 L78 105'],
   '3': ['M27 18 C47 8 73 13 75 34 C76 48 65 56 52 59 C69 60 79 73 74 91 C69 109 42 112 25 99'],
   '4': ['M58 12 L21 74 L76 74', 'M61 12 L61 108'],
@@ -18,7 +32,7 @@ const digitPaths: Record<string, string[]> = {
   '7': ['M22 14 L77 14 L39 108'],
   '8': ['M50 59 C67 55 76 43 75 30 C74 8 28 8 25 30 C24 43 33 55 50 59 C70 62 78 76 74 92 C69 111 31 111 26 92 C22 76 30 62 50 59'],
   '9': ['M72 42 C72 59 61 70 46 70 C29 70 22 59 23 43 C24 24 35 12 51 12 C68 12 76 25 74 44 C72 66 62 84 43 108'],
-  '10': ['M30 16 L30 105', 'M70 16 C57 16 51 33 51 61 C51 88 57 106 70 106 C83 106 89 88 89 61 C89 33 83 16 70 16'],
+  '10': ['M49 7 L4 113', 'M74 8 C60 8 53 30 53 60 C53 91 60 112 74 112 C88 112 96 91 96 60 C96 30 88 8 74 8'],
 };
 </script>
 
@@ -116,8 +130,8 @@ const digitPaths: Record<string, string[]> = {
 }
 
 .sample-glyph {
-  width: 10.2mm;
-  height: 10.2mm;
+  width: 12mm;
+  height: 12mm;
   fill: none;
   stroke: #171313;
   stroke-width: 4.4;
@@ -126,8 +140,8 @@ const digitPaths: Record<string, string[]> = {
 }
 
 .trace-glyph {
-  width: 10.2mm;
-  height: 10.2mm;
+  width: 12mm;
+  height: 12mm;
   overflow: visible;
 }
 
