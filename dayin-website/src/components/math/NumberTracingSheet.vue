@@ -26,7 +26,9 @@ const digitPaths: Record<string, string[]> = {
   '1': ['M78 12 L25 108'],
   '2': ['M26 29 C30 10 65 9 74 27 C83 46 66 62 48 78 L25 105 L78 105'],
   '3': ['M27 18 C47 8 73 13 75 34 C76 48 65 56 52 59 C69 60 79 73 74 91 C69 109 42 112 25 99'],
-  '4': ['M58 12 L21 74 L76 74', 'M61 12 L61 108'],
+  // 4: the primary-school “little flag” form: short left slant, horizontal,
+  // then a long stem that falls slightly left. Keep all three strokes separate.
+  '4': ['M42 12 L21 74', 'M21 74 L77 74', 'M63 12 L58 108'],
   '5': ['M32 16 L27 55 C44 48 67 52 73 70 C82 98 60 112 39 105 C30 102 25 96 23 91', 'M32 16 L75 16'],
   '6': ['M72 22 C62 9 41 15 31 35 C16 69 24 106 50 106 C73 106 81 83 70 66 C59 49 35 55 27 71'],
   '7': ['M22 14 L77 14 L39 108'],
